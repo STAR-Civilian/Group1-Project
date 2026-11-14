@@ -1,3 +1,4 @@
 # Group1-Project
 
-Created by Stephanie Asauskas
+Su -- here for group project
+Created by Steph Asauskas
