@@ -49,12 +49,12 @@ Behavioral interviews make it harder: hiring managers expect STAR-method answers
 
 
 ## Team
-  Name     |   Feature owned (end-to-end)   |   GitHub
------------|--------------------------------|----------------------
-Alana Karp     |   [feature]                |   [@username]
-Liz Burk       |   [feature]                |   [@username]
-Steph Asauskas |   [feature]                |   [@activedutymodel]
-Su Gardner     |   [feature]                |   [@username]
+  Name         |   Feature owned (end-to-end)   |   GitHub
+---------------|--------------------------------|----------------------
+Alana Karp     |   [feature]                    |   @Karp-636
+Liz Burk       |   [feature]                    |   @IzzyVIII
+Steph Asauskas |   [feature]                    |   @activedutymodel
+Su Gardner     |   [feature]                    |   @SuGardner18
 
 *Feature ideas to split: auth + profile/MOS · O\*NET job search · resume upload + text · LLM STAR answers*
 
