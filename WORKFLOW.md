@@ -183,10 +183,9 @@ docker compose exec backend python manage.py migrate
 
 ```bash
 git checkout main && git pull origin main      # 1. fresh main
-git checkout -b feature/<name>                  # 2. new branch
-# ...code...
+git checkout -b feature/<name>                 # 2. new branch
 git add <files> && git commit -m "<message>"   # 3. save
 git push -u origin feature/<name>              # 4. push
-# 5. open PR on GitHub → review → merge
+                                               # 5. open PR on GitHub → review → merge
 git checkout main && git pull origin main      # 6. back to fresh main
 ```
