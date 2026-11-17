@@ -44,8 +44,6 @@ git commit -m "Add Resume model"    # short, starts with a verb
 Good messages: `Add resume upload endpoint`, `Fix MOS search filter`, `Style login page`.
 Bad messages: `stuff`, `fixed it`, `asdf`.
 
-> Avoid `git add .` until you've checked `git status` — it's how `.env` files and junk get committed.
-
 ---
 
 ## 3. Push your branch to GitHub
