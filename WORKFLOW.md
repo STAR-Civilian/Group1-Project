@@ -129,11 +129,8 @@ Click **Delete branch** on the merged PR page on GitHub. Then start your next ta
 Git marks the conflict inside the file:
 
 ```text
-<<<<<<< HEAD
 your version
-=======
 the version from main
->>>>>>> main
 ```
 
 1. Open each conflicted file (`git status` lists them).
