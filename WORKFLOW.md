@@ -13,8 +13,8 @@ Replace anything in `<angle brackets>` with your own value (and drop the bracket
 
 ```bash
 git checkout main && git pull origin main      # 1. fresh main
-git checkout -b feature/<name>                 # 2. new branch
-git add <files> && git commit -m "<message>"   # 3. save
+git checkout -b feature/task                   # 2. new branch
+git add . && git commit -m ""                  # 3. save
 git push -u origin feature/<name>              # 4. push
                                                # 5. open PR on GitHub → review → merge
 git checkout main && git pull origin main      # 6. back to fresh main
@@ -149,3 +149,32 @@ docker compose exec backend python manage.py migrate
 | I committed `.env` or a secret | Tell the team **right away**. Run `git rm --cached .env`, commit, and rotate (replace) the leaked keys |
 
 **Never** use `git push --force` on `main` or on someone else's branch.
+
+---
+
+## 11. Django commands
+Run from the repo root. Activate the venv FIRST:
+
+```bash
+source venv/bin/activate
+```
+
+```bash
+# start the dev server
+python backend/star_civilian/manage.py runserver
+
+# catch config errors
+python backend/star_civilian/manage.py check                         
+
+# after changing models
+python backend/star_civilian/manage.py makemigrations <your_app>    
+
+# apply migrations
+python backend/star_civilian/manage.py migrate 
+
+# run your tests
+python backend/star_civilian/manage.py test <your_app>   
+
+# admin login (once)
+python backend/star_civilian/manage.py createsuperuser               
+```

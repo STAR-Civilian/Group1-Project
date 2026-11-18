@@ -1,0 +1,43 @@
+{
+  "summary": "Supply and inventory professional with 10 years of experience keeping equipment and records accurate for teams of up to 120 people. Trains new team members and keeps daily operations running smoothly. [Add a result, such as a percentage improvement or cost saved.]",
+  "skills": [
+    "Inventory control",
+    "Record keeping",
+    "Ordering and purchasing",
+    "Team supervision",
+    "Training and coaching",
+    "Planning and scheduling"
+  ],
+  "experience": [
+    {
+      "title": "Warehouse Supervisor",
+      "organization": "Acme Logistics",
+      "dates": "09/2022 - Present",
+      "bullets": [
+        "Schedule and supervise a team of warehouse associates.",
+        "Keep inventory records accurate across daily shipments."
+      ]
+    },
+    {
+      "title": "Unit Supply Specialist",
+      "organization": "U.S. Army",
+      "dates": "06/2016 - 08/2022",
+      "bullets": [
+        "Tracked and accounted for equipment and supplies for a company of about 120 people.",
+        "Ordered replacement parts and followed up until they arrived.",
+        "Ran monthly inventories and kept records current.",
+        "Trained 4 junior team members on supply paperwork."
+      ]
+    }
+  ],
+  "education": [
+    "Associate degree, Business, Example State College, 2020"
+  ],
+  "certifications": [
+    "Supply Chain Certificate, Example Training Institute, 2020"
+  ],
+  "questions_for_vet": [
+    "How many people do you supervise at your current job?",
+    "Can you add a number or result to any of your bullet points?"
+  ]
+}
