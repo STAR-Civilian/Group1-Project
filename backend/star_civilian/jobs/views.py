@@ -9,7 +9,7 @@ from .onet import get_onet_data
 @require_GET
 def civ_job_search(request):
     """
-    Searches O*Net for civilian jobs
+    Searches O*NET for civilian jobs
     using a job title or keyword.
     """
 
@@ -37,7 +37,7 @@ def civ_job_search(request):
 
     except Exception:
         return JsonResponse(
-            {"error": "Unable to retrieve civilian jobs from O*Net."},
+            {"error": "Unable to retrieve civilian jobs from O*NET."},
             status=502
         )
 
@@ -46,8 +46,8 @@ def civ_job_search(request):
 @require_GET
 def mil_job_search(request):
     """
-    Searches O*Net's military job
-    using a military job title or code.
+    Searches O*NET for military occupations
+    and related civilian career matches.
     """
 
     keyword = request.GET.get("keyword", "").strip()
@@ -60,7 +60,7 @@ def mil_job_search(request):
 
     try:
         results = get_onet_data(
-            "online/career-equivalent/military",
+            "veterans/military",
             params={"keyword": keyword}
         )
 
@@ -74,16 +74,16 @@ def mil_job_search(request):
 
     except Exception:
         return JsonResponse(
-            {"error": "Unable to search military job."},
+            {"error": "Unable to search military occupations."},
             status=502
         )
 
 
-# 3. Civilian job matching
+# 3. Civilian job matching based on skills
 @require_GET
 def job_matches(request):
     """
-    Finds civilian jobs based on selected O*Net skills.
+    Finds civilian occupations based on selected O*NET skill IDs.
     """
 
     skills = request.GET.get("skills", "").strip()
