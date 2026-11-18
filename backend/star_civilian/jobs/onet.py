@@ -2,15 +2,15 @@ import os
 import requests
 
 
-# O*NET API base URL (Version 2.0)
+# O*Net API base URL (Version 2.0)
 ONET_BASE_URL = "https://api-v2.onetcenter.org"
 
 
 def get_onet_data(endpoint, params=None):
     """
-    Sends a GET request to the O*NET API.
+    Sends a GET request to the O*Net API.
 
-    endpoint: The specific O*NET resource we want.
+    endpoint: The specific O*Net resource we want.
     params: Optional search parameters.
     """
 
@@ -18,7 +18,7 @@ def get_onet_data(endpoint, params=None):
     api_key = os.getenv("ONET_API_KEY")
 
     if not api_key:
-        raise ValueError("O*NET API key is missing.")
+        raise ValueError("O*Net API key is missing.")
 
     # Set up request headers
     headers = {
@@ -43,12 +43,12 @@ def get_onet_data(endpoint, params=None):
         return response.json()
 
     except requests.exceptions.Timeout:
-        raise Exception("O*NET API request timed out.")
+        raise Exception("O*Net API request timed out.")
 
     except requests.exceptions.HTTPError:
         raise Exception(
-            f"O*NET API returned an error: {response.status_code}"
+            f"O*Net API returned an error: {response.status_code}"
         )
 
     except requests.exceptions.RequestException:
-        raise Exception("Unable to connect to O*NET API.")
+        raise Exception("Unable to connect to O*Net API.")
