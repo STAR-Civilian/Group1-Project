@@ -33,3 +33,20 @@ def validate_resume(data):
             _is_text_list(job.get("bullets")),
             "experience bullets must be a list of text.",
         )
+
+def validate_star(data):
+    _require(isinstance(data, dict), "The reply must be a JSON object.")
+
+    answers = data.get("answers")
+    _require(isinstance(answers, list) and answers, "answers must be a non-empty list.")
+
+    for item in answers:
+        _require(isinstance(item, dict), "Each answer must be an object.")
+        _require(
+            isinstance(item.get("question"), str) and item["question"].strip(),
+            "Each answer needs a question.",
+        )
+        for key in ("skill", "situation", "task", "action", "result"):
+            _require(isinstance(item.get(key), str), f"answer {key} must be text.")
+        if "tip" in item:
+            _require(isinstance(item["tip"], str), "answer tip must be text.")
