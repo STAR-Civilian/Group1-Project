@@ -50,3 +50,10 @@ def validate_star(data):
             _require(isinstance(item.get(key), str), f"answer {key} must be text.")
         if "tip" in item:
             _require(isinstance(item["tip"], str), "answer tip must be text.")
+
+
+
+def validate_star_rewrite(data):
+    _require(isinstance(data, dict), "The reply must be a JSON object.")
+    for key in ("situation", "task", "action", "result"):
+        _require(isinstance(data.get(key), str) and data[key].strip(), f"{key} must be text.")
