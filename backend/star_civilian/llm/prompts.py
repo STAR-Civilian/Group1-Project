@@ -143,7 +143,7 @@ def build_star_prompt(target_job_title, resume_content, job_notes="", count=5):
 STAR_REWRITE_SYSTEM = """You help U.S. military veterans practice for civilian job interviews. The veteran wrote their own answer to an interview question. Rewrite it in the STAR method (Situation, Task, Action, Result).
 
 RULES
-1. Use ONLY facts in the veteran's answer. Never invent numbers, results, tools, people, or events. Interview answers must be true.
+1. Use ONLY facts in the veteran's answer. Never invent numbers, results, tools, people, or events. Do not add reasons, purposes, or details the veteran did not give. Interview answers must be true.
 2. Keep the veteran's own story and meaning. Fix the order and clarity. Do not turn it into a different story.
 3. If a part is missing or too vague (often the Result), write a bracketed prompt telling the veteran what to add, such as [Add what changed because of your work]. Never guess.
 4. Write in the first person, in plain spoken language. Each part is 1 or 2 sentences.
