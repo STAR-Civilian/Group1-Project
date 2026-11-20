@@ -1,15 +1,14 @@
-from django.shortcuts import render
-
-# Create your views here.
+from django.db import transaction
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from resumes.models import Resume
+from resumes.models import Resume, StarAnswer
 
 from .client import LLMError, call_llm_json
-from .prompts import RESUME_SYSTEM, build_resume_prompt
+from .prompts import RESUME_SYSTEM, STAR_SYSTEM, build_resume_prompt, build_star_prompt
 from .services import build_resume_input
-from .validators import validate_resume
+from .validators import validate_resume, validate_star
 
 
 class GenerateResumeView(APIView):
@@ -65,3 +64,68 @@ class GenerateResumeView(APIView):
         )
 
     
+
+class GenerateStarView(APIView):
+    """POST: write interview questions with example STAR answers for a saved resume."""
+
+    def post(self, request, resume_id):
+        # Only the owner can use their resume. Anyone else gets a 404.
+        resume = get_object_or_404(Resume, id=resume_id, user=request.user)
+        if not resume.content:
+            return Response({"detail": "This resume has no content yet."}, status=400)
+
+        try:
+            count = int(request.data.get("count", 5))
+        except (TypeError, ValueError):
+            return Response({"detail": "count must be a number."}, status=400)
+        if not 1 <= count <= 10:
+            return Response({"detail": "count must be between 1 and 10."}, status=400)
+
+        job_notes = str(request.data.get("job_notes") or "")
+        prompt = build_star_prompt(resume.target_job_title, resume.content, job_notes, count)
+        try:
+            data = call_llm_json(
+                STAR_SYSTEM, prompt, "star.json", validate_star, max_tokens=3000
+            )
+        except LLMError:
+            return Response(
+                {"detail": "The interview coach had a problem. Please try again."},
+                status=502,
+            )
+
+        # New answers are added. Existing ones are never deleted, because the
+        # veteran may have edited or written their own.
+        with transaction.atomic():
+            saved = [
+                StarAnswer.objects.create(
+                    resume=resume,
+                    question=a["question"][:300],
+                    skill=a["skill"][:100],
+                    tip=a.get("tip", ""),
+                    situation=a["situation"],
+                    task=a["task"],
+                    action=a["action"],
+                    result=a["result"],
+                )
+                for a in data["answers"]
+            ]
+
+        return Response(
+            {
+                "resume_id": resume.id,
+                "answers": [
+                    {
+                        "id": s.id,
+                        "question": s.question,
+                        "skill": s.skill,
+                        "tip": s.tip,
+                        "situation": s.situation,
+                        "task": s.task,
+                        "action": s.action,
+                        "result": s.result,
+                    }
+                    for s in saved
+                ],
+            },
+            status=201,
+        )
