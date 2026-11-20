@@ -6,9 +6,16 @@ from rest_framework.views import APIView
 from resumes.models import Resume, StarAnswer
 
 from .client import LLMError, call_llm_json
-from .prompts import RESUME_SYSTEM, STAR_SYSTEM, build_resume_prompt, build_star_prompt
+from .prompts import (
+    RESUME_SYSTEM,
+    STAR_REWRITE_SYSTEM,
+    STAR_SYSTEM,
+    build_resume_prompt,
+    build_star_prompt,
+    build_star_rewrite_prompt,
+)
 from .services import build_resume_input
-from .validators import validate_resume, validate_star
+from .validators import validate_resume, validate_star, validate_star_rewrite
 
 
 class GenerateResumeView(APIView):
@@ -128,4 +135,61 @@ class GenerateStarView(APIView):
                 ],
             },
             status=201,
+        )
+
+    
+
+class RewriteStarAnswerView(APIView):
+    """POST: rewrite the veteran's own answer in STAR format and save it."""
+
+    def post(self, request, answer_id):
+        # Only the owner of the resume can change its answers. Anyone else gets a 404.
+        answer = get_object_or_404(
+            StarAnswer.objects.select_related("resume"),
+            id=answer_id,
+            resume__user=request.user,
+        )
+
+        text = str(request.data.get("answer_text") or "").strip()
+        if not text:
+            return Response({"detail": "answer_text is required."}, status=400)
+        if len(text) > 3000:
+            return Response(
+                {"detail": "answer_text is too long (3000 characters max)."}, status=400
+            )
+
+        prompt = build_star_rewrite_prompt(
+            answer.resume.target_job_title, answer.question, text
+        )
+        try:
+            data = call_llm_json(
+                STAR_REWRITE_SYSTEM,
+                prompt,
+                "star_rewrite.json",
+                validate_star_rewrite,
+                max_tokens=1000,
+            )
+        except LLMError:
+            return Response(
+                {"detail": "The interview coach had a problem. Please try again."},
+                status=502,
+            )
+
+        answer.situation = data["situation"]
+        answer.task = data["task"]
+        answer.action = data["action"]
+        answer.result = data["result"]
+        answer.save()
+
+        return Response(
+            {
+                "id": answer.id,
+                "question": answer.question,
+                "skill": answer.skill,
+                "tip": answer.tip,
+                "situation": answer.situation,
+                "task": answer.task,
+                "action": answer.action,
+                "result": answer.result,
+            }
         )
