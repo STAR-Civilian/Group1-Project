@@ -28,7 +28,7 @@ def call_llm(system, user, mock_file, max_tokens=2000):
         system=system,
         messages=[{"role": "user", "content": user}],
     )
-    return response.content[0].text
+    return "".join(block.text for block in response.content if block.type == "text")
 
 
 def _parse_json(text):
