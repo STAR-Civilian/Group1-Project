@@ -34,6 +34,7 @@ class StarAnswer(models.Model):
     )
     question = models.CharField(max_length=300)
     skill = models.CharField(max_length=100, blank=True)   # e.g. "Organization"
+    tip = models.TextField(blank=True)                     # coaching suggestion from the AI
     situation = models.TextField(blank=True)
     task = models.TextField(blank=True)
     action = models.TextField(blank=True)
