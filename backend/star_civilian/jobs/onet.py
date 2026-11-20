@@ -1,7 +1,6 @@
 import os
 import requests
 
-
 # O*Net API base URL (Version 2.0)
 ONET_BASE_URL = "https://api-v2.onetcenter.org"
 
