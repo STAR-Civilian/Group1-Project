@@ -68,3 +68,53 @@ class Login(APIView):
         
         token, _ = Token.objects.get_or_create(user=user)       # get this user token, or make one
         return Response({"token": token.key})                   # send token to REACT
+
+# the 7 fields a user can see & change    
+PROFILE_FIELDS = ["first_name", "last_name", "phone", "city", "state", "branch", "job_code_or_title"]
+
+def profile_data(user):
+    profile = user.profile
+    return {
+        "email": user.email,
+        "first_name": profile.first_name,
+        "last_name": profile.last_name,
+        "phone": profile.phone,
+        "city": profile.city,
+        "state": profile.state,
+        "branch": profile.branch,
+        "job_code_or_title": profile.job_code_or_title,
+    }
+    
+class ProfileMe(APIView):
+    
+    def get(self, request):
+        try:
+            return Response(profile_data(request.user))
+        except Profile.DoesNotExist:
+            return Response({"Error": "No profile found"}, status= 404)
+        
+    def put(self, request):
+        missing = [f for f in PROFILE_FIELDS if not str(request.data.get(f, "")).strip()]
+        if missing:
+            return Response({"Error": f"These fields are required: {','.join(missing)}"}, status=400)
+        
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            return Response({"Error": "No profile found"}, status=404)
+        
+        profile.first_name = request.data["first_name"].strip()
+        profile.last_name = request.data["last_name"].strip()
+        profile.phone = request.data["phone"].strip()
+        profile.city = request.data["city"].strip()
+        profile.state = request.data["state"].strip().upper()
+        profile.branch = request.data["branch"].strip()
+        profile.job_code_or_title = request.data["job_code_or_title"].strip()
+        
+        try:
+            profile.full_clean()
+        except ValidationError as err:
+            return Response({"Error": err.message_dict}, status= 400)
+        
+        profile.save()
+        return Response(profile_data(request.user))
