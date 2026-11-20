@@ -53,7 +53,7 @@ class SignUp(APIView):
         return Response({"token": token.key}, status=201)
     
 class Login(APIView):
-    authenticate_classes = []
+    authentication_classes = []
     permission_classes = [AllowAny]         #anyone can try to log in
     
     def post(self, request):
