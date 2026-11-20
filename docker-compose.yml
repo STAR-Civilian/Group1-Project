@@ -5,6 +5,8 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -15,6 +17,7 @@ services:
 
   backend:
     build: ./backend
+    working_dir: /app/star_civilian
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
@@ -22,6 +25,10 @@ services:
       - ./backend:/app
     env_file:
       - .env
+    environment:
+      # Inside Docker the database is reached by its service name, whatever .env says.
+      DB_HOST: db
+      DB_PORT: "5432"
     depends_on:
       db:
         condition: service_healthy
