@@ -18,8 +18,8 @@ class Profile(models.Model):
     phone = models.CharField(max_length=30)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=2)
-    branch = models.CharField(max_length=15, choices=BRANCH_CHOICE)     # Choice gives dropdown its values 
-    job_code_or_title = models.CharField(max_length=100)
+    branch = models.CharField(max_length=15, choices=BRANCH_CHOICE, blank=True)     # Choice gives dropdown its values 
+    job_code_or_title = models.CharField(max_length=100, blank=True)
     
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
