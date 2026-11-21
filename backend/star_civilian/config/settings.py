@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
 import os
 
@@ -7,9 +8,12 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR.parent.parent / ".env")
 
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-dev-only-change-me")
+# No fallback: a missing key must stop the app, never run with a public one
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ImproperlyConfigured("SECRET_KEY is not set. Add it to your .env file.")
 
-DEBUG = os.getenv("DEBUG", "true").lower() == "true"
+DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
