@@ -1,7 +1,7 @@
 // src/pages/HomePage.jsx
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/star-logo.svg";
-import "../css styling/HomePage.css";
+import "../css-styling/HomePage.css";
 
 const STEPS = [
   {
