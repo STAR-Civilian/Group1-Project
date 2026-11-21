@@ -1,0 +1,31 @@
+{
+  "answers": [
+    {
+      "question": "Tell me about a time you had to keep track of many items or tasks at once.",
+      "skill": "Organization",
+      "tip": "Think of a time you tracked many things at once, such as supplies, people, or deadlines.",
+      "situation": "In my role as a Unit Supply Specialist in the U.S. Army, I was responsible for the equipment and supplies a whole unit depended on.",
+      "task": "I needed to make sure everything was counted, stored, and available when people needed it.",
+      "action": "I kept organized records, checked them regularly against what was on the shelves, and fixed any differences I found.",
+      "result": "[Add what changed because of your work, such as fewer missing items or faster issue times.]"
+    },
+    {
+      "question": "Tell me about a time you taught or coached someone.",
+      "skill": "Teaching and coaching",
+      "tip": "Think of any time you taught someone a task, even informally, such as showing a new teammate how things work.",
+      "situation": "As a Warehouse Supervisor at Acme Logistics, I worked with team members who had different levels of experience.",
+      "task": "I needed to get newer team members working safely and correctly.",
+      "action": "I showed them the process step by step, watched them do it, and gave feedback until they were comfortable.",
+      "result": "[Add how the person improved or what the team gained from the training.]"
+    },
+    {
+      "question": "Describe a time something went wrong and you had to fix it quickly.",
+      "skill": "Problem solving",
+      "tip": "Think of a time something went wrong and you had to fix it fast, such as late equipment or a missed deadline.",
+      "situation": "[Think of a time an order, shipment, or piece of equipment was late, missing, or wrong.]",
+      "task": "[Describe what you were responsible for fixing.]",
+      "action": "[Explain the steps you took and who you worked with.]",
+      "result": "[Add what happened because of your actions.]"
+    }
+  ]
+}
