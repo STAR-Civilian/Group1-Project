@@ -127,6 +127,10 @@
 /* floating label sitting on the border */
 .field {
   position: relative;
+}
+
+/* side-by-side fields (first/last name, city/state) */
+.field-row > .field {
   flex: 1 1 140px;
 }
 .field label {
