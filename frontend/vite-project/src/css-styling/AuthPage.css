@@ -1,0 +1,239 @@
+/* src/pages/AuthPage.css */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+.auth {
+  --navy: #263d6b;
+  --navy-dark: #16264a;
+  --ink: #1f2433;
+  --muted: #5a6070;
+  --line: #8a8f9c;
+
+  min-height: 100vh;
+  display: flex;
+  flex-wrap: wrap; /* stacks on phones */
+  font-family: Roboto, system-ui, sans-serif;
+  color: var(--ink);
+  background: #f4f5f9;
+}
+
+/* ---------- left brand panel ---------- */
+.auth-brand {
+  flex: 1 1 480px;
+  box-sizing: border-box;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  background: var(--navy);
+  color: #fff;
+}
+
+.auth-logo {
+  height: 110px;
+  width: auto;
+  align-self: flex-start;
+}
+
+.auth-pitch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 32px;
+}
+
+.auth-pitch h1 {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+.auth-pitch ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  font-size: 18px;
+}
+
+.auth-pitch li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.feature-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-footnote {
+  margin: 0;
+  max-width: 520px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #dfe4ee;
+}
+
+/* ---------- right form side ---------- */
+.auth-main {
+  flex: 1 1 420px;
+  box-sizing: border-box;
+  padding: 48px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  padding: 40px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.auth-card__head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.auth-card__head h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--navy);
+}
+.auth-card__head p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* floating label sitting on the border */
+.field {
+  position: relative;
+}
+
+/* side-by-side fields (first/last name, city/state) */
+.field-row > .field {
+  flex: 1 1 140px;
+}
+.field label {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  padding: 0 4px;
+  background: #fff;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--navy);
+}
+.field input,
+.field select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 14px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ink);
+  font: 16px Roboto, sans-serif;
+}
+.field input:focus,
+.field select:focus {
+  outline: 2px solid var(--navy);
+  outline-offset: -1px;
+}
+.field-note {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.field-note--ok {
+  color: #1d6b3a;
+}
+.field-note--warn {
+  color: #8a4b00;
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.auth-submit {
+  min-height: 48px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--navy);
+  color: #fff;
+  font: 700 14px Roboto, sans-serif;
+  letter-spacing: 0.06em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.auth-submit:hover {
+  background: var(--navy-dark);
+}
+
+.auth-links {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+.auth-links a,
+.link-btn {
+  color: var(--navy);
+  text-decoration: underline;
+}
+
+/* a button that looks like a link */
+.link-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.link-btn:hover,
+.auth-links a:hover {
+  color: var(--navy-dark);
+}
+
+.auth-error {
+  margin: 0;
+  font-size: 14px;
+  color: #a3261b;
+}
+
+@media (max-width: 600px) {
+  .auth-brand {
+    padding: 32px 24px;
+    gap: 32px;
+  }
+  .auth-pitch h1 {
+    font-size: 32px;
+  }
+}
