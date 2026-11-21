@@ -13,7 +13,7 @@ from .models import Profile
 # Every filed that signup must receive
 REQUIRED_FIELDS = [
     "email", "password", "first_name", "last_name",
-    "phone", "city", "state", "branch", "job_code_or_title",
+    "phone", "city", "state",
 ]
 
 class SignUp(APIView):
@@ -46,8 +46,8 @@ class SignUp(APIView):
             phone=str(request.data["phone"]).strip(),
             city=str(request.data["city"]).strip(),
             state=str(request.data["state"]).strip().upper(),
-            branch=str(request.data["branch"]).strip(),
-            job_code_or_title=str(request.data["job_code_or_title"]).strip(),
+            branch=str(request.data.get("branch", "")).strip(),
+            job_code_or_title=str(request.data.get("job_code_or_title", "")).strip(),
         )
         try:    # try validating the profile before saving anything
             profile.full_clean(exclude=["user"])
@@ -78,8 +78,7 @@ class Login(APIView):
         return Response({"token": token.key})                   # send token to REACT
     
 # the 7 fields a user can see & change    
-PROFILE_FIELDS = ["first_name", "last_name", "phone", "city", "state", "branch", "job_code_or_title"]
-
+PROFILE_REQUIRED_FIELDS = ["first_name", "last_name", "phone", "city", "state"]
 def profile_data(user):
     profile = user.profile
     return {
@@ -102,7 +101,7 @@ class ProfileMe(APIView):
             return Response({"detail": "No profile found"}, status= 404)
         
     def put(self, request):
-        missing = [f for f in PROFILE_FIELDS if not str(request.data.get(f, "")).strip()]
+        missing = [f for f in PROFILE_REQUIRED_FIELDS if not str(request.data.get(f, "")).strip()]        
         if missing:
             return Response({"detail": f"These fields are required: {', '.join(missing)}"}, status=400)
         
@@ -116,8 +115,8 @@ class ProfileMe(APIView):
         profile.phone = str(request.data["phone"]).strip()
         profile.city = str(request.data["city"]).strip()
         profile.state = str(request.data["state"]).strip().upper()
-        profile.branch = str(request.data["branch"]).strip()
-        profile.job_code_or_title = str(request.data["job_code_or_title"]).strip()
+        profile.branch = str(request.data.get("branch", "")).strip()
+        profile.job_code_or_title = str(request.data.get("job_code_or_title", "")).strip()
         
         try:
             profile.full_clean()

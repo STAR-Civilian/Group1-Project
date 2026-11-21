@@ -12,3 +12,4 @@ sleep 5
 docker compose exec backend python manage.py migrate
 
 echo "App is up. Hit it at http://localhost:8000"
+
