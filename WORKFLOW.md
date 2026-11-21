@@ -91,7 +91,7 @@ On GitHub: **Files changed** → leave comments → **Review changes** → Appro
 
 When you're done, go back to your own work:
 ```bash
-git checkout <your-branch>
+git checkout feature/branch
 ```
 
 ---
