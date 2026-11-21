@@ -7,14 +7,23 @@ from resumes.models import Resume, StarAnswer
 
 from .client import LLMError, call_llm_json
 from .prompts import (
+    JOB_FIT_SYSTEM,
     RESUME_SYSTEM,
     STAR_REWRITE_SYSTEM,
     STAR_SYSTEM,
+    build_job_fit_prompt,
     build_resume_prompt,
     build_star_prompt,
     build_star_rewrite_prompt,
 )
 from .services import build_resume_input
+from .validators import (
+    validate_job_fit,
+    validate_resume,
+    validate_star,
+    validate_star_rewrite,
+)
+
 from .validators import validate_resume, validate_star, validate_star_rewrite
 
 
@@ -197,5 +206,44 @@ class RewriteStarAnswerView(APIView):
                 "task": answer.task,
                 "action": answer.action,
                 "result": answer.result,
+            }
+        )
+
+
+
+class JobFitView(APIView):
+    """POST: explain how the veteran's experience fits a target job. Nothing is saved."""
+
+    def post(self, request):
+        target_job_title = str(request.data.get("target_job_title") or "").strip()
+        if not target_job_title:
+            return Response({"detail": "target_job_title is required."}, status=400)
+
+        job_notes = str(request.data.get("job_notes") or "")
+        position_ids = request.data.get("position_ids")
+        if position_ids is not None and not isinstance(position_ids, list):
+            return Response({"detail": "position_ids must be a list."}, status=400)
+
+        positions, credentials = build_resume_input(request.user, position_ids or None)
+        if not positions:
+            return Response({"detail": "Add at least one position first."}, status=400)
+
+        prompt = build_job_fit_prompt(target_job_title, job_notes, positions, credentials)
+        try:
+            data = call_llm_json(
+                JOB_FIT_SYSTEM, prompt, "job_fit.json", validate_job_fit, max_tokens=2000
+            )
+        except LLMError:
+            return Response(
+                {"detail": "The job coach had a problem. Please try again."},
+                status=502,
+            )
+
+        return Response(
+            {
+                "target_job_title": target_job_title,
+                "summary": data["summary"],
+                "transfers": data["transfers"],
+                "gaps": data["gaps"],
             }
         )

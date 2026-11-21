@@ -1,0 +1,39 @@
+{
+  "summary": "Your supply work is a real stepping stone toward project management. You have already planned, tracked, and supervised, which are core parts of the job. The jump is moderate: what is missing is mostly formal project experience and a recognized certification.",
+  "transfers": [
+    {
+      "skill": "Planning and scheduling",
+      "from_experience": "Unit Supply Specialist: ordering parts and following up until they arrived",
+      "why": "Project managers keep work and materials arriving on time."
+    },
+    {
+      "skill": "Tracking resources",
+      "from_experience": "Unit Supply Specialist: tracked and accounted for unit equipment",
+      "why": "Project managers track budgets, equipment, and deliverables."
+    },
+    {
+      "skill": "Leading a small team",
+      "from_experience": "Warehouse Supervisor: scheduled and supervised a team of warehouse associates",
+      "why": "Project managers guide people who do not report to them and keep them on task."
+    },
+    {
+      "skill": "Training others",
+      "from_experience": "Unit Supply Specialist: trained junior team members on supply paperwork",
+      "why": "Project managers bring new team members up to speed quickly."
+    }
+  ],
+  "gaps": [
+    {
+      "item": "This job usually expects a project management certification, such as CAPM or PMP.",
+      "how_to_close": "Look into the CAPM, which is designed for people with no formal project experience, and check whether your military training already counts toward the required hours."
+    },
+    {
+      "item": "This job usually expects experience with project tools such as Microsoft Project, Jira, or Smartsheet.",
+      "how_to_close": "Try a free trial of one tool and plan a small real project in it. If you have already used one, add it to your position."
+    },
+    {
+      "item": "This job usually expects budget and schedule responsibility.",
+      "how_to_close": "If you ever managed spending, deadlines, or a project start to finish, add it to your position with the numbers."
+    }
+  ]
+}
