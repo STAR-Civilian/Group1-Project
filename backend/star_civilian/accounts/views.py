@@ -22,15 +22,15 @@ class SignUp(APIView):
     def post(self, request):
         missing = [f for f in REQUIRED_FIELDS if not str(request.data.get(f, "")).strip()]
         if missing:
-            return Response({"Error": f"These fields are required: {', '.join(missing)}"}, status=400)
+            return Response({"detail": f"These fields are required: {', '.join(missing)}"}, status=400)
 
         email = request.data["email"].strip().lower()
         try:
             validate_email(email)
         except ValidationError:
-            return Response({"Error": "Enter a valid email address"}, status=400)
+            return Response({"detail": "Enter a valid email address"}, status=400)
         if User.objects.filter(username=email).exists():
-            return Response({"Error": "That email is already registered"}, status=400)
+            return Response({"detail": "That email is already registered"}, status=400)
 
         profile = Profile(
             first_name=request.data["first_name"].strip(),
@@ -44,7 +44,7 @@ class SignUp(APIView):
         try:    # try validating the profile before saving anything
             profile.full_clean(exclude=["user"])
         except ValidationError as err:
-            return Response({"Error": err.message_dict}, status=400)
+            return Response({"detail": err.message_dict}, status=400)
 
         user = User.objects.create_user(username=email, email=email, password=request.data["password"])
         profile.user = user
@@ -60,11 +60,11 @@ class Login(APIView):
         email = str(request.data.get("email", "")).strip().lower()
         password = request.data.get("password", "")
         if not email or not password:
-            return Response({"Error": "Email and password are required"}, status=400)
+            return Response({"detail": "Email and password are required"}, status=400)
         
         user = authenticate(username=email, password=password)  # find a user that matches both
         if user is None:                                        # no match found
-            return Response({"Error": "Wrong email or password"}, status=400)
+            return Response({"detail": "Wrong email or password"}, status=400)
         
         token, _ = Token.objects.get_or_create(user=user)       # get this user token, or make one
         return Response({"token": token.key})                   # send token to REACT
@@ -91,17 +91,17 @@ class ProfileMe(APIView):
         try:
             return Response(profile_data(request.user))
         except Profile.DoesNotExist:
-            return Response({"Error": "No profile found"}, status= 404)
+            return Response({"detail": "No profile found"}, status= 404)
         
     def put(self, request):
         missing = [f for f in PROFILE_FIELDS if not str(request.data.get(f, "")).strip()]
         if missing:
-            return Response({"Error": f"These fields are required: {','.join(missing)}"}, status=400)
+            return Response({"detail": f"These fields are required: {','.join(missing)}"}, status=400)
         
         try:
             profile = request.user.profile
         except Profile.DoesNotExist:
-            return Response({"Error": "No profile found"}, status=404)
+            return Response({"detail": "No profile found"}, status=404)
         
         profile.first_name = request.data["first_name"].strip()
         profile.last_name = request.data["last_name"].strip()
@@ -114,7 +114,7 @@ class ProfileMe(APIView):
         try:
             profile.full_clean()
         except ValidationError as err:
-            return Response({"Error": err.message_dict}, status= 400)
+            return Response({"detail": err.message_dict}, status= 400)
         
         profile.save()
         return Response(profile_data(request.user))
