@@ -25,7 +25,11 @@ from .validators import (
     validate_star_rewrite,
 )
 
-from .validators import validate_resume, validate_star, validate_star_rewrite
+
+def valid_id_list(value):
+    return isinstance(value, list) and all(
+        isinstance(i, int) and not isinstance(i, bool) for i in value
+    )
 
 
 class GenerateResumeView(APIView):
@@ -39,8 +43,10 @@ class GenerateResumeView(APIView):
         onet_code = str(request.data.get("onet_code") or "")
         job_notes = str(request.data.get("job_notes") or "")
         position_ids = request.data.get("position_ids")
-        if position_ids is not None and not isinstance(position_ids, list):
-            return Response({"detail": "position_ids must be a list."}, status=400)
+        if position_ids is not None and not valid_id_list(position_ids):
+            return Response(
+                {"detail": "position_ids must be a list of numbers."}, status=400
+            )
 
         extra_details = str(request.data.get("extra_details") or "").strip()
         if len(extra_details) > 3000:
@@ -210,6 +216,7 @@ class RewriteStarAnswerView(APIView):
             }
         )
 
+
 class JobFitView(APIView):
     """POST: explain how the veteran's experience fits a target job, and save it."""
 
@@ -221,8 +228,10 @@ class JobFitView(APIView):
         onet_code = str(request.data.get("onet_code") or "")
         job_notes = str(request.data.get("job_notes") or "")
         position_ids = request.data.get("position_ids")
-        if position_ids is not None and not isinstance(position_ids, list):
-            return Response({"detail": "position_ids must be a list."}, status=400)
+        if position_ids is not None and not valid_id_list(position_ids):
+            return Response(
+                {"detail": "position_ids must be a list of numbers."}, status=400
+            )
 
         positions, credentials = build_resume_input(request.user, position_ids or None)
         if not positions:
@@ -250,4 +259,3 @@ class JobFitView(APIView):
             },
         )
         return Response(JobFitSerializer(job_fit).data, status=201)
-
