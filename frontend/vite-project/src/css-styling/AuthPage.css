@@ -160,6 +160,17 @@
   outline: 2px solid var(--navy);
   outline-offset: -1px;
 }
+.field-note {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.field-note--ok {
+  color: #1d6b3a;
+}
+.field-note--warn {
+  color: #8a4b00;
+}
 
 .field-row {
   display: flex;
