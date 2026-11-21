@@ -57,3 +57,32 @@ def validate_star_rewrite(data):
     _require(isinstance(data, dict), "The reply must be a JSON object.")
     for key in ("situation", "task", "action", "result"):
         _require(isinstance(data.get(key), str) and data[key].strip(), f"{key} must be text.")
+
+
+
+
+def validate_job_fit(data):
+    _require(isinstance(data, dict), "The reply must be a JSON object.")
+
+    summary = data.get("summary")
+    _require(isinstance(summary, str) and summary.strip(), "summary must be text.")
+
+    transfers = data.get("transfers")
+    _require(isinstance(transfers, list), "transfers must be a list.")
+    for item in transfers:
+        _require(isinstance(item, dict), "Each transfer must be an object.")
+        for key in ("skill", "from_experience", "why"):
+            _require(
+                isinstance(item.get(key), str) and item[key].strip(),
+                f"transfer {key} must be text.",
+            )
+
+    gaps = data.get("gaps")
+    _require(isinstance(gaps, list), "gaps must be a list.")
+    for item in gaps:
+        _require(isinstance(item, dict), "Each gap must be an object.")
+        for key in ("item", "how_to_close"):
+            _require(
+                isinstance(item.get(key), str) and item[key].strip(),
+                f"gap {key} must be text.",
+            )

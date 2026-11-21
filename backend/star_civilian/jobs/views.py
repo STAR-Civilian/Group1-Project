@@ -1,12 +1,13 @@
-
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from rest_framework import permissions
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 from .onet import get_onet_data
 
 
 # 1. Civilian job search
-@require_GET
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
 def civ_job_search(request):
     """
     Searches O*NET for civilian jobs
@@ -16,7 +17,7 @@ def civ_job_search(request):
     keyword = request.GET.get("keyword", "").strip()
 
     if not keyword:
-        return JsonResponse(
+        return Response(
             {"detail": "Please provide a search keyword."},
             status=400
         )
@@ -27,23 +28,24 @@ def civ_job_search(request):
             params={"keyword": keyword}
         )
 
-        return JsonResponse(results)
+        return Response(results)
 
     except ValueError as error:
-        return JsonResponse(
+        return Response(
             {"detail": str(error)},
             status=503
         )
 
     except Exception:
-        return JsonResponse(
+        return Response(
             {"detail": "Unable to retrieve civilian jobs from O*NET."},
             status=502
         )
 
 
 # 2. Military job search
-@require_GET
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
 def mil_job_search(request):
     """
     Searches O*NET for military occupations
@@ -53,7 +55,7 @@ def mil_job_search(request):
     keyword = request.GET.get("keyword", "").strip()
 
     if not keyword:
-        return JsonResponse(
+        return Response(
             {"detail": "Please provide a military job title or code."},
             status=400
         )
@@ -64,23 +66,24 @@ def mil_job_search(request):
             params={"keyword": keyword}
         )
 
-        return JsonResponse(results)
+        return Response(results)
 
     except ValueError as error:
-        return JsonResponse(
+        return Response(
             {"detail": str(error)},
             status=503
         )
 
     except Exception:
-        return JsonResponse(
+        return Response(
             {"detail": "Unable to search military occupations."},
             status=502
         )
 
 
 # 3. Civilian job matching based on skills
-@require_GET
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
 def job_matches(request):
     """
     Finds civilian occupations based on selected O*NET skill IDs.
@@ -89,7 +92,7 @@ def job_matches(request):
     skills = request.GET.get("skills", "").strip()
 
     if not skills:
-        return JsonResponse(
+        return Response(
             {"detail": "Please provide at least one skill ID."},
             status=400
         )
@@ -100,16 +103,16 @@ def job_matches(request):
             params={"skills": skills}
         )
 
-        return JsonResponse(results)
+        return Response(results)
 
     except ValueError as error:
-        return JsonResponse(
+        return Response(
             {"detail": str(error)},
             status=503
         )
 
     except Exception:
-        return JsonResponse(
+        return Response(
             {"detail": "Unable to find matching jobs."},
             status=502
         )
