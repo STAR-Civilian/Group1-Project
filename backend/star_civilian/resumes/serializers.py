@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import JobFit, Resume, StarAnswer
 
+from llm.validators import validate_resume
 
 class ResumeListSerializer(serializers.ModelSerializer):
     """Short version for the list page: no content."""
@@ -20,8 +21,10 @@ class ResumeSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "onet_code", "mos_code", "created_at", "updated_at"]
 
     def validate_content(self, value):
-        if not isinstance(value, dict):
-            raise serializers.ValidationError("content must be an object.")
+        try:
+            validate_resume(value)      # same check the AI's reply must pass
+        except ValueError as err:
+            raise serializers.ValidationError(str(err))
         return value
 
 
