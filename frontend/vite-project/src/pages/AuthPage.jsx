@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/star-logo.svg";
 import "../css-styling/AuthPage.css";
-import MilitaryJobCodeField from "../components/MilitaryJobCodeField";
 
 // Backend base URL comes from vite-project/.env (VITE_API_URL=http://localhost:8000)
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
@@ -29,7 +28,6 @@ const EMPTY_SIGNUP = {
     phone: "",
     city: "",
     state: "",
-    branch: "",
     password: "",
 };
 
@@ -132,10 +130,7 @@ export default function AuthPage({ initialMode = "login" }) {
     async function handleSignup(e) {
         e.preventDefault();
         setError("");
-        if (!signup.branch) {
-            setError("Please select a branch.");
-            return;
-        }
+
         try {
             const data = await postJson(SIGNUP_URL, signup);
             await saveSession(data.token);
@@ -233,10 +228,6 @@ export default function AuthPage({ initialMode = "login" }) {
                                 ))}
                             </select>
                         </div>
-
-                        <MilitaryJobCodeField value={signup.job_code_or_title} onChange={onSignupChange}
-                            branch={signup.branch}
-                        />
 
                         <Field id="su-password" label="Password" name="password" type="password"
                             value={signup.password} onChange={onSignupChange} required />
