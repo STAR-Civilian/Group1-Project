@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/star-logo.svg";
-import "./AuthPage.css";
+import "../css-styling/AuthPage.css";
+
 
 // TODO: point these at your backend routes
 const LOGIN_URL = "/api/users/login/";
