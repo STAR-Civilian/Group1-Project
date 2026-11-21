@@ -16,7 +16,7 @@ git checkout main && git pull origin main      # 1. fresh main
 git checkout -b feature/task                   # 2. new branch
 git add . && git commit -m ""                  # 3. save
 git push -u origin feature/<name>              # 4. push
-                                               # 5. open PR on GitHub → review → merge
+*Go to GitHub*                                 # 5. open PR on GitHub → review → merge
 git checkout main && git pull origin main      # 6. back to fresh main
 ```
 
@@ -153,33 +153,31 @@ docker compose exec backend python manage.py migrate
 ---
 
 ## 11. Backend commands (Django)
-
 Run these from the project root (`Group1-Project/`) with the venv active:
-
 ```bash
 source venv/bin/activate
 ```
 
 > `runserver` keeps its terminal busy. Run the other commands in a second terminal.
 
-### First-time setup (once)
 
+### First-time setup (once)
 ```bash
 cd backend/star_civilian
 python manage.py migrate
 python manage.py createsuperuser
 ```
 
-### Every work session
 
+### Every work session
 ```bash
 cd backend/star_civilian
 docker compose up -d db
 python manage.py runserver
 ```
 
-### After every `git pull`
 
+### After every `git pull`
 Teammates may have added migrations.
 
 ```bash
@@ -187,8 +185,8 @@ cd backend/star_civilian
 python manage.py migrate
 ```
 
-### When you change a model
 
+### When you change a model
 Replace `<app_name>` with the app you changed (e.g. `history`).
 
 ```bash
@@ -197,8 +195,8 @@ python manage.py makemigrations <app_name>
 python manage.py migrate
 ```
 
-### Before you commit or open a PR
 
+### Before you commit or open a PR
 ```bash
 cd backend/star_civilian
 python manage.py check
