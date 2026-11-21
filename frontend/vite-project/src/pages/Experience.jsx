@@ -1,3 +1,8 @@
+export default function Experience() {
+  return <div>Experience page coming soon</div>;
+}
+
+
 // import { useEffect, useState } from "react";
 // import api from "../api";            // the shared API helper — check the file name in frontend/src
 
