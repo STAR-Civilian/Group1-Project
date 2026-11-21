@@ -1,49 +1,51 @@
-# [App Name]
-**Live site:** [https://your-domain.com] *(TBD)*
-**Project board:** https://github.com/Veteran-Transition/Group1-Project/
-![CI](https://github.com/Veteran-Transition/Group1-Project/actions/workflows/[ci].yml/badge.svg)
+# STAR Civilian
+**Live site:** [https://our-domain.com] *(TBD)*
+**Project board:** https://github.com/STAR-Civilian/Group1-Project/
+![CI](https://github.com/STAR-Civilian/Group1-Project/actions/workflows/[ci].yml/badge.svg)
 
 
 
 ## The problem
-Veterans leaving the military often struggle to explain their experience in civilian terms. Military job titles (MOS codes), acronyms, and duties don't map clearly to civilian roles, so strong candidates get overlooked.
+Veterans leaving the military often struggle to explain their experience in civilian terms. Military job titles (MOS codes/rates), acronyms, and duties don't map clearly to civilian roles, so strong candidates get overlooked.
 
 Behavioral interviews make it harder: hiring managers expect STAR-method answers (Situation, Task, Action, Result), and many vets don't know how to turn their service into those stories.
 
 
 
 ## Our solution
-[App Name] helps veterans translate their military experience into civilian interview answers:
+STAR Civilian helps veterans translate their military experience into civilian resumes and interview answers:
 
-- Add your branch and MOS (from a built-in MOS database).
-- Pick the type of civilian job(s) you're interested in (powered by O*NET).
-- Upload your military resume. Text is extracted automatically via 3rd party API.
-- Get an AI-generated translation of your resume into civilian language.
-- Get STAR-method example answers to common behavioral interview questions, based on your own resume and experiences.
-- Exploring a career change? Pick a job outside your MOS field and get answers tailored to that path through our LLM chatbot.
+- Add your service details: branch, rank, and MOS/rating.
+- Enter your work history, military and civilian, one position at a time (duties + achievements).
+- Add credentials: certifications, training, awards, and education.
+- Search civilian jobs that match your MOS, or any career you're interested in (powered by O*NET).
+- Generate a civilian-language resume from your history (powered by Claude).
+- Get STAR-method example answers to common behavioral interview questions, based on your own experience.
+- Save, edit, and delete your resumes and answers. Your history is stored, so you never re-enter it.
 
-⚠️ [App Name] is a prep tool. It is not affiliated with or endorsed by the DoD or VA. AI-generated answers are examples to edit, not scripts to memorize.
+⚠️ STAR Civilian is a prep tool. It is not affiliated with or endorsed by the DoD or VA. AI-generated answers are examples to edit, not scripts to memorize.
 
 
 
 ## MVP
-✅ **Must have**
-- [ ] Sign up / log in
-- [ ] MOS database
-- [ ] Resume upload + text extraction
-- [ ] O*NET integration (civilian job types)
-- [ ] LLM: translate resume into STAR-method interview answers
+**Must have**
+- [✅] Sign up / log in
+- [✅] MOS database
+- [✅] O*NET integration (civilian job types)
+- [✅] LLM: translate resume into STAR-method interview answers
+- [✅] Search form (branch, MOS, civilian job interests, etc.)
 
-🎯 **Should have**
+**Should have**
 - [ ] Joint Services Transcript (JST) — API, or PDF upload + PDF reader
 - [ ] Search form (branch, MOS, civilian job interests, etc.)
 - [ ] Career-change path (vets targeting jobs outside their MOS field)
 - [ ] Suggested document checklist (what users should upload)
 
-💡 **Could have**
+**Could have**
 - [ ] Local job listings
+- [ ] Resume upload + text extraction
 
-👎 **Won't have (this version)**
+**Won't have (this version)**
 - Mock interviews
 
 
@@ -51,10 +53,12 @@ Behavioral interviews make it harder: hiring managers expect STAR-method answers
 ## Team
   Name         |   Feature owned (end-to-end)   |   GitHub
 ---------------|--------------------------------|----------------------
-Alana Karp     |   [feature]                    |   @Karp-636
-Liz Burk       |   [feature]                    |   @IzzyVIII
-Steph Asauskas |   [feature]                    |   @activedutymodel
-Su Gardner     |   [feature]                    |   @SuGardner18
+Alana Karp     |   [jobs, O*NET API]            |   @Karp-636
+Liz Burk       |   [accounts, config]           |   @IzzyVIII
+Steph Asauskas |   [requirements.txt,           |   @activedutymodel
+               |   history, README,             |
+               |   WORKFLOW]                    |   
+Su Gardner     |   [LLM, resume, O*NET API]     |   @SuGardner18
 
 *Feature ideas to split: auth + profile/MOS · O\*NET job search · resume upload + text · LLM STAR answers*
 
@@ -193,8 +197,8 @@ Open .env and fill in the values. .env.example lists and explains every variable
 App	             |   DEBUG, SECRET_KEY, ALLOWED_HOSTS
 Frontend / CORS	 |   CORS_ALLOWED_ORIGINS, VITE_API_URL
 Database	       |   DB_HOST, DB_PORT, plus name/user/password
-O*NET	           |   username / API key
-LLM	             |   API key, model name
+O*NET	           |   username / ONET_API_KEY
+LLM	             |   ONET_API_KEY, model name
 
 Never commit .env. Only .env.example belongs in git.
 

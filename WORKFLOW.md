@@ -71,7 +71,7 @@ Do this BEFORE opening a PR, and any time a teammate's PR gets merged.
 ```bash
 git checkout main
 git pull origin main
-git checkout feature/<short-name>
+git checkout feature/task
 git merge main
 git push
 ```
@@ -100,7 +100,7 @@ git checkout <your-branch>
 ```bash
 git checkout main
 git pull origin main
-git branch -d feature/<short-name>     # delete your local branch
+git branch -d feature/task     # delete your local branch
 ```
 
 Click **Delete branch** on the merged PR page on GitHub. Then start your next task at section 1.
