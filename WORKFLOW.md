@@ -152,29 +152,55 @@ docker compose exec backend python manage.py migrate
 
 ---
 
-## 11. Django commands
-Run from the repo root. Activate the venv FIRST:
+## 11. Backend commands (Django)
+
+Run these from the project root (`Group1-Project/`) with the venv active:
 
 ```bash
 source venv/bin/activate
 ```
 
+> `runserver` keeps its terminal busy. Run the other commands in a second terminal.
+
+### First-time setup (once)
+
 ```bash
-# start the dev server
-python backend/star_civilian/manage.py runserver
+cd backend/star_civilian
+python manage.py migrate
+python manage.py createsuperuser
+```
 
-# catch config errors
-python backend/star_civilian/manage.py check                         
+### Every work session
 
-# after changing models
-python backend/star_civilian/manage.py makemigrations <your_app>    
+```bash
+cd backend/star_civilian
+docker compose up -d db
+python manage.py runserver
+```
 
-# apply migrations
-python backend/star_civilian/manage.py migrate 
+### After every `git pull`
 
-# run your tests
-python backend/star_civilian/manage.py test <your_app>   
+Teammates may have added migrations.
 
-# admin login (once)
-python backend/star_civilian/manage.py createsuperuser               
+```bash
+cd backend/star_civilian
+python manage.py migrate
+```
+
+### When you change a model
+
+Replace `<app_name>` with the app you changed (e.g. `history`).
+
+```bash
+cd backend/star_civilian
+python manage.py makemigrations <app_name>
+python manage.py migrate
+```
+
+### Before you commit or open a PR
+
+```bash
+cd backend/star_civilian
+python manage.py check
+python manage.py test <app_name>
 ```
