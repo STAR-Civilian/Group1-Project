@@ -17,7 +17,7 @@ def civ_job_search(request):
 
     if not keyword:
         return JsonResponse(
-            {"error": "Please provide a search keyword."},
+            {"detail": "Please provide a search keyword."},
             status=400
         )
 
@@ -31,13 +31,13 @@ def civ_job_search(request):
 
     except ValueError as error:
         return JsonResponse(
-            {"error": str(error)},
+            {"detail": str(error)},
             status=503
         )
 
     except Exception:
         return JsonResponse(
-            {"error": "Unable to retrieve civilian jobs from O*NET."},
+            {"detail": "Unable to retrieve civilian jobs from O*NET."},
             status=502
         )
 
@@ -54,7 +54,7 @@ def mil_job_search(request):
 
     if not keyword:
         return JsonResponse(
-            {"error": "Please provide a military job title or code."},
+            {"detail": "Please provide a military job title or code."},
             status=400
         )
 
@@ -68,13 +68,13 @@ def mil_job_search(request):
 
     except ValueError as error:
         return JsonResponse(
-            {"error": str(error)},
+            {"detail": str(error)},
             status=503
         )
 
     except Exception:
         return JsonResponse(
-            {"error": "Unable to search military occupations."},
+            {"detail": "Unable to search military occupations."},
             status=502
         )
 
@@ -90,7 +90,7 @@ def job_matches(request):
 
     if not skills:
         return JsonResponse(
-            {"error": "Please provide at least one skill ID."},
+            {"detail": "Please provide at least one skill ID."},
             status=400
         )
 
@@ -104,12 +104,12 @@ def job_matches(request):
 
     except ValueError as error:
         return JsonResponse(
-            {"error": str(error)},
+            {"detail": str(error)},
             status=503
         )
 
     except Exception:
         return JsonResponse(
-            {"error": "Unable to find matching jobs."},
+            {"detail": "Unable to find matching jobs."},
             status=502
         )
