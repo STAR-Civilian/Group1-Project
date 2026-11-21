@@ -91,6 +91,7 @@ export default function AuthPage({ initialMode = "login" }) {
     try {
       const data = await postJson(LOGIN_URL, login);
       if (data.token) localStorage.setItem("token", data.token);
+      if (data.first_name) localStorage.setItem("first_name", data.first_name);
       navigate("/home");
     } catch {
       setError("Email or password is incorrect.");
@@ -107,6 +108,7 @@ export default function AuthPage({ initialMode = "login" }) {
     try {
       const data = await postJson(SIGNUP_URL, signup);
       if (data.token) localStorage.setItem("token", data.token);
+      if (data.first_name) localStorage.setItem("first_name", data.first_name);
       navigate("/home");
     } catch {
       setError("Could not create account. Try again.");
