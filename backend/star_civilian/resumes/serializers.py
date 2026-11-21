@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Resume, StarAnswer
+from .models import JobFit, Resume, StarAnswer
 
 
 class ResumeListSerializer(serializers.ModelSerializer):
@@ -35,3 +35,14 @@ class StarAnswerSerializer(serializers.ModelSerializer):
         ]
         # The veteran can edit the text. The AI's skill label and tip stay as they were.
         read_only_fields = ["id", "resume", "skill", "tip", "created_at", "updated_at"]
+
+
+
+
+class JobFitSerializer(serializers.ModelSerializer):
+    """A saved job-fit result. Read only: it is created by POST /api/llm/job-fit/."""
+
+    class Meta:
+        model = JobFit
+        fields = ["id", "target_job_title", "onet_code", "content", "created_at"]
+        read_only_fields = fields

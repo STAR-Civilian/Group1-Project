@@ -3,7 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from resumes.models import Resume, StarAnswer
+from resumes.models import JobFit, Resume, StarAnswer
+from resumes.serializers import JobFitSerializer
 
 from .client import LLMError, call_llm_json
 from .prompts import (
@@ -209,16 +210,15 @@ class RewriteStarAnswerView(APIView):
             }
         )
 
-
-
 class JobFitView(APIView):
-    """POST: explain how the veteran's experience fits a target job. Nothing is saved."""
+    """POST: explain how the veteran's experience fits a target job, and save it."""
 
     def post(self, request):
         target_job_title = str(request.data.get("target_job_title") or "").strip()
         if not target_job_title:
             return Response({"detail": "target_job_title is required."}, status=400)
 
+        onet_code = str(request.data.get("onet_code") or "")
         job_notes = str(request.data.get("job_notes") or "")
         position_ids = request.data.get("position_ids")
         if position_ids is not None and not isinstance(position_ids, list):
@@ -239,11 +239,15 @@ class JobFitView(APIView):
                 status=502,
             )
 
-        return Response(
-            {
-                "target_job_title": target_job_title,
+        job_fit = JobFit.objects.create(
+            user=request.user,
+            target_job_title=target_job_title,
+            onet_code=onet_code,
+            content={
                 "summary": data["summary"],
                 "transfers": data["transfers"],
                 "gaps": data["gaps"],
-            }
+            },
         )
+        return Response(JobFitSerializer(job_fit).data, status=201)
+

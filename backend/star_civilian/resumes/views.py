@@ -2,8 +2,13 @@ from rest_framework import mixins, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Resume, StarAnswer
-from .serializers import ResumeListSerializer, ResumeSerializer, StarAnswerSerializer
+from .models import JobFit, Resume, StarAnswer
+from .serializers import (
+    JobFitSerializer,
+    ResumeListSerializer,
+    ResumeSerializer,
+    StarAnswerSerializer,
+)
 
 
 class ResumeViewSet(
@@ -47,3 +52,20 @@ class StarAnswerViewSet(
 
     def get_queryset(self):
         return StarAnswer.objects.filter(resume__user=self.request.user)   # only YOUR answers
+
+
+class JobFitViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    """List, open, and delete the logged-in veteran's saved job fits.
+    Job fits are CREATED by POST /api/llm/job-fit/, not here."""
+
+    serializer_class = JobFitSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    http_method_names = ["get", "delete", "head", "options"]
+
+    def get_queryset(self):
+        return JobFit.objects.filter(user=self.request.user)   # only YOUR job fits
