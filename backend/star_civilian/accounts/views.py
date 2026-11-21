@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.contrib.auth.password_validation import validate_password
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -24,29 +25,36 @@ class SignUp(APIView):
         if missing:
             return Response({"detail": f"These fields are required: {', '.join(missing)}"}, status=400)
 
-        email = request.data["email"].strip().lower()
+        email = str(request.data["email"]).strip().lower()
         try:
             validate_email(email)
         except ValidationError:
             return Response({"detail": "Enter a valid email address"}, status=400)
         if User.objects.filter(username=email).exists():
             return Response({"detail": "That email is already registered"}, status=400)
+        
+        # reject weak passwords using Django's built-in rules
+        password = str(request.data["password"])
+        try:
+            validate_password(password)
+        except ValidationError as err:
+            return Response({"detail": " ".join(err.messages)}, status=400)
 
         profile = Profile(
-            first_name=request.data["first_name"].strip(),
-            last_name=request.data["last_name"].strip(),
-            phone=request.data["phone"].strip(),
-            city=request.data["city"].strip(),
-            state=request.data["state"].strip().upper(),
-            branch=request.data["branch"],
-            job_code_or_title=request.data["job_code_or_title"].strip(),
+            first_name=str(request.data["first_name"]).strip(),
+            last_name=str(request.data["last_name"]).strip(),
+            phone=str(request.data["phone"]).strip(),
+            city=str(request.data["city"]).strip(),
+            state=str(request.data["state"]).strip().upper(),
+            branch=str(request.data["branch"]).strip(),
+            job_code_or_title=str(request.data["job_code_or_title"]).strip(),
         )
         try:    # try validating the profile before saving anything
             profile.full_clean(exclude=["user"])
         except ValidationError as err:
             return Response({"detail": err.message_dict}, status=400)
 
-        user = User.objects.create_user(username=email, email=email, password=request.data["password"])
+        user = User.objects.create_user(username=email, email=email, password=password)
         profile.user = user
         profile.save()
         token, _ = Token.objects.get_or_create(user=user)
@@ -61,14 +69,14 @@ class Login(APIView):
         password = request.data.get("password", "")
         if not email or not password:
             return Response({"detail": "Email and password are required"}, status=400)
-        
+
         user = authenticate(username=email, password=password)  # find a user that matches both
         if user is None:                                        # no match found
             return Response({"detail": "Wrong email or password"}, status=400)
-        
+
         token, _ = Token.objects.get_or_create(user=user)       # get this user token, or make one
         return Response({"token": token.key})                   # send token to REACT
-
+    
 # the 7 fields a user can see & change    
 PROFILE_FIELDS = ["first_name", "last_name", "phone", "city", "state", "branch", "job_code_or_title"]
 
@@ -96,20 +104,20 @@ class ProfileMe(APIView):
     def put(self, request):
         missing = [f for f in PROFILE_FIELDS if not str(request.data.get(f, "")).strip()]
         if missing:
-            return Response({"detail": f"These fields are required: {','.join(missing)}"}, status=400)
+            return Response({"detail": f"These fields are required: {', '.join(missing)}"}, status=400)
         
         try:
             profile = request.user.profile
         except Profile.DoesNotExist:
             return Response({"detail": "No profile found"}, status=404)
         
-        profile.first_name = request.data["first_name"].strip()
-        profile.last_name = request.data["last_name"].strip()
-        profile.phone = request.data["phone"].strip()
-        profile.city = request.data["city"].strip()
-        profile.state = request.data["state"].strip().upper()
-        profile.branch = request.data["branch"].strip()
-        profile.job_code_or_title = request.data["job_code_or_title"].strip()
+        profile.first_name = str(request.data["first_name"]).strip()
+        profile.last_name = str(request.data["last_name"]).strip()
+        profile.phone = str(request.data["phone"]).strip()
+        profile.city = str(request.data["city"]).strip()
+        profile.state = str(request.data["state"]).strip().upper()
+        profile.branch = str(request.data["branch"]).strip()
+        profile.job_code_or_title = str(request.data["job_code_or_title"]).strip()
         
         try:
             profile.full_clean()
