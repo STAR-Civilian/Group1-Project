@@ -32,11 +32,19 @@ class GenerateResumeView(APIView):
         if position_ids is not None and not isinstance(position_ids, list):
             return Response({"detail": "position_ids must be a list."}, status=400)
 
+        extra_details = str(request.data.get("extra_details") or "").strip()
+        if len(extra_details) > 3000:
+            return Response(
+                {"detail": "extra_details is too long (3000 characters max)."}, status=400
+            )
+
         positions, credentials = build_resume_input(request.user, position_ids or None)
         if not positions:
             return Response({"detail": "Add at least one position first."}, status=400)
 
-        prompt = build_resume_prompt(target_job_title, job_notes, positions, credentials)
+        prompt = build_resume_prompt(
+            target_job_title, job_notes, positions, credentials, extra_details
+        )
         try:
             content = call_llm_json(
                 RESUME_SYSTEM, prompt, "resume.json", validate_resume, max_tokens=3000
@@ -70,7 +78,6 @@ class GenerateResumeView(APIView):
             status=201,
         )
 
-    
 
 class GenerateStarView(APIView):
     """POST: write interview questions with example STAR answers for a saved resume."""
@@ -137,7 +144,6 @@ class GenerateStarView(APIView):
             status=201,
         )
 
-    
 
 class RewriteStarAnswerView(APIView):
     """POST: rewrite the veteran's own answer in STAR format and save it."""
