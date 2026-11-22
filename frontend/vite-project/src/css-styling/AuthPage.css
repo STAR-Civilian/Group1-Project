@@ -7,6 +7,10 @@
   --ink: #1f2433;
   --muted: #5a6070;
   --line: #8a8f9c;
+  --pad-top: 48px;       /* space above the logo */
+  --logo-h: 110px;       /* logo height */
+  --logo-gap: 48px;      /* space between logo and headline */
+  --card-pad: 40px;      /* padding inside the card */
 
   min-height: 100vh;
   display: flex;
@@ -20,16 +24,16 @@
 .auth-brand {
   flex: 1 1 480px;
   box-sizing: border-box;
-  padding: 48px 56px;
+  padding: var(--pad-top) 56px 48px;
+  gap: var(--logo-gap);
   display: flex;
   flex-direction: column;
-  gap: 48px;
   background: var(--navy);
   color: #fff;
 }
 
 .auth-logo {
-  height: 110px;
+  height: var(--logo-h);
   width: auto;
   align-self: flex-start;
 }
@@ -38,7 +42,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;   /* was center */
   gap: 32px;
 }
 
@@ -98,7 +102,7 @@
   width: 100%;
   max-width: 400px;
   box-sizing: border-box;
-  padding: 40px 36px;
+  padding: var(--card-pad) 36px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -229,6 +233,9 @@
 }
 
 @media (max-width: 600px) {
+    .auth-main {
+    padding-top: 32px;
+  }
   .auth-brand {
     padding: 32px 24px;
     gap: 32px;
