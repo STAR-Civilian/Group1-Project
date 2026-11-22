@@ -1,0 +1,66 @@
+/* src/css-styling/AppHeader.css */
+.app-header {
+  background: #263d6b;
+  font-family: Roboto, system-ui, sans-serif;
+}
+
+.app-nav {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 8px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+
+.app-nav__logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.app-nav__logo img {
+  height: 56px;
+  width: auto;
+}
+
+.app-nav__links {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.app-nav__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 4px;
+  color: #dfe4ee;
+  text-decoration: none;
+  font-size: 15px;
+}
+.app-nav__link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+.app-nav__link.is-active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+  font-weight: 500;
+}
+
+.app-nav__logout {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  background: none;
+  color: #fff;
+  font: 15px Roboto, sans-serif;
+  cursor: pointer;
+}
+.app-nav__logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
