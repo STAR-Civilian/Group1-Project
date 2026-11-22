@@ -1,6 +1,6 @@
 """Turns database rows into the plain dicts our prompts expect."""
 
-from experience.models import Credential, Position
+from history.models import Credential, Position
 
 BRANCH_NAMES = {
     "army": "U.S. Army",

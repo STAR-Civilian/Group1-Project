@@ -8,7 +8,7 @@ const STEPS = [
     step: "Step 1",
     title: "Enter your military job",
     text: "Look up your MOS / rating / AFSC and see the skills it maps to.",
-    to: "/military-job",
+    to: "/experience",
   },
   {
     step: "Step 2",
@@ -60,11 +60,12 @@ export default function HomePage() {
             <span className="tag">Welcome, {firstName}</span>
             <h1>Turn your military experience into a civilian career.</h1>
             <p className="muted">
-              Enter your military job, pick a target civilian job, and get resume
-              language and STAR interview answers written for civilian hiring managers.
+              Enter your military job (MOS), other work experience, and education/training. 
+              Then, select the civilian job you're targeting and generate your new resume 
+              and STAR interview answers written for civilian hiring managers.
             </p>
             <div className="home-hero__actions">
-              <Link to="/military-job" className="btn btn-primary">Get started</Link>
+              <Link to="/experience" className="btn btn-primary">Get started</Link>
               <a href="#how" className="btn btn-outline">How it works</a>
             </div>
           </div>
