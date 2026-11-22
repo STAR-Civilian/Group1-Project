@@ -272,10 +272,7 @@ export default function ResumePage() {
 
   const togglePos = (id) =>
     setPosIds(posIds.includes(id) ? posIds.filter((x) => x !== id) : [...posIds, id]);
-
-  // Only show the editor for the resume named in the URL
   const showing = draft && resume && String(resume.id) === openId;
-
   const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
   const contact = [
     [profile?.city, profile?.state].filter(Boolean).join(", "),
