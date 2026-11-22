@@ -106,8 +106,8 @@ export default function CredentialsSection() {
     }
   }
 
-  return (
-    <section className="exp-section" aria-labelledby="edu-h">
+ return (
+    <section id="education" className="exp-section" aria-labelledby="edu-h">
       <div className="exp-head">
         <h2 id="edu-h">Education &amp; training</h2>
         <p className="muted">Degrees, military courses, certifications and awards.</p>

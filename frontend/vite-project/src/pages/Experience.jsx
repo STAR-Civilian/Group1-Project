@@ -359,6 +359,14 @@ export default function Experience() {
             </div>
           </form>
         </div>
+
+                <a href="#education" className="exp-next">
+          <span>Next: Education &amp; training</span>
+          <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M6 13l6 6 6-6" />
+          </svg>
+        </a>
         
         <CredentialsSection />
       </main>

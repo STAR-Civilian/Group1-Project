@@ -7,6 +7,7 @@ import "../css-styling/AppHeader.css";
 const LINKS = [
   { to: "/home", label: "Home" },
   { to: "/experience", label: "Experience" },
+  { to: "/jobs", label: "Target jobs" },
 ];
 
 export default function AppHeader() {

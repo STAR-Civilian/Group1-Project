@@ -343,3 +343,33 @@
   background: #fbeedd;
   color: #7a4300;
 }
+
+/* "Next: Education & training" arrow */
+.exp-next {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 16px;
+  color: var(--navy);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+}
+.exp-next:hover {
+  background: var(--tint);
+}
+.exp-next svg {
+  animation: exp-bounce 1.6s ease-in-out infinite;
+}
+@keyframes exp-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .exp-next svg { animation: none; }
+}
+html {
+  scroll-behavior: smooth;
+}
