@@ -16,7 +16,7 @@ git checkout main && git pull origin main      # 1. fresh main
 git checkout -b feature/task                   # 2. new branch
 git add . && git commit -m ""                  # 3. save
 git push -u origin feature/<name>              # 4. push
-                                               # 5. open PR on GitHub → review → merge
+*Go to GitHub*                                 # 5. open PR on GitHub → review → merge
 git checkout main && git pull origin main      # 6. back to fresh main
 ```
 
@@ -152,29 +152,53 @@ docker compose exec backend python manage.py migrate
 
 ---
 
-## 11. Django commands
-Run from the repo root. Activate the venv FIRST:
-
+## 11. Backend commands (Django)
+Run these from the project root (`Group1-Project/`) with the venv active:
 ```bash
 source venv/bin/activate
 ```
 
+> `runserver` keeps its terminal busy. Run the other commands in a second terminal.
+
+
+### First-time setup (once)
 ```bash
-# start the dev server
-python backend/star_civilian/manage.py runserver
+cd backend/star_civilian
+python manage.py migrate
+python manage.py createsuperuser
+```
 
-# catch config errors
-python backend/star_civilian/manage.py check                         
 
-# after changing models
-python backend/star_civilian/manage.py makemigrations <your_app>    
+### Every work session
+```bash
+cd backend/star_civilian
+docker compose up -d db
+python manage.py runserver
+```
 
-# apply migrations
-python backend/star_civilian/manage.py migrate 
 
-# run your tests
-python backend/star_civilian/manage.py test <your_app>   
+### After every `git pull`
+Teammates may have added migrations.
 
-# admin login (once)
-python backend/star_civilian/manage.py createsuperuser               
+```bash
+cd backend/star_civilian
+python manage.py migrate
+```
+
+
+### When you change a model
+Replace `<app_name>` with the app you changed (e.g. `history`).
+
+```bash
+cd backend/star_civilian
+python manage.py makemigrations <app_name>
+python manage.py migrate
+```
+
+
+### Before you commit or open a PR
+```bash
+cd backend/star_civilian
+python manage.py check
+python manage.py test <app_name>
 ```
