@@ -5,8 +5,7 @@ from rest_framework.response import Response
 from .onet import get_onet_data
 from .models import Occupation, MilitaryJobKeyword, JobMatch
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
+
 def save_occupation(occupation_data):
     """
     Saves or updates one civilian occupation from ONET.
