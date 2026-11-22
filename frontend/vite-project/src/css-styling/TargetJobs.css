@@ -1,0 +1,135 @@
+/* src/css-styling/TargetJobs.css
+   Builds on Experience.css (.exp, .btn, .tag, .field, .exp-card ...) */
+
+.tj h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+/* ---------- military job card ---------- */
+.tj-mil {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  background: #fff;
+  border: 2px solid var(--navy);
+  border-radius: 8px;
+}
+.tj-mil h2 {
+  margin: 6px 0 4px;
+  font-size: 24px;
+  color: var(--navy);
+}
+.tj-mil p {
+  margin: 0;
+}
+.tj-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* ---------- picked target jobs ---------- */
+.tj-targets,
+.tj-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tj-target-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tj-next {
+  align-self: flex-start;
+}
+.exp .btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* "How do I fit?" result */
+.tj-fit {
+  margin-top: 14px;
+  padding: 16px;
+  background: #f7f9fc;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.tj-fit p {
+  margin: 0 0 8px;
+}
+.tj-fit h4 {
+  margin: 12px 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.tj-fit ul {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---------- results lists ---------- */
+.tj-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.tj-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+}
+.tj-row + .tj-row {
+  border-top: 1px solid var(--line);
+}
+.tj-row__info {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.tj-row__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+.tj-row p {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+.exp .tag--bright {
+  background: #fbeedd;
+  color: #7a4300;
+}
+
+/* ---------- search ---------- */
+.tj-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+.tj-search .field {
+  flex: 1 1 320px;
+}

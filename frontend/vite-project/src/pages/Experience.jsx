@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
+import CredentialsSection from "../components/CredentialsSection";
 import MilitaryJobCodeField from "../components/MilitaryJobCodeField";
 import { apiFetch } from "../api";
 import "../css-styling/Experience.css";
@@ -337,9 +338,9 @@ export default function Experience() {
             />
             <TextArea
               id="achievements"
-              label="Accomplishments"
+              label="Achievements"
               rows={3}
-              placeholder="Results, awards, numbers you can point to"
+              placeholder="Results, awards, etc. (numbers you can point to)"
               value={form.achievements}
               onChange={onChange}
             />
@@ -358,6 +359,16 @@ export default function Experience() {
             </div>
           </form>
         </div>
+
+                <a href="#education" className="exp-next">
+          <span>Next: Education &amp; training</span>
+          <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14M6 13l6 6 6-6" />
+          </svg>
+        </a>
+        
+        <CredentialsSection />
       </main>
     </div>
   );
