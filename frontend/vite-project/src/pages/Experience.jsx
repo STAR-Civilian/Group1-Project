@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
+import CredentialsSection from "../components/CredentialsSection";
 import MilitaryJobCodeField from "../components/MilitaryJobCodeField";
 import { apiFetch } from "../api";
 import "../css-styling/Experience.css";
@@ -337,9 +338,9 @@ export default function Experience() {
             />
             <TextArea
               id="achievements"
-              label="Accomplishments"
+              label="Achievements"
               rows={3}
-              placeholder="Results, awards, numbers you can point to"
+              placeholder="Results, awards, etc. (numbers you can point to)"
               value={form.achievements}
               onChange={onChange}
             />
@@ -358,6 +359,7 @@ export default function Experience() {
             </div>
           </form>
         </div>
+        <CredentialsSection />
       </main>
     </div>
   );
