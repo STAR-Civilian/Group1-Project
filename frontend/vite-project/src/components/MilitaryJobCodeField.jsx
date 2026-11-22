@@ -1,7 +1,7 @@
 // src/components/MilitaryJobCodeField.jsx
 // Job code input that checks the code against O*NET (via our backend)
 // when the user leaves the field.
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
 const LOOKUP_URL = "https://www.mynextmove.org/vets/";
@@ -19,19 +19,18 @@ export default function MilitaryJobCodeField({
   id = "job-code",
   name = "job_code_or_title",
 }) {
-  // "idle" | "checking" | "ok" | "outdated" | "invalid"
-  const [status, setStatus] = useState("idle");
-  const [match, setMatch] = useState(null);
-
-  // Branch changed: the old result no longer applies
-  useEffect(() => {
-    setStatus("idle");
-    setMatch(null);
-  }, [branch]);
+  // A result only counts for the exact code + branch it was checked with,
+  // so typing or changing the branch clears it automatically.
+  const key = `${value.trim()}|${branch}`;
+  const [result, setResult] = useState({ key: "", status: "idle", match: null });
+  const { status, match } =
+    result.key === key ? result : { status: "idle", match: null };
+  // status: "idle" | "checking" | "ok" | "outdated" | "invalid"
 
   async function checkCode() {
     const code = value.trim();
-    if (!code) return setStatus("idle");
+    if (!code) return;
+    const setStatus = (s, m = null) => setResult({ key, status: s, match: m });
     setStatus("checking");
     try {
       const params = new URLSearchParams({ keyword: code });
@@ -44,16 +43,9 @@ export default function MilitaryJobCodeField({
       if (!res.ok) return setStatus("idle"); // lookup down; don't block the user
       const matches = getMatches(await res.json());
       const active = matches.find((m) => m.active);
-      if (active) {
-        setMatch(active);
-        setStatus("ok");
-      } else if (matches.length) {
-        setMatch(matches[0]);
-        setStatus("outdated");
-      } else {
-        setMatch(null);
-        setStatus("invalid");
-      }
+      if (active) setStatus("ok", active);
+      else if (matches.length) setStatus("outdated", matches[0]);
+      else setStatus("invalid");
     } catch {
       setStatus("idle");
     }
@@ -101,10 +93,7 @@ export default function MilitaryJobCodeField({
           name={name}
           placeholder="e.g. 0311"
           value={value}
-          onChange={(e) => {
-            setStatus("idle");
-            onChange(e);
-          }}
+          onChange={onChange}
           onBlur={checkCode}
           aria-describedby={`${id}-note`}
           aria-invalid={status === "invalid" || status === "outdated"}
