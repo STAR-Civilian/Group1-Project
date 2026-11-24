@@ -10,7 +10,7 @@
 //   GET    /api/resumes/:id/                -> one resume
 //   PATCH  /api/resumes/:id/                -> save edits ({ content })
 //   DELETE /api/resumes/:id/
-// Target jobs come from the Target jobs page (localStorage "targetJobs").
+//   GET    /api/jobs/target-jobs/           -> the target jobs picked on the Target jobs page
 
 
 import { useEffect, useState } from "react";
@@ -31,13 +31,8 @@ const fromLines = (text) =>
     .map((s) => s.replace(/^\s*[•\-*]\s*/, "").trim())
     .filter(Boolean);
 
-function loadTargets() {
-  try {
-    return JSON.parse(localStorage.getItem("targetJobs") || "[]");
-  } catch {
-    return [];
-  }
-}
+// Any [bracketed placeholder] left in the resume, like "[add team size]" or "[confirm]"
+const hasPlaceholders = (content) => /\[[^\]]+\]/.test(JSON.stringify(content));
 
 // Saved content -> what the form edits
 function toDraft(content = {}) {
@@ -97,47 +92,62 @@ function PrintableResume({ profile, content }) {
   const contact = contactLine(profile);
   return (
     <div className="rs-print">
-      <h1>{name}</h1>
-      {contact && <p className="rs-print__contact">{contact}</p>}
-      <h2>Summary</h2>
-      <p>{content.summary}</p>
-      {content.skills.length > 0 && (
-        <>
-          <h2>Skills</h2>
-          <p>{content.skills.join(" · ")}</p>
-        </>
-      )}
-      {content.experience.length > 0 && (
-        <>
-          <h2>Experience</h2>
-          {content.experience.map((j, i) => (
-            <div key={i} className="rs-print__job">
-              <div className="rs-print__job-head">
-                <strong>{j.title}</strong>
-                <span>{j.dates}</span>
-              </div>
-              <div>{j.organization}</div>
-              <ul>
-                {j.bullets.map((b, k) => (
-                  <li key={k}>{b}</li>
+      {/* The empty header/footer rows repeat on every printed page: they are the top and bottom margins */}
+      <table className="rs-print__table">
+        <thead>
+          <tr><td><div className="rs-print__gap" /></td></tr>
+        </thead>
+        <tfoot>
+          <tr><td><div className="rs-print__gap" /></td></tr>
+        </tfoot>
+        <tbody>
+          <tr>
+            <td className="rs-print__body">
+            <h1>{name}</h1>
+            {contact && <p className="rs-print__contact">{contact}</p>}
+            <h2>Summary</h2>
+            <p>{content.summary}</p>
+            {content.skills.length > 0 && (
+              <>
+                <h2>Skills</h2>
+                <p>{content.skills.join(" · ")}</p>
+              </>
+            )}
+            {content.experience.length > 0 && (
+              <>
+                <h2>Experience</h2>
+                {content.experience.map((j, i) => (
+                  <div key={i} className="rs-print__job">
+                    <div className="rs-print__job-head">
+                      <strong>{j.title}</strong>
+                      <span>{j.dates}</span>
+                    </div>
+                    <div>{j.organization}</div>
+                    <ul>
+                      {j.bullets.map((b, k) => (
+                        <li key={k}>{b}</li>
+                      ))}
+                    </ul>
+                  </div>
                 ))}
-              </ul>
-            </div>
-          ))}
-        </>
-      )}
-      {content.education.length > 0 && (
-        <>
-          <h2>Education</h2>
-          <ul>{content.education.map((e, i) => <li key={i}>{e}</li>)}</ul>
-        </>
-      )}
-      {content.certifications.length > 0 && (
-        <>
-          <h2>Certifications</h2>
-          <ul>{content.certifications.map((c, i) => <li key={i}>{c}</li>)}</ul>
-        </>
-      )}
+              </>
+            )}
+            {content.education.length > 0 && (
+              <>
+                <h2>Education</h2>
+                <ul>{content.education.map((e, i) => <li key={i}>{e}</li>)}</ul>
+              </>
+            )}
+            {content.certifications.length > 0 && (
+              <>
+                <h2>Certifications</h2>
+                <ul>{content.certifications.map((c, i) => <li key={i}>{c}</li>)}</ul>
+              </>
+            )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -150,11 +160,11 @@ export default function ResumePage() {
   const [profile, setProfile] = useState(null);
   const [positions, setPositions] = useState([]);
   const [resumes, setResumes] = useState([]);
-  const [targets] = useState(loadTargets);
+  const [targets, setTargets] = useState([]); // saved on the server
   const [loading, setLoading] = useState(true);
 
   // generate form
-  const [jobChoice, setJobChoice] = useState(() => loadTargets()[0]?.code || "other");
+  const [jobChoice, setJobChoice] = useState("other");
   const [customTitle, setCustomTitle] = useState("");
   const [jobNotes, setJobNotes] = useState("");
   const [extra, setExtra] = useState("");
@@ -169,6 +179,17 @@ export default function ResumePage() {
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
 
+  // The PDF's file name comes from the page title while printing
+  useEffect(() => {
+    if (!resume) return;
+    const previous = document.title;
+    const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
+    document.title = name ? `${name} - Resume` : "Resume";
+    return () => {
+      document.title = previous;
+    };
+  }, [resume, profile]);
+
   const handleErr = (err) => (err.status === 401 ? navigate("/") : setError(err.message));
 
   // Load profile, positions and saved resumes
@@ -177,8 +198,12 @@ export default function ResumePage() {
       apiFetch("/api/profile/me/"),
       apiFetch("/api/history/positions/"),
       apiFetch("/api/resumes/"),
+      apiFetch("/api/jobs/target-jobs/"),
     ])
-      .then(([prof, pos, list]) => {
+      .then(([prof, pos, list, targetList]) => {
+        const picked = targetList.map((t) => ({ code: t.onet_code, title: t.title }));
+        setTargets(picked);
+        setJobChoice(picked[0]?.code || "other");
         setProfile(prof);
         setPositions(pos);
         setPosIds(pos.map((p) => p.id)); // include all by default
@@ -285,6 +310,18 @@ export default function ResumePage() {
     } catch (err) {
       handleErr(err);
     }
+  }
+
+  function handlePrint() {
+    if (
+      hasPlaceholders(fromDraft(draft)) &&
+      !window.confirm(
+        "Your resume still has [bracketed] items to fill in. Print anyway?"
+      )
+    ) {
+      return;
+    }
+    window.print();
   }
 
   const togglePos = (id) =>
@@ -427,7 +464,7 @@ export default function ResumePage() {
                     <button className="btn btn-primary btn-sm" type="button" onClick={handleSave} disabled={!dirty || saving}>
                       {saving ? "Saving…" : "Save changes"}
                     </button>
-                    <button className="btn btn-outline btn-sm" type="button" onClick={() => window.print()}>
+                    <button className="btn btn-outline btn-sm" type="button" onClick={handlePrint}>
                       Print / PDF
                     </button>
                     <button className="btn btn-outline btn-sm" type="button" onClick={handleDelete}>

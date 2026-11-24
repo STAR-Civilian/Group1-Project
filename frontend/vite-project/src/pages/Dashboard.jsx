@@ -6,7 +6,7 @@
 //   GET /api/history/credentials/
 //   GET /api/resumes/
 //   GET /api/resumes/:id/star-answers/   (one call per resume, to count answers)
-// Target jobs come from the Target jobs page (localStorage "targetJobs").
+//   GET /api/jobs/target-jobs/           (the jobs picked on the Target jobs page)
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
@@ -14,21 +14,12 @@ import { apiFetch } from "../api";
 import "../css-styling/Experience.css"; // shared page styles (.exp ...)
 import "../css-styling/Dashboard.css";
 
-function loadTargets() {
-  try {
-    return JSON.parse(localStorage.getItem("targetJobs") || "[]");
-  } catch {
-    return [];
-  }
-}
-
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const firstName = localStorage.getItem("first_name") || "there";
-  const [targets] = useState(loadTargets);
-  const [data, setData] = useState(null); // { positions, credentials, resumes, starCounts }
+  const [data, setData] = useState(null); // { positions, credentials, resumes, targets, starCounts }
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -36,13 +27,14 @@ export default function Dashboard() {
       apiFetch("/api/history/positions/"),
       apiFetch("/api/history/credentials/"),
       apiFetch("/api/resumes/"),
+      apiFetch("/api/jobs/target-jobs/"),
     ])
-      .then(async ([positions, credentials, resumes]) => {
+      .then(async ([positions, credentials, resumes, targets]) => {
         const lists = await Promise.all(
           resumes.map((r) => apiFetch(`/api/resumes/${r.id}/star-answers/`))
         );
         const starCounts = Object.fromEntries(resumes.map((r, i) => [r.id, lists[i].length]));
-        setData({ positions, credentials, resumes, starCounts });
+        setData({ positions, credentials, resumes, targets, starCounts });
       })
       .catch((err) => (err.status === 401 ? navigate("/") : setError(err.message)));
   }, [navigate]);
@@ -74,8 +66,8 @@ export default function Dashboard() {
         },
         {
           title: "Target jobs",
-          done: targets.length > 0,
-          detail: plural(targets.length, "job") + " picked",
+          done: data.targets.length > 0,
+          detail: plural(data.targets.length, "job") + " picked",
           to: "/jobs",
           cta: "Pick target jobs",
         },

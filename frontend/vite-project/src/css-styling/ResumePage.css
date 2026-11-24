@@ -174,17 +174,16 @@
   display: none;
 }
 
+/* @page margin 0 removes the browser's own date, title and URL lines.
+   The resume gets its own padding instead. */
+@page {
+  margin: 0;
+}
+
 @media print {
-  .app-header,
-  .exp-head,
-  .rs-side,
-  .rs-toolbar,
-  .rs-questions,
-  .rs-paper,
-  .rs-next,
-  .form-error,
-  .exp-empty {
-    display: none !important;
+  /* Hide everything on the page (step bar, footer notice, header...) ... */
+  body * {
+    visibility: hidden !important;
   }
   .exp,
   .exp-main {
@@ -192,10 +191,47 @@
     padding: 0;
     min-height: 0;
   }
+  .rs-paper,
+  .rs-toolbar,
+  .rs-questions,
+  .rs-side,
+  .rs-next,
+  .exp-head,
+  .form-error,
+  .exp-empty {
+    display: none !important;
+  }
+
+  /* ... then show only the printable resume, at the top of the page */
+  .rs-print,
+  .rs-print * {
+    visibility: visible !important;
+  }
   .rs-print {
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     color: #000;
+    background: #fff;
     font: 11pt/1.4 Georgia, "Times New Roman", serif;
+  }
+  .rs-print__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .rs-print__table td {
+    padding: 0;
+  }
+  .rs-print__gap {
+    height: 0.6in; /* top and bottom margin on every page */
+  }
+  .rs-print__body {
+    padding: 0 0.7in !important; /* left and right margin */
+  }
+  .rs-print h2 {
+    break-after: avoid;
   }
   .rs-print h1 {
     margin: 0;
