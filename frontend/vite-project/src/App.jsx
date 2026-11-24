@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import AppFooter from './components/AppFooter'
 import AuthPage from './pages/AuthPage'
 import HomePage from './pages/HomePage'
 import Experience from './pages/Experience'
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/jobs" element={<TargetJobs />} />
         <Route path="/resume" element={<ResumePage />} />
       </Routes>
+      <AppFooter />
     </BrowserRouter>
   )
 }
