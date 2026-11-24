@@ -63,7 +63,7 @@ class GenerateResumeView(APIView):
         )
         try:
             content = call_llm_json(
-                RESUME_SYSTEM, prompt, "resume.json", validate_resume, max_tokens=3000
+                RESUME_SYSTEM, prompt, "resume.json", validate_resume, max_tokens=8000
             )
         except LLMError:
             return Response(
@@ -115,7 +115,7 @@ class GenerateStarView(APIView):
         prompt = build_star_prompt(resume.target_job_title, resume.content, job_notes, count)
         try:
             data = call_llm_json(
-                STAR_SYSTEM, prompt, "star.json", validate_star, max_tokens=3000
+                STAR_SYSTEM, prompt, "star.json", validate_star, max_tokens=6000
             )
         except LLMError:
             return Response(
@@ -189,7 +189,7 @@ class RewriteStarAnswerView(APIView):
                 prompt,
                 "star_rewrite.json",
                 validate_star_rewrite,
-                max_tokens=1000,
+                max_tokens=4000,
             )
         except LLMError:
             return Response(
@@ -240,7 +240,7 @@ class JobFitView(APIView):
         prompt = build_job_fit_prompt(target_job_title, job_notes, positions, credentials)
         try:
             data = call_llm_json(
-                JOB_FIT_SYSTEM, prompt, "job_fit.json", validate_job_fit, max_tokens=2000
+                JOB_FIT_SYSTEM, prompt, "job_fit.json", validate_job_fit, max_tokens=6000
             )
         except LLMError:
             return Response(
