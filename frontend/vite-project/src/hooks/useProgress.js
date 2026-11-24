@@ -8,18 +8,11 @@ import { apiFetch } from "../api";
 
 export const PROGRESS_EVENT = "progress-changed";
 
-function targetCount() {
-  try {
-    return JSON.parse(localStorage.getItem("targetJobs") || "[]").length;
-  } catch {
-    return 0;
-  }
-}
-
 async function loadProgress() {
-  const [positions, resumes] = await Promise.all([
+  const [positions, resumes, targets] = await Promise.all([
     apiFetch("/api/history/positions/"),
     apiFetch("/api/resumes/"),
+    apiFetch("/api/jobs/target-jobs/"), // saved on the server
   ]);
   // Stop at the first resume that has answers
   let hasStar = false;
@@ -32,7 +25,7 @@ async function loadProgress() {
   }
   return {
     experience: positions.length > 0,
-    jobs: targetCount() > 0,
+    jobs: targets.length > 0,
     resume: resumes.length > 0,
     star: hasStar,
   };
