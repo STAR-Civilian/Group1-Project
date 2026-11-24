@@ -1,6 +1,7 @@
 // src/pages/HomePage.jsx
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/star-logo.svg";
+import Timeline from "../components/Timeline";
 import "../css-styling/HomePage.css";
 
 const STEPS = [
@@ -53,6 +54,7 @@ export default function HomePage() {
           </div>
         </nav>
       </header>
+      <Timeline />
 
       <main className="home-main">
         <section className="home-hero">

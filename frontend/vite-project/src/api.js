@@ -25,6 +25,9 @@ export async function apiFetch(path, { method = "GET", body } = {}) {
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  // Let the progress timeline know something changed
+  if (res.ok && method !== "GET") window.dispatchEvent(new Event("progress-changed"));
+
   if (res.status === 204) return null; // e.g. after DELETE
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
