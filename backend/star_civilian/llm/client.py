@@ -1,9 +1,11 @@
 import json
+import logging
 from pathlib import Path
 
 from django.conf import settings
 
 MOCK_DIR = Path(__file__).parent / "mocks"
+logger = logging.getLogger(__name__)
 
 
 class LLMError(Exception):
@@ -28,6 +30,12 @@ def call_llm(system, user, mock_file, max_tokens=2000):
         system=system,
         messages=[{"role": "user", "content": user}],
     )
+    if response.stop_reason == "max_tokens":
+        # The reply was cut off, so any JSON in it will be incomplete.
+        logger.warning(
+            "LLM reply hit max_tokens (%s) for %s; output tokens used: %s",
+            max_tokens, mock_file, response.usage.output_tokens,
+        )
     return "".join(block.text for block in response.content if block.type == "text")
 
 
@@ -46,13 +54,22 @@ def call_llm_json(system, user, mock_file, validate, max_tokens=2000):
     `validate` is a function that raises ValueError if the data is wrong.
     """
     prompt = user
-    for _ in range(2):
-        text = call_llm(system, prompt, mock_file, max_tokens)
+    for attempt in (1, 2):
+        try:
+            text = call_llm(system, prompt, mock_file, max_tokens)
+        except Exception:
+            # API errors (bad key, timeout, rate limit, overloaded) land here.
+            logger.exception("LLM API call failed for %s", mock_file)
+            raise
         try:
             data = _parse_json(text)
             validate(data)
             return data
-        except ValueError:  # includes json.JSONDecodeError
+        except ValueError as err:  # includes json.JSONDecodeError
+            logger.warning(
+                "LLM reply for %s was rejected on attempt %s: %s. Reply started: %r",
+                mock_file, attempt, err, text[:200],
+            )
             prompt = user + (
                 "\n\nYour last reply could not be read. "
                 "Reply with valid JSON only, in the exact shape requested."
