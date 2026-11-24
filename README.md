@@ -1,7 +1,6 @@
 # STAR Civilian
-**Live site:** [https://our-domain.com] *(TBD)*
-**Project board:** https://github.com/STAR-Civilian/Group1-Project/
-![CI](https://github.com/STAR-Civilian/Group1-Project/actions/workflows/[ci].yml/badge.svg)
+**Live site:** https://100-57-237-178.sslip.io
+**Repo:** https://github.com/STAR-Civilian/Group1-Project
 
 
 
@@ -13,234 +12,209 @@ Behavioral interviews make it harder: hiring managers expect STAR-method answers
 
 
 ## Our solution
-STAR Civilian helps veterans translate their military experience into civilian resumes and interview answers:
+STAR Civilian helps veterans translate their military experience into civilian resumes and interview answers, in 4 steps:
 
-- Add your service details: branch, rank, and MOS/rating.
-- Enter your work history, military and civilian, one position at a time (duties + achievements).
-- Add credentials: certifications, training, awards, and education.
-- Search civilian jobs that match your MOS, or any career you're interested in (powered by O*NET).
-- Generate a civilian-language resume from your history (powered by Claude).
-- Get STAR-method example answers to common behavioral interview questions, based on your own experience.
-- Save, edit, and delete your resumes and answers. Your history is stored, so you never re-enter it.
+1. **Experience:** add your work history, military and civilian, one position at a time (duties + achievements), plus education, training, and certifications.
+2. **Target jobs:** search civilian jobs that match your military job, or any career you're interested in (powered by O*NET). Save the ones you want, with job descriptions and salary info.
+3. **Resume:** generate a civilian-language resume for one of your target jobs (powered by Claude). Edit it, add your contact info and links, and print or save it as a PDF.
+4. **STAR answers:** get example answers to behavioral interview questions, built from your resume. Edit them, or write your own story and have it reshaped into STAR format.
 
-⚠️ STAR Civilian is a prep tool. It is not affiliated with or endorsed by the DoD or VA. AI-generated answers are examples to edit, not scripts to memorize.
+A **dashboard** and a **progress timeline** at the top of every page show what's done and what to do next. Everything is saved, so you never re-enter your history.
+
+⚠️ STAR Civilian is an independent capstone prototype. It is not affiliated with or endorsed by the U.S. Department of Veterans Affairs or the Department of Defense. AI-generated answers are examples to edit, not scripts to memorize.
 
 
 
 ## MVP
 **Must have**
 - [✅] Sign up / log in
-- [✅] MOS database
+- [✅] Military job (MOS) lookup
 - [✅] O*NET integration (civilian job types)
-- [✅] LLM: translate resume into STAR-method interview answers
-- [✅] Search form (branch, MOS, civilian job interests, etc.)
+- [✅] LLM: translate experience into a civilian resume and STAR-method interview answers
+- [✅] Search form (branch, military job, civilian job interests)
 
 **Should have**
-- [ ] Joint Services Transcript (JST) — API, or PDF upload + PDF reader
-- [ ] Search form (branch, MOS, civilian job interests, etc.)
-- [ ] Career-change path (vets targeting jobs outside their MOS field)
-- [ ] Suggested document checklist (what users should upload)
+- [✅] Career-change path (vets targeting jobs outside their military field)
+- [✅] Dashboard + progress timeline
+- [ ] Joint Services Transcript (JST) import
 
 **Could have**
 - [ ] Local job listings
-- [ ] Resume upload + text extraction
+- [ ] Resume upload + text extraction *(moved out of the MVP)*
 
 **Won't have (this version)**
 - Mock interviews
+- Suggested document checklist
 
 
 
 ## Team
-  Name         |   Feature owned (end-to-end)   |   GitHub
----------------|--------------------------------|----------------------
-Alana Karp     |   [jobs, O*NET API]            |   @Karp-636
-Liz Burk       |   [accounts, config]           |   @IzzyVIII
-Steph Asauskas |   [requirements.txt,           |   @activedutymodel
-               |   history, README,             |
-               |   WORKFLOW]                    |   
-Su Gardner     |   [LLM, resume, O*NET API]     |   @SuGardner18
-
-*Feature ideas to split: auth + profile/MOS · O\*NET job search · resume upload + text · LLM STAR answers*
+  Name         |   Features owned (end-to-end)                                  |   GitHub
+---------------|----------------------------------------------------------------|----------------------
+Alana Karp     |   Group lead · jobs app, O*NET API · testing                   |   @Karp-636
+Liz Burk       |   accounts app (auth + profile), config · testing              |   @IzzyVIII
+Steph Asauskas |   history app · frontend pages, timeline, dashboard · README, WORKFLOW |   @activedutymodel
+Su Gardner     |   LLM app, resumes app, saved target jobs · AWS deployment     |   @SuGardner18
 
 
 
 ## Contributions
-*(Be specific — models, endpoints, pages, bugs fixed. You should be able to cite this in interviews.)*
-
-- **Alana Karp** — [...]
-- **Liz Burk** — [...]
-- **Steph Asauskas** — [example: built X model + endpoints, Y page, set up Z, fixed W]
-- **Su Gardner** — [...]
+- **Alana Karp:** led the team and kept everyone on schedule. Built the `jobs` app: the O*NET client (`jobs/onet.py`), plus civilian search, military search, and skills-based job match endpoints. Tested the full app end to end.
+- **Liz Burk:** built the `accounts` app: sign-up and login with DRF token auth, the `Profile` model, `GET/PUT /api/profile/me/`, password rules, and name/city/phone validators. Set up Postgres and Django settings (required `SECRET_KEY`, `DEBUG` off by default). Tested the full app end to end.
+- **Steph Asauskas:** built the `history` app (`Position` and `Credential` models, serializers, CRUD endpoints, 16 tests). Built the frontend pages: login/sign up, Experience (work + education), Target jobs, Resume, STAR answers, and Dashboard. Built the progress timeline, the resume contact info section (optional phone, LinkedIn, GitHub, website), and the disclaimer footer. Wrote the README and WORKFLOW docs.
+- **Su Gardner:** built the `llm` app (Claude client with mock mode, prompts, and validators for resumes, STAR answers, rewrites, and job fit) and the `resumes` app (`Resume`, `StarAnswer`, `JobFit` CRUD). Added saved target jobs with descriptions and salary. Deployed the app to AWS EC2 with Docker, Nginx, and Caddy (automatic HTTPS).
 
 
 
 ## Screenshots
-*(Add once pages exist. Save images in `docs/`. A demo GIF also works.)*
+*(To-do: add images to `docs/`.)*
 
-![Demo](docs/demo.gif)
-
-| Log In | Create Account |
+| Log In | Dashboard |
 |---|---|
-| ![Log In](docs/01-login.png) | ![Create Account](docs/02-signup.png) |
+| ![Log In](docs/01-login.png) | ![Dashboard](docs/02-dashboard.png) |
 
-| Profile (Branch + MOS) | Job Search |
+| Experience | Target Jobs |
 |---|---|
-| ![Profile](docs/03-profile.png) | ![Job Search](docs/04-job-search.png) |
+| ![Experience](docs/03-experience.png) | ![Target Jobs](docs/04-target-jobs.png) |
 
-| Resume Upload | STAR Answers |
+| Resume | STAR Answers |
 |---|---|
-| ![Resume Upload](docs/05-resume.png) | ![STAR Answers](docs/06-star-answers.png) |
+| ![Resume](docs/05-resume.png) | ![STAR Answers](docs/06-star-answers.png) |
 
 
 
 ## Tech stack
-  Layer        |	                        Tools
+  Layer        |   Tools
 ---------------|-----------------------------------------------------------
-Frontend	     |   React (Vite), [UI library]
-Backend	       |   Django REST Framework, [auth method]
-Database	     |   PostgreSQL
-APIs           |	 O*NET Web Services, [LLM provider], [JST — TBD]
-Text extraction|   [PDF reader / OCR — TBD]
-Containers	   |   Docker, Docker Compose
-CI             |   GitHub Actions (runs on every PR)
-Deployment	   |   AWS EC2, [web server, HTTPS]
+Frontend       |   React 19 (Vite), React Router
+Backend        |   Django + Django REST Framework, token auth, Gunicorn
+Database       |   PostgreSQL 16
+APIs           |   O*NET Web Services, Anthropic Claude
+Containers     |   Docker, Docker Compose
+Deployment     |   AWS EC2, Caddy (HTTPS), Nginx
 
 
 
 ## Third-party APIs
-- **O*NET Web Services** — civilian occupation data and military-to-civilian job matching. [Which endpoint/file uses it]
-- **[LLM provider]** — translates resume text and generates STAR-method answers. [Which endpoint/file uses it]
-- **[PDF reader / OCR]** — pulls text from uploaded resumes (and JST PDFs). [Which file]
-- **JST** *(should have)* — [API or PDF upload — decide]
+- **O*NET Web Services:** civilian occupation data, military-to-civilian job matching, job descriptions, and salary. Used in `jobs/onet.py`, `jobs/details.py`, and `jobs/views.py`.
+- **Anthropic Claude:** writes the resume, STAR answers, STAR rewrites, and job-fit notes. Used in `llm/client.py` and `llm/views.py`. Set `USE_MOCK_LLM=true` to use saved sample replies instead (no API key needed).
+
+Includes information from O*NET Web Services. O*NET® is a trademark of USDOL/ETA.
 
 
 
-## Data model *(draft — adjust as we build)*
-User ──> Resume ──> StarAnswer
-User ──> TargetJob
-User ──> MOS (via profile)
+## Data model
+```text
+User ──> Profile                         (one)
+User ──> Position, Credential            (many: work history, education + training)
+User ──> TargetJob ──> Occupation        (many: saved civilian jobs)
+User ──> Resume ──> StarAnswer           (many)
+User ──> JobFit
+```
 
-- A User has one military profile (branch + MOS)
-- A User has many Resumes
-- A User has many TargetJobs (civilian roles they're interested in)
-- A Resume has many StarAnswers (one per behavioral question)
+  Model      |  App       |  Key fields
+-------------|------------|----------------------------------------------------------------
+Profile      |  accounts  |  user, first/last name, phone (optional), city, state, branch, linkedin/github/website URLs (optional)
+Position     |  history   |  user, experience_type (military/civilian), title, dates, duties, achievements, branch, rank, mos_code, employer
+Credential   |  history   |  user, credential_type, name, issuer, date_earned, description
+Occupation   |  jobs      |  onet_code, title, description
+TargetJob    |  jobs      |  user, occupation
+Resume       |  resumes   |  user, target_job_title, onet_code, mos_code, content (JSON)
+StarAnswer   |  resumes   |  resume, question, skill, situation, task, action, result, tip
+JobFit       |  resumes   |  user, target_job_title, onet_code, content (JSON: summary, transfers, gaps)
 
-![Database schema](docs/schema.png)
-
-
-Entity Relationship Diagram (ERD)
-
-  Model      |                          Key fields
--------------|------------------------------------------------------------------
-MOS          |  branch, code, title, description
-Profile      |  user (FK), branch, mos (FK), career_change (bool)
-Resume       |  user (FK), file, extracted_text, translated_text, uploaded_at
-TargetJob    |  user (FK), onet_code, title
-StarAnswer   |  resume (FK), target_job (FK), question, situation, task, action, result
-
-Full CRUD resources: Resume, TargetJob, StarAnswer *(2 required)*.
+Full CRUD: Position, Credential, TargetJob, Resume, StarAnswer.
 
 
 
 ## Project structure
 ```text
-.                            |   project root
-├── backend/                 |   Django project ([project_name])
-│   ├── accounts_app/        |   sign-up, login, auth
-│   ├── mos_app/             |   MOS database + profile
-│   ├── jobs_app/            |   O*NET search + target jobs
-│   ├── resumes_app/         |   uploads + text extraction
-│   ├── star_app/            |   LLM translation + STAR answers
-│   ├── Dockerfile           |
-│   └── requirements.txt     |
-├── frontend/                |   React app (Vite)
-│   ├── src/                 |   pages, components, api/client.js
-│   ├── Dockerfile           |
-│   └── nginx.conf           |
-├── docs/                    |   screenshots + schema.png
-├── sample-resumes/          |   fictional test resumes
-├── docker-compose.yml       |   local dev (db, backend, frontend)
-├── docker-compose.prod.yml  |   production
-└── .env.example             |   every required environment variable
+.
+├── backend/
+│   ├── star_civilian/
+│   │   ├── accounts/        sign-up, login, profile
+│   │   ├── history/         work history, education + training
+│   │   ├── jobs/            O*NET search, military job lookup, target jobs
+│   │   ├── llm/             Claude prompts: resume, STAR answers, job fit
+│   │   ├── resumes/         saved resumes, STAR answers, job fits
+│   │   └── config/          Django settings + URLs
+│   ├── Dockerfile
+│   └── requirements.txt
+├── frontend/vite-project/   React app (pages, components, hooks, css-styling)
+├── nginx/                   serves the React build, proxies /api/ to Django
+├── caddy/                   HTTPS in production
+├── docs/                    screenshots for the README
+├── docker-compose.yml       local dev
+├── docker-compose.prod.yml  production
+├── setup.sh / stop.sh       start / stop local Docker
+├── WORKFLOW.md              team git workflow
+└── .env.example             every environment variable
 ```
 
 
 
 ## Getting started
-Prerequisites:
-- Docker + Docker Compose
-- Git
-- Optional, for full functionality:
-  * O*NET Web Services account
-  * [LLM provider] API key
+**Prerequisites:** Docker + Docker Compose and Git. Optional: an O*NET Web Services key and an Anthropic API key (mock mode works without one).
 
-
-1. Clone the repo
-Run in your terminal, wherever you keep projects:
-
+1. **Clone the repo**
 ```bash
-git clone https://github.com/Veteran-Transition/Group1-Project.git
+git clone https://github.com/STAR-Civilian/Group1-Project.git
 cd Group1-Project
 ```
 
-2. Set up environment variables
-Run in the project root:
-
+2. **Set up environment variables**
 ```bash
 cp .env.example .env
 ```
+Open `.env` and fill in the values:
 
-Open .env and fill in the values. .env.example lists and explains every variable. The main groups:
-
-   Group	     |                            Examples
+  Group          |   Variables
 -----------------|------------------------------------------------------------------
-App	             |   DEBUG, SECRET_KEY, ALLOWED_HOSTS
-Frontend / CORS	 |   CORS_ALLOWED_ORIGINS, VITE_API_URL
-Database	       |   DB_HOST, DB_PORT, plus name/user/password
-O*NET	           |   username / ONET_API_KEY
-LLM	             |   ONET_API_KEY, model name
+App              |   SECRET_KEY (required), DEBUG, ALLOWED_HOSTS
+Frontend / CORS  |   CORS_ALLOWED_ORIGINS
+Database         |   DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+O*NET            |   ONET_API_KEY
+LLM              |   USE_MOCK_LLM, ANTHROPIC_API_KEY, LLM_MODEL
 
-Never commit .env. Only .env.example belongs in git.
+Never commit `.env`. Only `.env.example` belongs in git.
 
-
-3. Start the app
-Run in the project root:
-
+3. **Start the backend** (Postgres + Django in Docker)
 ```bash
-docker compose up --build
+./setup.sh
 ```
+This builds the containers and runs migrations. The API runs at http://localhost:8000. Stop it with `./stop.sh`.
 
-Open http://localhost:5173
+4. **Start the frontend** (in a second terminal)
+```bash
+cd frontend/vite-project
+npm install
+npm run dev
+```
+Open http://localhost:5173.
 
-
-4. (Optional) Create an admin user
-Run in the project root:
-
+5. **(Optional) Create an admin user**
 ```bash
 docker compose exec backend python manage.py createsuperuser
 ```
 
-5. Try it out
-Sign up, add your branch and MOS, pick a target job, upload a resume from sample-resumes/, and generate STAR answers.
+6. **Try it out:** sign up, add a position on Experience, pick a target job, generate a resume, then get STAR answers.
 
 
 
 ## Team workflow
+See [WORKFLOW.md](WORKFLOW.md) for the full commands.
 - Branch from `main`: `feature/<short-name>` or `fix/<short-name>`
-- Never push straight to `main` (branch protection is on)
-- Every PR: link its issue (`Closes #12`), at least 1 approval, CI must pass
+- Never push straight to `main`
+- Every PR: at least 1 approval
 - Keep PRs small and single-purpose
 - Disclose materially AI-generated code in the PR description
-- Daily standup: [time] — update the board during standup
-- Weekly 15-min retro: what worked, what didn't, one change
-- [Who owns `settings.py` in week 1]
+- After pulling, run `python manage.py migrate`
 
 
 
 ## Running tests
-[Number] backend tests cover [areas].
+20 backend tests cover the `history` app (positions + credentials CRUD, owner-only access) and the `accounts` profile (optional phone, resume links).
 
-Run in the project root:
 ```bash
 docker compose exec backend python manage.py test
 ```
@@ -248,34 +222,34 @@ docker compose exec backend python manage.py test
 
 
 ## Deployment
-[Where it runs, e.g. AWS EC2 (Ubuntu) behind an Elastic IP.] $10 AWS budget alert is set.
-
-Who can deploy: [at least 2 names]
+Runs on AWS EC2 with Docker Compose (`docker-compose.prod.yml`).
 
 Request path:
 ```text
-Browser → [web server] → [frontend container]
-                            ├── serves React build
-                            └── proxies /api/ → Django
+Browser ──HTTPS──> Caddy ──> Nginx (web container)
+                               ├── serves the React build
+                               └── proxies /api/ and /admin/ ──> Django + Gunicorn (api container) ──> Postgres (db container)
 ```
 
-Redeploy:
-1. [Build + push step]
-2. [Pull + restart step on server]
+Redeploy *(Su to confirm)*:
+1. Build and push the images: `docker compose -f docker-compose.prod.yml build && docker compose -f docker-compose.prod.yml push`
+2. On the server: `docker compose -f docker-compose.prod.yml pull && docker compose -f docker-compose.prod.yml up -d`, then run `migrate` in the `api` container.
 
 
 
 ## Security notes
-- Every API query is scoped to the logged-in user.
-- Resumes are served only to their owner through an authenticated endpoint.
-- Resume text sent to the LLM: [note what's sent and any PII stripping].
-- [Other protections]
+- Every API route requires login (DRF token auth), and every query is scoped to the logged-in user.
+- Passwords are checked against Django's password rules.
+- Only work history, education, and target job details are sent to the LLM. Name, email, phone, and address are added to the resume afterward and never sent.
+- Secrets live in `.env`, and the app won't start without a `SECRET_KEY`. `DEBUG` is off by default.
+- Production uses HTTPS (Caddy), and the API port is only open to the server itself.
 
 
 
 ## Upcoming features
+- Joint Services Transcript (JST) import
 - Local job listings
-- [Stretch goal]
+- Resume upload + text extraction
 
 
 
@@ -285,4 +259,4 @@ AI tools were used during development, as allowed by the Code Platoon project ru
 
 
 ## About
-Built by Steph Asauskas, Alana Karp, Su Gardner, and Liz Burk as the group project requirement for the Code Platoon Full-Stack Software Engineering program.
+Built by Steph Asauskas, Alana Karp, Su Gardner, and Liz Burk as the group project for the Code Platoon Full-Stack Software Engineering program.
