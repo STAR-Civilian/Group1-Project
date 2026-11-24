@@ -30,6 +30,9 @@ export async function apiFetch(path, { method = "GET", body } = {}) {
 
   if (res.status === 204) return null; // e.g. after DELETE
   const data = await res.json().catch(() => ({}));
+  // Token expired or invalid: forget it, so "/" shows the login page again
+  if (res.status === 401) localStorage.removeItem("token");
+
   if (!res.ok) {
     const err = new Error(errorText(data));
     err.status = res.status;

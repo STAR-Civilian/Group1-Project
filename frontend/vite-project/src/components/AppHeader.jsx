@@ -6,7 +6,6 @@ import Timeline from "./Timeline";
 import "../css-styling/AppHeader.css";
 
 const LINKS = [
-  { to: "/home", label: "Home" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/experience", label: "Experience" },
   { to: "/jobs", label: "Target jobs" },
@@ -27,7 +26,7 @@ export default function AppHeader() {
     <>
       <header className="app-header">
         <nav className="app-nav" aria-label="Main">
-          <Link to="/home" className="app-nav__logo">
+          <Link to="/dashboard" className="app-nav__logo">
             <img src={logo} alt="STAR Civilian" />
           </Link>
 

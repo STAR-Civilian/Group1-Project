@@ -121,7 +121,7 @@ export default function AuthPage({ initialMode = "login" }) {
         try {
             const data = await postJson(LOGIN_URL, login);
             await saveSession(data.token);
-            navigate("/home");
+            navigate("/dashboard");
         } catch (err) {
             setError(err.message);
         }
@@ -134,7 +134,7 @@ export default function AuthPage({ initialMode = "login" }) {
         try {
             const data = await postJson(SIGNUP_URL, signup);
             await saveSession(data.token);
-            navigate("/home");
+            navigate("/dashboard");
         } catch (err) {
             setError(err.message);
         }
