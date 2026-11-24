@@ -13,8 +13,19 @@ from .models import Profile
 # Every filed that signup must receive
 REQUIRED_FIELDS = [
     "email", "password", "first_name", "last_name",
-    "phone", "city", "state",
+    "city", "state",
 ]
+
+# Optional resume links. Users can leave these blank.
+URL_FIELDS = ["linkedin_url", "github_url", "website_url"]
+
+
+def clean_url(value):
+    """'linkedin.com/in/me' -> 'https://linkedin.com/in/me'. Blank stays blank."""
+    value = str(value or "").strip()
+    if value and not value.lower().startswith(("http://", "https://")):
+        value = "https://" + value
+    return value
 
 class SignUp(APIView):
     authentication_classes = []
@@ -43,11 +54,12 @@ class SignUp(APIView):
         profile = Profile(
             first_name=str(request.data["first_name"]).strip(),
             last_name=str(request.data["last_name"]).strip(),
-            phone=str(request.data["phone"]).strip(),
+            phone=str(request.data.get("phone", "")).strip(),
             city=str(request.data["city"]).strip(),
             state=str(request.data["state"]).strip().upper(),
             branch=str(request.data.get("branch", "")).strip(),
             job_code_or_title=str(request.data.get("job_code_or_title", "")).strip(),
+            **{f: clean_url(request.data.get(f)) for f in URL_FIELDS},
         )
         try:    # try validating the profile before saving anything
             profile.full_clean(exclude=["user"])
@@ -77,8 +89,8 @@ class Login(APIView):
         token, _ = Token.objects.get_or_create(user=user)       # get this user token, or make one
         return Response({"token": token.key})                   # send token to REACT
     
-# the 7 fields a user can see & change    
-PROFILE_REQUIRED_FIELDS = ["first_name", "last_name", "phone", "city", "state"]
+# the fields a user can see & change    
+PROFILE_REQUIRED_FIELDS = ["first_name", "last_name", "city", "state"]
 def profile_data(user):
     profile = user.profile
     return {
@@ -90,6 +102,9 @@ def profile_data(user):
         "state": profile.state,
         "branch": profile.branch,
         "job_code_or_title": profile.job_code_or_title,
+        "linkedin_url": profile.linkedin_url,
+        "github_url": profile.github_url,
+        "website_url": profile.website_url,
     }
     
 class ProfileMe(APIView):
@@ -112,11 +127,14 @@ class ProfileMe(APIView):
         
         profile.first_name = str(request.data["first_name"]).strip()
         profile.last_name = str(request.data["last_name"]).strip()
-        profile.phone = str(request.data["phone"]).strip()
+        profile.phone = str(request.data.get("phone", "")).strip()
         profile.city = str(request.data["city"]).strip()
         profile.state = str(request.data["state"]).strip().upper()
         profile.branch = str(request.data.get("branch", "")).strip()
         profile.job_code_or_title = str(request.data.get("job_code_or_title", "")).strip()
+        for f in URL_FIELDS:
+            if f in request.data:       # only change links that were sent
+                setattr(profile, f, clean_url(request.data[f]))
         
         try:
             profile.full_clean()
