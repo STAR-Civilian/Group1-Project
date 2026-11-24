@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinLengthValidator
+from .validators import validate_starts_with_uppercase
+from .validators import validate_starts_with_uppercase, validate_city, validate_phone
 
 # Create your models here.
 class Profile(models.Model):
@@ -13,10 +16,10 @@ class Profile(models.Model):
     ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")     # OneToOneField each user has one profile
-    first_name = models.CharField(max_length= 50)
-    last_name = models.CharField(max_length=50)
-    phone = models.CharField(max_length=30)
-    city = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=50, validators=[validate_starts_with_uppercase])
+    last_name = models.CharField(max_length=50, validators=[validate_starts_with_uppercase, MinLengthValidator(2, message="Last name must be at least 2 letters.")],)   # at least 2 characters    
+    phone = models.CharField(max_length=30, validators=[validate_phone])
+    city = models.CharField(max_length=100, validators=[validate_city])
     state = models.CharField(max_length=2)
     branch = models.CharField(max_length=15, choices=BRANCH_CHOICE, blank=True)     # Choice gives dropdown its values 
     job_code_or_title = models.CharField(max_length=100, blank=True)
