@@ -107,6 +107,12 @@ export default function Experience() {
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const setType = (type) => setForm({ ...form, experience_type: type });
 
+  // Scroll to Education & training and put the cursor in its first field
+  function goToEducation() {
+    document.getElementById("education")?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById("credential_type")?.focus({ preventScroll: true });
+  }
+
   function resetForm() {
     localStorage.removeItem(DRAFT_KEY);
     setForm(EMPTY_FORM);
@@ -149,6 +155,8 @@ export default function Experience() {
         setPositions(sortPositions([created, ...positions]));
       }
       resetForm();
+      // Like a page refresh: back to the top, empty form, new job in the list
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       if (err.status === 401) navigate("/");
       else setError(err.message);
@@ -181,12 +189,16 @@ export default function Experience() {
       <AppHeader />
 
       <main className="exp-main">
-        <div className="exp-head">
-          <h1>Work experience</h1>
-          <p className="muted">
-            Add the jobs you've held, military or civilian. We use them to build your
-            resume and STAR interview answers.
-          </p>
+        <div className="exp-head exp-head--split">
+          <div>
+            <h1>Work experience</h1>
+            <p className="muted">
+              Add the jobs you've held, military or civilian. We use them to build your
+              resume and STAR interview answers.
+            </p>
+          </div>
+          <button type="button" className="btn btn-primary" onClick={goToEducation}>            Next:  Education &amp; training
+          </button>
         </div>
 
         <div className="exp-layout">
@@ -360,14 +372,6 @@ export default function Experience() {
           </section>
         </div>
 
-        <a href="#education" className="exp-next">
-          <span>Next: Education &amp; training</span>
-          <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 5v14M6 13l6 6 6-6" />
-          </svg>
-        </a>
-        
         <CredentialsSection />
       </main>
     </div>

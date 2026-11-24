@@ -258,6 +258,18 @@
   color: #a3261b;
 }
 
+/* page title on the left, jump button on the right */
+.exp-head--split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.exp-head--split > div {
+  flex: 1 1 320px;
+}
+
 .exp-form__actions {
   display: flex;
   flex-wrap: wrap;
