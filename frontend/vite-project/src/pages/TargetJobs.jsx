@@ -119,6 +119,7 @@ export default function TargetJobs() {
   // Keep picks between visits
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(targets));
+    window.dispatchEvent(new Event("progress-changed")); // update the timeline
   }, [targets]);
 
   // 1. Find the military job from Experience (most recent military position with a code)
