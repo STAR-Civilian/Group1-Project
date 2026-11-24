@@ -27,7 +27,7 @@ git checkout main && git pull origin main      # 6. back to fresh main
 git config --global user.name "<Your Name>"
 git config --global user.email "<your-github-email>"
 
-git clone https://github.com/Veteran-Transition/Group1-Project.git
+git clone https://github.com/STAR-Civilian/Group1-Project.git
 cd Group1-Project
 cp .env.example .env                # then fill in values
 ```
