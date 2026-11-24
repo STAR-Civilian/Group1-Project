@@ -1,0 +1,46 @@
+/* src/css-styling/StarPage.css */
+/* Builds on Experience.css (.exp, .exp-layout, .exp-form, .exp-card ...) */
+
+.star-side {
+  align-self: flex-start;
+}
+
+.star-parts {
+  margin: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.star-part dt {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.star-part dd {
+  margin: 2px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.star-tip {
+  margin-top: 16px !important;
+  padding: 10px 12px;
+  background: var(--tint);
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+.star-edit {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.star-note {
+  margin: 0;
+  font-size: 14px;
+}

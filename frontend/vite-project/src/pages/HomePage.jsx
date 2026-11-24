@@ -87,11 +87,6 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="home-footer">
-        <div className="home-footer__inner">
-          <span>STAR Civilian · Code Platoon Group 1</span>
-        </div>
-      </footer>
     </div>
   );
 }

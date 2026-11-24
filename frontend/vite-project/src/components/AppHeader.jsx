@@ -8,6 +8,8 @@ const LINKS = [
   { to: "/home", label: "Home" },
   { to: "/experience", label: "Experience" },
   { to: "/jobs", label: "Target jobs" },
+  { to: "/resume", label: "Resume" },
+  { to: "/star", label: "STAR answers" },
 ];
 
 export default function AppHeader() {
