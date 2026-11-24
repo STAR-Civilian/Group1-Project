@@ -51,27 +51,6 @@
 }
 
 /* ---------- progress steps ---------- */
-.db-steps {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-.db-step {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 18px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  color: var(--ink);
-  text-decoration: none;
-}
 .db-step:hover,
 .db-step:focus-visible {
   border-color: var(--navy);

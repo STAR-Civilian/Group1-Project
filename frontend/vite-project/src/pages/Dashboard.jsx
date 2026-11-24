@@ -89,7 +89,6 @@ export default function Dashboard() {
     : [];
 
   const next = steps.find((s) => !s.done);
-  const doneCount = steps.filter((s) => s.done).length;
 
   return (
     <div className="exp db">
@@ -123,27 +122,6 @@ export default function Dashboard() {
               )}
             </section>
 
-            {/* ---------- progress ---------- */}
-            <section aria-labelledby="prog-h">
-              <div className="db-section-head">
-                <h2 id="prog-h">Your progress</h2>
-                <span className="muted">{doneCount} of {steps.length} done</span>
-              </div>
-              <ol className="db-steps">
-                {steps.map((s) => (
-                  <li key={s.title}>
-                    <Link to={s.to} className={`db-step${s.done ? " is-done" : ""}`}>
-                      <span className="db-step__check" aria-hidden="true">{s.done ? "✓" : ""}</span>
-                      <span className="db-step__text">
-                        <strong>{s.title}</strong>
-                        <span className="muted">{s.detail}</span>
-                      </span>
-                      <span className="sr-only">{s.done ? "(done)" : "(not started)"}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            </section>
 
             {/* ---------- saved resumes ---------- */}
             <section aria-labelledby="res-h">
