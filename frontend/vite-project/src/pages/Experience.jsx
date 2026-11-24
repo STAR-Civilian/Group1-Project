@@ -190,50 +190,6 @@ export default function Experience() {
         </div>
 
         <div className="exp-layout">
-          {/* ---------- saved positions ---------- */}
-          <section className="exp-list" aria-labelledby="saved-h">
-            <h2 id="saved-h">Your positions</h2>
-
-            {loading ? (
-              <p className="muted">Loading…</p>
-            ) : positions.length === 0 ? (
-              <div className="exp-empty">No positions yet. Add your first one with the form.</div>
-            ) : (
-              <ul>
-                {positions.map((p) => (
-                  <li key={p.id} className={`exp-card${editingId === p.id ? " is-editing" : ""}`}>
-                    <div className="exp-card__top">
-                      <div>
-                        <span className={`tag tag--${p.experience_type}`}>
-                          {p.experience_type === "military" ? "Military" : "Civilian"}
-                        </span>
-                        <h3>{p.title}</h3>
-                        {details(p) && <p className="muted">{details(p)}</p>}
-                        <p className="muted">
-                          {formatDate(p.start_date)} – {formatDate(p.end_date)}
-                        </p>
-                      </div>
-                      <div className="exp-card__actions">
-                        <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(p)}>
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-outline btn-sm"
-                          onClick={() => handleDelete(p)}
-                          aria-label={`Delete ${p.title}`}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                    {p.duties && <p className="exp-card__duties">{p.duties}</p>}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
           {/* ---------- add / edit form ---------- */}
           <form className="exp-form" onSubmit={handleSave} aria-labelledby="form-h">
             <h2 id="form-h">{editingId ? "Edit position" : "Add a position"}</h2>
@@ -358,9 +314,53 @@ export default function Experience() {
               )}
             </div>
           </form>
+
+          {/* ---------- saved positions ---------- */}
+          <section className="exp-list" aria-labelledby="saved-h">
+            <h2 id="saved-h">Your positions</h2>
+
+            {loading ? (
+              <p className="muted">Loading…</p>
+            ) : positions.length === 0 ? (
+              <div className="exp-empty">No positions yet. Add your first one with the form.</div>
+            ) : (
+              <ul>
+                {positions.map((p) => (
+                  <li key={p.id} className={`exp-card${editingId === p.id ? " is-editing" : ""}`}>
+                    <div className="exp-card__top">
+                      <div>
+                        <span className={`tag tag--${p.experience_type}`}>
+                          {p.experience_type === "military" ? "Military" : "Civilian"}
+                        </span>
+                        <h3>{p.title}</h3>
+                        {details(p) && <p className="muted">{details(p)}</p>}
+                        <p className="muted">
+                          {formatDate(p.start_date)} – {formatDate(p.end_date)}
+                        </p>
+                      </div>
+                      <div className="exp-card__actions">
+                        <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(p)}>
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline btn-sm"
+                          onClick={() => handleDelete(p)}
+                          aria-label={`Delete ${p.title}`}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                    {p.duties && <p className="exp-card__duties">{p.duties}</p>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </div>
 
-                <a href="#education" className="exp-next">
+        <a href="#education" className="exp-next">
           <span>Next: Education &amp; training</span>
           <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
