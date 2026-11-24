@@ -1,0 +1,194 @@
+// src/pages/Dashboard.jsx
+// Progress at a glance: what's done, what's next, and quick links to saved resumes.
+//
+// Backend used:
+//   GET /api/history/positions/
+//   GET /api/history/credentials/
+//   GET /api/resumes/
+//   GET /api/resumes/:id/star-answers/   (one call per resume, to count answers)
+// Target jobs come from the Target jobs page (localStorage "targetJobs").
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import AppHeader from "../components/AppHeader";
+import { apiFetch } from "../api";
+import "../css-styling/Experience.css"; // shared page styles (.exp ...)
+import "../css-styling/Dashboard.css";
+
+function loadTargets() {
+  try {
+    return JSON.parse(localStorage.getItem("targetJobs") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const firstName = localStorage.getItem("first_name") || "there";
+  const [targets] = useState(loadTargets);
+  const [data, setData] = useState(null); // { positions, credentials, resumes, starCounts }
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    Promise.all([
+      apiFetch("/api/history/positions/"),
+      apiFetch("/api/history/credentials/"),
+      apiFetch("/api/resumes/"),
+    ])
+      .then(async ([positions, credentials, resumes]) => {
+        const lists = await Promise.all(
+          resumes.map((r) => apiFetch(`/api/resumes/${r.id}/star-answers/`))
+        );
+        const starCounts = Object.fromEntries(resumes.map((r, i) => [r.id, lists[i].length]));
+        setData({ positions, credentials, resumes, starCounts });
+      })
+      .catch((err) => (err.status === 401 ? navigate("/") : setError(err.message)));
+  }, [navigate]);
+
+  if (error) {
+    return (
+      <div className="exp">
+        <AppHeader />
+        <main className="exp-main">
+          <p className="form-error" role="alert">{error}</p>
+        </main>
+      </div>
+    );
+  }
+
+  const totalStar = data ? Object.values(data.starCounts).reduce((a, b) => a + b, 0) : 0;
+
+  const steps = data
+    ? [
+        {
+          title: "Experience",
+          done: data.positions.length > 0,
+          detail: `${plural(data.positions.length, "position")} · ${plural(
+            data.credentials.length,
+            "credential"
+          )}`,
+          to: "/experience",
+          cta: "Add experience",
+        },
+        {
+          title: "Target jobs",
+          done: targets.length > 0,
+          detail: plural(targets.length, "job") + " picked",
+          to: "/jobs",
+          cta: "Pick target jobs",
+        },
+        {
+          title: "Resume",
+          done: data.resumes.length > 0,
+          detail: plural(data.resumes.length, "resume") + " saved",
+          to: "/resume",
+          cta: "Generate a resume",
+        },
+        {
+          title: "STAR answers",
+          done: totalStar > 0,
+          detail: plural(totalStar, "answer") + " ready",
+          to: "/star",
+          cta: "Get STAR answers",
+        },
+      ]
+    : [];
+
+  const next = steps.find((s) => !s.done);
+  const doneCount = steps.filter((s) => s.done).length;
+
+  return (
+    <div className="exp db">
+      <AppHeader />
+
+      <main className="exp-main">
+        <div className="exp-head">
+          <h1>Hi, {firstName}</h1>
+          <p className="muted">Here's where you are and what to do next.</p>
+        </div>
+
+        {!data ? (
+          <p className="muted">Loading…</p>
+        ) : (
+          <>
+            {/* ---------- next step ---------- */}
+            <section className="db-next" aria-labelledby="next-h">
+              {next ? (
+                <>
+                  <div>
+                    <p className="db-next__label" id="next-h">Next step</p>
+                    <h2>{next.cta}</h2>
+                  </div>
+                  <Link to={next.to} className="btn btn-light">Go</Link>
+                </>
+              ) : (
+                <div>
+                  <p className="db-next__label" id="next-h">All steps done</p>
+                  <h2>Practice your STAR answers out loud before the interview.</h2>
+                </div>
+              )}
+            </section>
+
+            {/* ---------- progress ---------- */}
+            <section aria-labelledby="prog-h">
+              <div className="db-section-head">
+                <h2 id="prog-h">Your progress</h2>
+                <span className="muted">{doneCount} of {steps.length} done</span>
+              </div>
+              <ol className="db-steps">
+                {steps.map((s) => (
+                  <li key={s.title}>
+                    <Link to={s.to} className={`db-step${s.done ? " is-done" : ""}`}>
+                      <span className="db-step__check" aria-hidden="true">{s.done ? "✓" : ""}</span>
+                      <span className="db-step__text">
+                        <strong>{s.title}</strong>
+                        <span className="muted">{s.detail}</span>
+                      </span>
+                      <span className="sr-only">{s.done ? "(done)" : "(not started)"}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+            </section>
+
+            {/* ---------- saved resumes ---------- */}
+            <section aria-labelledby="res-h">
+              <div className="db-section-head">
+                <h2 id="res-h">Your resumes</h2>
+              </div>
+              {data.resumes.length === 0 ? (
+                <div className="exp-empty">
+                  No resumes yet. <Link to="/resume">Generate your first one</Link>.
+                </div>
+              ) : (
+                <ul className="db-resumes">
+                  {data.resumes.map((r) => (
+                    <li key={r.id} className="exp-card db-resume">
+                      <div>
+                        <h3>{r.target_job_title}</h3>
+                        <p className="muted">
+                          Updated {new Date(r.updated_at).toLocaleDateString()} ·{" "}
+                          {plural(data.starCounts[r.id] || 0, "STAR answer")}
+                        </p>
+                      </div>
+                      <div className="exp-card__actions">
+                        <Link to={`/resume?id=${r.id}`} className="btn btn-outline btn-sm">
+                          Resume
+                        </Link>
+                        <Link to={`/star?resume=${r.id}`} className="btn btn-outline btn-sm">
+                          STAR answers
+                        </Link>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}
