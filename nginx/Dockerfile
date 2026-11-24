@@ -2,11 +2,11 @@ FROM node:22-slim AS build
 
 WORKDIR /app
 
-COPY frontend/package*.json ./
+COPY frontend/vite-project/package*.json ./
 
 RUN npm install
 
-COPY frontend/ ./
+COPY frontend/vite-project/ ./
 
 ARG VITE_API_URL=""
 ENV VITE_API_URL=$VITE_API_URL

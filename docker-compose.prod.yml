@@ -34,7 +34,7 @@ services:
       context: .
       dockerfile: nginx/Dockerfile
       args:
-        VITE_API_URL: ""
+        VITE_API_URL: "https://100-57-237-178.sslip.io"
     image: sgardner18/star-civilian-web
     restart: unless-stopped
     expose:
