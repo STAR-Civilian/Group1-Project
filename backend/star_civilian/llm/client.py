@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from pathlib import Path
 
 from django.conf import settings
@@ -12,7 +13,16 @@ class LLMError(Exception):
     """Raised when the model's answer can't be used."""
 
 
-def call_llm(system, user, mock_file, max_tokens=2000):
+def resume_model():
+    """The model that writes resumes.
+
+    Set LLM_RESUME_MODEL in the server's .env to use a stronger model for
+    resumes only. If it is not set, resumes use the same model as everything else.
+    """
+    return os.environ.get("LLM_RESUME_MODEL") or settings.LLM_MODEL
+
+
+def call_llm(system, user, mock_file, max_tokens=2000, model=None):
     """Send one request to Claude and return the reply text.
 
     With USE_MOCK_LLM on, return a saved sample from mocks/ instead,
@@ -25,7 +35,7 @@ def call_llm(system, user, mock_file, max_tokens=2000):
 
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
     response = client.messages.create(
-        model=settings.LLM_MODEL,
+        model=model or settings.LLM_MODEL,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": user}],
@@ -48,7 +58,7 @@ def _parse_json(text):
     return json.loads(text)
 
 
-def call_llm_json(system, user, mock_file, validate, max_tokens=2000):
+def call_llm_json(system, user, mock_file, validate, max_tokens=2000, model=None):
     """Like call_llm, but returns parsed JSON. Retries once if the reply is bad.
 
     `validate` is a function that raises ValueError if the data is wrong.
@@ -56,7 +66,7 @@ def call_llm_json(system, user, mock_file, validate, max_tokens=2000):
     prompt = user
     for attempt in (1, 2):
         try:
-            text = call_llm(system, prompt, mock_file, max_tokens)
+            text = call_llm(system, prompt, mock_file, max_tokens, model)
         except Exception:
             # API errors (bad key, timeout, rate limit, overloaded) land here.
             logger.exception("LLM API call failed for %s", mock_file)
