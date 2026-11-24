@@ -1,9 +1,11 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .onet import get_onet_data
-from .models import Occupation, MilitaryJobKeyword, JobMatch
+from .models import Occupation, MilitaryJobKeyword, JobMatch, TargetJob
+from .details import load_details
 
 
 def save_occupation(occupation_data):
@@ -270,3 +272,112 @@ def job_matches(request):
             {"detail": "Unable to find matching jobs."},
             status=502
         )
+
+def _number(value):
+    """Turn a stored Decimal into a plain number for the JSON reply."""
+    return float(value) if value is not None else None
+
+
+def _target_job_data(target):
+    occupation = target.occupation
+    return {
+        "id": target.id,
+        "onet_code": occupation.onet_code,
+        "title": occupation.title,
+        "description": occupation.description,
+        "salary_median": _number(occupation.salary_median),
+        "created_at": target.created_at,
+    }
+
+
+# 4. Target jobs the user has picked (saved, so they follow the user to any browser)
+@api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def target_jobs(request):
+    """
+    GET: the logged-in user's target jobs.
+    POST: add one. Adding the same job again returns the existing one.
+    """
+
+    if request.method == "POST":
+        onet_code = str(request.data.get("onet_code") or "").strip()
+        title = str(request.data.get("title") or "").strip()
+
+        if not onet_code or not title:
+            return Response(
+                {"detail": "onet_code and title are required."},
+                status=400
+            )
+
+        if len(onet_code) > 20 or len(title) > 255:
+            return Response(
+                {"detail": "onet_code or title is too long."},
+                status=400
+            )
+
+        occupation, _ = Occupation.objects.get_or_create(
+            onet_code=onet_code,
+            defaults={"title": title}
+        )
+        load_details([occupation])
+
+        target, created = TargetJob.objects.get_or_create(
+            user=request.user,
+            occupation=occupation
+        )
+        return Response(
+            _target_job_data(target),
+            status=201 if created else 200
+        )
+
+    targets = TargetJob.objects.filter(
+        user=request.user
+    ).select_related("occupation")
+    return Response([_target_job_data(t) for t in targets])
+
+
+# 5. Remove one target job
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def target_job_detail(request, target_id):
+    """Remove one of the logged-in user's target jobs."""
+
+    # Only the owner can remove it. Anyone else gets a 404.
+    target = get_object_or_404(TargetJob, id=target_id, user=request.user)
+    target.delete()
+    return Response(status=204)
+
+
+# 6. Description and salary for a list of jobs
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def occupation_details(request):
+    """
+    Returns what each job is about and its median salary.
+
+    Example: /occupation-details/?codes=15-1299.09,29-2042.00
+    Details come from O*NET the first time and are saved after that.
+    """
+
+    codes = [
+        code.strip()
+        for code in request.GET.get("codes", "").split(",")
+        if code.strip()
+    ][:20]
+
+    if not codes:
+        return Response(
+            {"detail": "Please provide codes, such as ?codes=15-1299.09."},
+            status=400
+        )
+
+    occupations = list(Occupation.objects.filter(onet_code__in=codes))
+    load_details(occupations)
+
+    return Response({
+        o.onet_code: {
+            "description": o.description,
+            "salary_median": _number(o.salary_median),
+        }
+        for o in occupations
+    })
