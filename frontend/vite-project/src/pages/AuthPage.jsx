@@ -199,17 +199,17 @@ export default function AuthPage({ initialMode = "login" }) {
                         </div>
 
                         <div className="field-row">
-                            <Field id="su-first" label="First name" name="first_name"
+                            <Field id="su-first" label="Legal first name" name="first_name"
                                 value={signup.first_name} onChange={onSignupChange} required />
-                            <Field id="su-last" label="Last name" name="last_name"
+                            <Field id="su-last" label="Legal last name" name="last_name"
                                 value={signup.last_name} onChange={onSignupChange} required />
                         </div>
 
                         <Field id="su-email" label="Email" name="email" type="email"
                             value={signup.email} onChange={onSignupChange} required />
 
-                        <Field id="su-phone" label="Phone" name="phone" type="tel"
-                            value={signup.phone} onChange={onSignupChange} required />
+                        <Field id="su-phone" label="Phone (optional)" name="phone" type="tel"
+                            value={signup.phone} onChange={onSignupChange} />
 
                         <div className="field-row">
                             <Field id="su-city" label="City" name="city"

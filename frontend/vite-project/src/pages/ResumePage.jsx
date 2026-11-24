@@ -3,6 +3,7 @@
 //
 // Backend used:
 //   GET    /api/profile/me/                 -> name + contact for the resume header
+//   PUT    /api/profile/me/                 -> edit contact info (ContactInfo.jsx)
 //   GET    /api/history/positions/          -> positions to include
 //   POST   /api/llm/generate-resume/        -> write a new resume (saved automatically)
 //   GET    /api/resumes/                    -> saved resumes (list)
@@ -15,6 +16,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
+import ContactInfo from "../components/ContactInfo";
 import { apiFetch } from "../api";
 import "../css-styling/Experience.css"; // shared page styles (.exp ...)
 import "../css-styling/ResumePage.css";
@@ -73,11 +75,26 @@ function fromDraft(d) {
 
 const EMPTY_JOB = { title: "", organization: "", dates: "", bullets: "" };
 
+// "https://www.linkedin.com/in/me/" -> "linkedin.com/in/me"
+const shortUrl = (url) => url.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, "");
+
+// Everything under the name: place, email, phone (optional), links (optional)
+function contactLine(p) {
+  if (!p) return "";
+  return [
+    [p.city, p.state].filter(Boolean).join(", "),
+    p.email,
+    p.phone,
+    ...[p.linkedin_url, p.github_url, p.website_url].filter(Boolean).map(shortUrl),
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+
 /* ---------- printable version (only shows when printing) ---------- */
 function PrintableResume({ profile, content }) {
   const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
-  const place = [profile?.city, profile?.state].filter(Boolean).join(", ");
-  const contact = [place, profile?.email, profile?.phone].filter(Boolean).join(" · ");
+  const contact = contactLine(profile);
   return (
     <div className="rs-print">
       <h1>{name}</h1>
@@ -274,13 +291,7 @@ export default function ResumePage() {
     setPosIds(posIds.includes(id) ? posIds.filter((x) => x !== id) : [...posIds, id]);
   const showing = draft && resume && String(resume.id) === openId;
   const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
-  const contact = [
-    [profile?.city, profile?.state].filter(Boolean).join(", "),
-    profile?.email,
-    profile?.phone,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const contact = contactLine(profile);
 
   return (
     <div className="exp rs">
@@ -299,6 +310,10 @@ export default function ResumePage() {
         <div className="exp-layout">
           {/* ---------- left: generate + saved list ---------- */}
           <aside className="rs-side">
+            {profile && (
+              <ContactInfo profile={profile} onSaved={setProfile} onError={handleErr} />
+            )}
+
             <form className="exp-form" onSubmit={handleGenerate} aria-labelledby="gen-h">
               <h2 id="gen-h">Generate a resume</h2>
 
