@@ -1,0 +1,136 @@
+/* src/css-styling/Dashboard.css */
+/* Builds on Experience.css (.exp, .exp-card, .btn ...) */
+
+.db h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+/* ---------- next step banner ---------- */
+.db-next {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px;
+  background: var(--navy);
+  color: #fff;
+  border-radius: 8px;
+}
+.db-next h2 {
+  font-size: 22px;
+}
+.db-next__label {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #dfe4ee;
+}
+.db-next .btn-light {
+  background: #fff;
+  color: var(--navy);
+  border: 1px solid #fff;
+  min-width: 96px;
+  justify-content: center;
+}
+.db-next .btn-light:hover {
+  background: var(--tint);
+}
+
+/* ---------- section headings ---------- */
+.db-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* ---------- progress steps ---------- */
+.db-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+.db-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.db-step:hover,
+.db-step:focus-visible {
+  border-color: var(--navy);
+}
+.db-step__check {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--input-line);
+  border-radius: 50%;
+  font-weight: 700;
+}
+.db-step.is-done .db-step__check {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.db-step__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+}
+.db-step__text strong {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* ---------- resumes ---------- */
+.db-resumes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.db-resume {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.db-resume h3 {
+  margin: 0 0 4px;
+}
+
+/* screen-reader-only text */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

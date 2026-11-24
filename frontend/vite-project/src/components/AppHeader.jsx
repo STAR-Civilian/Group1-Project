@@ -6,6 +6,7 @@ import "../css-styling/AppHeader.css";
 
 const LINKS = [
   { to: "/home", label: "Home" },
+  { to: "/dashboard", label: "Dashboard" },
   { to: "/experience", label: "Experience" },
   { to: "/jobs", label: "Target jobs" },
   { to: "/resume", label: "Resume" },
