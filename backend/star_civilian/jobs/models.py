@@ -158,4 +158,33 @@ class JobMatch(models.Model):
         return f"{self.user} - {self.occupation.title}"
 
 
+class TargetJob(models.Model):
+    """
+    A civilian job a user has chosen as a target.
+    """
 
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="target_jobs"
+    )
+
+    occupation = models.ForeignKey(
+        Occupation,
+        on_delete=models.CASCADE,
+        related_name="target_users"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "occupation"],
+                name="unique_user_target_occupation"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.user} - {self.occupation.title}"
