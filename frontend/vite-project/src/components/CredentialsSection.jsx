@@ -106,7 +106,7 @@ export default function CredentialsSection() {
     }
   }
 
- return (
+  return (
     <section id="education" className="exp-section" aria-labelledby="edu-h">
       <div className="exp-head">
         <h2 id="edu-h">Education &amp; training</h2>
@@ -114,49 +114,6 @@ export default function CredentialsSection() {
       </div>
 
       <div className="exp-layout">
-        {/* ---------- saved items ---------- */}
-        <div className="exp-list">
-          {loading ? (
-            <p className="muted">Loading…</p>
-          ) : items.length === 0 ? (
-            <div className="exp-empty">Nothing added yet. Use the form to add your first one.</div>
-          ) : (
-            <ul>
-              {items.map((c) => (
-                <li key={c.id} className={`exp-card${editingId === c.id ? " is-editing" : ""}`}>
-                  <div className="exp-card__top">
-                    <div>
-                      <span className={`tag tag--${c.credential_type}`}>
-                        {typeInfo(c.credential_type).label}
-                      </span>
-                      <h3>{c.name}</h3>
-                      {(c.issuer || c.date_earned) && (
-                        <p className="muted">
-                          {[c.issuer, formatDate(c.date_earned)].filter(Boolean).join(" · ")}
-                        </p>
-                      )}
-                    </div>
-                    <div className="exp-card__actions">
-                      <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(c)}>
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-sm"
-                        onClick={() => handleDelete(c)}
-                        aria-label={`Delete ${c.name}`}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  {c.description && <p className="exp-card__duties">{c.description}</p>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
         {/* ---------- add / edit form ---------- */}
         <form className="exp-form" onSubmit={handleSave} aria-labelledby="edu-form-h">
           <h2 id="edu-form-h">{editingId ? "Edit item" : "Add education or training"}</h2>
@@ -211,6 +168,49 @@ export default function CredentialsSection() {
             )}
           </div>
         </form>
+
+        {/* ---------- saved items ---------- */}
+        <div className="exp-list">
+          {loading ? (
+            <p className="muted">Loading…</p>
+          ) : items.length === 0 ? (
+            <div className="exp-empty">Nothing added yet. Use the form to add your first one.</div>
+          ) : (
+            <ul>
+              {items.map((c) => (
+                <li key={c.id} className={`exp-card${editingId === c.id ? " is-editing" : ""}`}>
+                  <div className="exp-card__top">
+                    <div>
+                      <span className={`tag tag--${c.credential_type}`}>
+                        {typeInfo(c.credential_type).label}
+                      </span>
+                      <h3>{c.name}</h3>
+                      {(c.issuer || c.date_earned) && (
+                        <p className="muted">
+                          {[c.issuer, formatDate(c.date_earned)].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                    </div>
+                    <div className="exp-card__actions">
+                      <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(c)}>
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => handleDelete(c)}
+                        aria-label={`Delete ${c.name}`}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                  {c.description && <p className="exp-card__duties">{c.description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </section>
   );

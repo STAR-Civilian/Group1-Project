@@ -7,20 +7,26 @@ import "../css-styling/HomePage.css";
 const STEPS = [
   {
     step: "Step 1",
-    title: "Enter your military job",
-    text: "Look up your MOS / rating / AFSC and see the skills it maps to.",
+    title: "Add your experience",
+    text: "Enter your military job and any civilian work, plus education, training and certifications.",
     to: "/experience",
   },
   {
     step: "Step 2",
-    title: "Select your target job",
-    text: "Browse matching civilian occupations from O*NET.",
+    title: "Pick your target jobs",
+    text: "See civilian jobs from O*NET that match your military job, and save the ones you want.",
     to: "/jobs",
   },
   {
     step: "Step 3",
-    title: "Get STAR interview responses",
-    text: "Turn your experience and resume into answers for behavioral interview questions.",
+    title: "Generate your resume",
+    text: "Get a civilian resume written for one of your target jobs, then edit it however you like.",
+    to: "/resume",
+  },
+  {
+    step: "Step 4",
+    title: "Get STAR interview answers",
+    text: "Turn your resume into example answers for behavioral interview questions.",
     to: "/star",
   },
 ];
