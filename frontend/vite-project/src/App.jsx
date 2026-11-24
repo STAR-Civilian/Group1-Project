@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import Experience from './pages/Experience'
 import ResumePage from './pages/ResumePage'
 import TargetJobs from './pages/TargetJobs'
+import StarPage from './pages/StarPage'
 
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/experience" element={<Experience />} />
         <Route path="/jobs" element={<TargetJobs />} />
         <Route path="/resume" element={<ResumePage />} />
+        <Route path="/star" element={<StarPage />} />
       </Routes>
       <AppFooter />
     </BrowserRouter>
