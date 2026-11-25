@@ -22,11 +22,13 @@ class Profile(models.Model):
     city = models.CharField(max_length=100, validators=[validate_city])
     state = models.CharField(max_length=2)
     branch = models.CharField(max_length=15, choices=BRANCH_CHOICE, blank=True)     # Choice gives dropdown its values 
+    rank = models.CharField(max_length=50, blank=True)     # optional, e.g. "Sergeant (E-5)"
     job_code_or_title = models.CharField(max_length=100, blank=True)
     # optional links for the resume header
     linkedin_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     website_url = models.URLField(blank=True)
+    website_title = models.CharField(max_length=60, blank=True)    # e.g. "Portfolio"; shown instead of the URL
     
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

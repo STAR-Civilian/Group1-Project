@@ -58,8 +58,10 @@ class SignUp(APIView):
             city=str(request.data["city"]).strip(),
             state=str(request.data["state"]).strip().upper(),
             branch=str(request.data.get("branch", "")).strip(),
+            rank=str(request.data.get("rank", "")).strip(),
             job_code_or_title=str(request.data.get("job_code_or_title", "")).strip(),
             **{f: clean_url(request.data.get(f)) for f in URL_FIELDS},
+            website_title=str(request.data.get("website_title", "")).strip(),
         )
         try:    # try validating the profile before saving anything
             profile.full_clean(exclude=["user"])
@@ -101,10 +103,12 @@ def profile_data(user):
         "city": profile.city,
         "state": profile.state,
         "branch": profile.branch,
+        "rank": profile.rank,
         "job_code_or_title": profile.job_code_or_title,
         "linkedin_url": profile.linkedin_url,
         "github_url": profile.github_url,
         "website_url": profile.website_url,
+        "website_title": profile.website_title,
     }
     
 class ProfileMe(APIView):
@@ -131,10 +135,13 @@ class ProfileMe(APIView):
         profile.city = str(request.data["city"]).strip()
         profile.state = str(request.data["state"]).strip().upper()
         profile.branch = str(request.data.get("branch", "")).strip()
+        profile.rank = str(request.data.get("rank", "")).strip()
         profile.job_code_or_title = str(request.data.get("job_code_or_title", "")).strip()
         for f in URL_FIELDS:
             if f in request.data:       # only change links that were sent
                 setattr(profile, f, clean_url(request.data[f]))
+        if "website_title" in request.data:
+            profile.website_title = str(request.data["website_title"]).strip()
         
         try:
             profile.full_clean()
