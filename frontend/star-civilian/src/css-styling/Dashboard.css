@@ -113,3 +113,48 @@
   white-space: nowrap;
   border: 0;
 }
+/* ---------- profile ---------- */
+.db-profile h3 {
+  margin: 0 0 4px;
+}
+.db-profile__info {
+  margin: 16px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 24px;
+}
+.db-profile__info dt {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--navy);
+}
+.db-profile__info dd {
+  margin: 2px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+.db-profile__info a {
+  color: var(--navy);
+}
+.db-profile__note {
+  margin: 12px 0 0;
+  font-size: 14px;
+}
+.db-profile__foot {
+  margin-top: 24px;
+}
+.db-profile-form {
+  flex: none;
+}
+.db-profile-form input[readonly] {
+  background: #f4f5f9;
+  color: var(--muted);
+}
+.req {
+  color: #b3261e;
+  font-weight: 700;
+}

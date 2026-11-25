@@ -267,38 +267,9 @@
     gap: 12px;
   }
 }
-/* ---------- contact info (collapsible) ---------- */
-.rs-contact {
-  flex: none;
-  display: block;
-}
-.rs-contact summary {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  cursor: pointer;
-  list-style: none;
-}
-.rs-contact summary::-webkit-details-marker {
-  display: none;
-}
-.rs-contact summary h2::after {
-  content: " ▸";
-  color: var(--muted);
-}
-.rs-contact[open] summary h2::after {
-  content: " ▾";
-}
-.rs-contact summary span {
-  font-size: 14px;
-}
-.rs-contact__form {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.rs-contact input[readonly] {
-  background: #f4f5f9;
-  color: var(--muted);
+
+/* links in the resume header */
+.rs-contact-line a,
+.rs-print__contact a {
+  color: inherit;
 }

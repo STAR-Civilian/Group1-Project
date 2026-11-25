@@ -140,7 +140,7 @@ Full CRUD: Position, Credential, TargetJob, Resume, StarAnswer.
 │   │   └── config/          Django settings + URLs
 │   ├── Dockerfile
 │   └── requirements.txt
-├── frontend/vite-project/   React app (pages, components, hooks, css-styling)
+├── frontend/star-civilian/   React app (pages, components, hooks, css-styling)
 ├── nginx/                   serves the React build, proxies /api/ to Django
 ├── caddy/                   HTTPS in production
 ├── docs/                    screenshots for the README
@@ -186,7 +186,7 @@ This builds the containers and runs migrations. The API runs at http://localhost
 
 4. **Start the frontend** (in a second terminal)
 ```bash
-cd frontend/vite-project
+cd frontend/star-civilian
 npm install
 npm run dev
 ```
