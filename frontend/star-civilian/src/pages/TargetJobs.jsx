@@ -17,6 +17,9 @@ import { apiFetch } from "../api";
 import "../css-styling/Experience.css"; // shared page styles (.exp ...)
 import "../css-styling/TargetJobs.css";
 
+const COMPARE_LABEL = "Compare my experience";
+const COMPARED_LABEL = "View comparison";
+
 const STORAGE_KEY = "targetJobs";
 const MAX_MATCHES = 20;
 
@@ -350,50 +353,44 @@ export default function TargetJobs() {
     setModalOpen(true);
   }
 
+  const serviceTitle = (matchTitle || milJob?.title || "").replace(/\s*\(.*\)\s*$/, "");
+  const branchName = milJob ? BRANCH_LABELS[milJob.branch] : "";
+
   return (
     <div className="exp tj">
       <AppHeader />
 
       <main className="exp-main">
-        <div className="exp-head">
+                         <div className="exp-head">
           <h1>Target jobs</h1>
-          <p className="muted">
-            Pick the civilian jobs you want. Your resume and STAR answers are tailored to these.
+          <p className="tj-lead">
+            {!loadingMil && milJob && milJob.mos_code && (
+              <>
+                Your {branchName ? `${branchName} ` : "military "}job code,{" "}
+                <strong>{milJob.mos_code}</strong>, is <strong>{serviceTitle}</strong>.{" "}
+              </>
+            )}
+            Much of what you did carries over to civilian work, often to jobs you wouldn't expect.
+          </p>
+          <p className="muted tj-intro">
+            <strong className="tj-key">Match your military work.</strong> We show civilian jobs
+            that line up with what you did.
+            <br />
+            <strong className="tj-key">Try something new.</strong> Search any job to see how your
+            experience carries over.
+          </p>
+          <p className="muted tj-intro">
+            We tailor your resume and interview answers to the ones you choose. Comparing is
+            optional.{" "}
+            <Link to="/experience">
+              {!loadingMil && milJob ? "Update my military job" : "Add my military job"}
+            </Link>
           </p>
         </div>
 
         {error && <p className="form-error" role="alert">{error}</p>}
 
-        {/* ---------- military job ---------- */}
-        <section className="tj-mil" aria-labelledby="mil-h">
-          {loadingMil ? (
-            <p className="muted">Loading your military job…</p>
-          ) : milJob ? (
-            <>
-              <div>
-                <span className="tj-label" id="mil-h">YOUR MILITARY JOB</span>
-                <h2>
-                  {milJob.mos_code} · {matchTitle || milJob.title}
-                </h2>
-                <p className="muted">
-                  {[BRANCH_LABELS[milJob.branch], milJob.rank, milJob.unit].filter(Boolean).join(" · ")}
-                </p>
-              </div>
-              <Link to="/experience" className="btn btn-outline btn-sm">Edit</Link>
-            </>
-          ) : (
-            <>
-              <div>
-                <span className="tj-label" id="mil-h">YOUR MILITARY JOB</span>
-                <h2>Not added yet</h2>
-                <p className="muted">
-                  Add a military position with your job code on the Experience page to see matching jobs.
-                </p>
-              </div>
-              <Link to="/experience" className="btn btn-primary">Go to Experience</Link>
-            </>
-          )}
-        </section>
+       
 
         {/* ---------- picked target jobs ---------- */}
         <section className="tj-targets" aria-labelledby="targets-h">
@@ -418,13 +415,18 @@ export default function TargetJobs() {
                 <li key={t.code} className="exp-card">
                   <div className="exp-card__top">
                     <div>
-                      <h3>{t.title}</h3>
-                      <JobDetails description={t.description} salary={t.salaryMedian} />
-                      {hasSaved && fit.createdAt && (
-                        <p className="muted">
-                          Fit saved {new Date(fit.createdAt).toLocaleDateString()}
-                        </p>
-                      )}
+                      <div className="tj-title-row">
+  <h3>{t.title}</h3>
+  {!hasSaved && (
+    <span className="tj-chip">{isLoading ? "Comparing…" : "Not compared yet"}</span>
+  )}
+</div>
+<JobDetails description={t.description} salary={t.salaryMedian} />
+{hasSaved && fit.createdAt && (
+  <p className="muted">
+    Comparison saved {new Date(fit.createdAt).toLocaleDateString()}
+  </p>
+)}
                     </div>
                     <div className="exp-card__actions">
                       {hasSaved ? (
@@ -435,7 +437,7 @@ export default function TargetJobs() {
                             onClick={() => toggleFit(t.code)}
                             aria-expanded={isOpen}
                           >
-                            {isOpen ? "Hide my fit" : "View my fit"}
+                            {isOpen ? "Hide comparison" : COMPARED_LABEL}
                           </button>
                           <button
                             type="button"
@@ -444,7 +446,7 @@ export default function TargetJobs() {
                             disabled={isLoading}
                             title="Re-checks using your latest experience"
                           >
-                            Refresh my fit
+                            Update comparison
                           </button>
                         </>
                       ) : (
@@ -454,7 +456,7 @@ export default function TargetJobs() {
                           onClick={() => checkFit(t)}
                           disabled={isLoading}
                         >
-                          How do I fit?
+                          {COMPARE_LABEL}
                         </button>
                       )}
                       <button
@@ -615,3 +617,4 @@ export default function TargetJobs() {
     </div>
   );
 }
+
