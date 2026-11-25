@@ -17,6 +17,17 @@ DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
+# Email. In development the reset email is printed in the backend log, and nothing is really sent.
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@example.com")
+
+# Where the reset link in the email sends the person (the frontend)
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+# The frontend page the email link opens. The link adds /<uid>/<token> to this path.
+FRONTEND_RESET_PATH = os.getenv("FRONTEND_RESET_PATH", "/reset-password")
+
+# A reset link stops working after 1 hour
+PASSWORD_RESET_TIMEOUT = 60 * 60
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -102,12 +113,25 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+if os.getenv("EMAIL_HOST"):
+    MAILERS = {
+        'default': {
+            'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+            'OPTIONS': {
+                'host': os.getenv("EMAIL_HOST"),
+                'port': int(os.getenv("EMAIL_PORT") or "587"),
+                'use_tls': os.getenv("EMAIL_USE_TLS", "true").lower() == "true",
+                'username': os.getenv("EMAIL_HOST_USER", ""),
+                'password': os.getenv("EMAIL_HOST_PASSWORD", ""),
+            },
+        },
+    }
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        },
+    }
 
 
 # --- Django REST Framework ---

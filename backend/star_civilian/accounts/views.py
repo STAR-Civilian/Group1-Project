@@ -3,12 +3,19 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Profile
+
+import logging
 
 # Every filed that signup must receive
 REQUIRED_FIELDS = [
@@ -63,7 +70,7 @@ class SignUp(APIView):
             **{f: clean_url(request.data.get(f)) for f in URL_FIELDS},
             website_title=str(request.data.get("website_title", "")).strip(),
         )
-        try:    # try validating the profile before saving anything
+        try:                                      # try validating the profile before saving anything
             profile.full_clean(exclude=["user"])
         except ValidationError as err:
             return Response({"detail": err.message_dict}, status=400)
@@ -76,7 +83,7 @@ class SignUp(APIView):
     
 class Login(APIView):
     authentication_classes = []
-    permission_classes = [AllowAny]         #anyone can try to log in
+    permission_classes = [AllowAny]                     #anyone can try to log in
     
     def post(self, request):
         email = str(request.data.get("email", "")).strip().lower()
@@ -84,12 +91,12 @@ class Login(APIView):
         if not email or not password:
             return Response({"detail": "Email and password are required"}, status=400)
 
-        user = authenticate(username=email, password=password)  # find a user that matches both
-        if user is None:                                        # no match found
+        user = authenticate(username=email, password=password)                  # find a user that matches both
+        if user is None:                                                        # no match found
             return Response({"detail": "Wrong email or password"}, status=400)
 
-        token, _ = Token.objects.get_or_create(user=user)       # get this user token, or make one
-        return Response({"token": token.key})                   # send token to REACT
+        token, _ = Token.objects.get_or_create(user=user)                       # get this user token, or make one
+        return Response({"token": token.key})                                   # send token to REACT
     
 # the fields a user can see & change    
 PROFILE_REQUIRED_FIELDS = ["first_name", "last_name", "city", "state"]
@@ -138,7 +145,7 @@ class ProfileMe(APIView):
         profile.rank = str(request.data.get("rank", "")).strip()
         profile.job_code_or_title = str(request.data.get("job_code_or_title", "")).strip()
         for f in URL_FIELDS:
-            if f in request.data:       # only change links that were sent
+            if f in request.data:                               # only change links that were sent
                 setattr(profile, f, clean_url(request.data[f]))
         if "website_title" in request.data:
             profile.website_title = str(request.data["website_title"]).strip()
@@ -150,3 +157,62 @@ class ProfileMe(APIView):
         
         profile.save()
         return Response(profile_data(request.user))
+    
+logger = logging.getLogger(__name__)
+
+class PasswordResetRequest(APIView):
+    """POST {email}: email the person a reset link."""
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = str(request.data.get("email", "")).strip().lower()
+        if not email:
+            return Response({"detail": "Email is required"}, status=400)
+    
+        user = User.objects.filter(username=email).first()
+        if user is not None:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))                       # the user's id, made safe for a link
+            token = default_token_generator.make_token(user)                        # one-time code tied to the current password
+            link = f"{settings.FRONTEND_URL}{settings.FRONTEND_RESET_PATH}/{uid}/{token}"
+            try:
+                send_mail(
+                    subject="Reset your password", 
+                    message=f"Use this link to choose a new password (it expires in 1 hour):\n\n{link}\n\nIf you did not ask for this, you can ignore this email.",
+                    from_email=None,                                                # uses DEFAULT_FROM_EMAIL
+                    recipient_list=[user.email],
+                )
+            except Exception:
+                logger.exception("Could not send password reset email")
+                
+        # Same answr whether or not the email has an account, so nobody can use this to find out who is registered
+        return Response({"detail": "If that email has an account, a reset link has been sent."})
+    
+class PasswordResetConfirm(APIView):
+    """POST {uid, token, new_password}: set the new password."""
+    authentication_classes = []
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        uid = str(request.data.get("uid", ""))
+        token = str(request.data.get("token", ""))
+        new_password = str(request.data.get("new_password", ""))
+        if not uid or not token or not new_password:
+            return Response({"detail": "uid, token and new_password are required"}, status= 400)
+        
+        try:
+            user = User.objects.get(pk=force_str(urlsafe_base64_decode(uid)))
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            user = None
+        if user is None or not default_token_generator.check_token(user, token):
+            return Response({"detail": "This reset link is invalid or has expired"}, status = 400)
+        
+        try:
+            validate_password(new_password, user)                                   # same password rules as signup
+        except ValidationError as err:
+            return Response({"detail": " ".join(err.messages)}, status= 400)
+        
+        user.set_password(new_password)
+        user.save()
+        Token.objects.filter(user=user).delete()                                    # log the person out everywhere
+        return Response({"detail": "Password updated. You can log in now."})
