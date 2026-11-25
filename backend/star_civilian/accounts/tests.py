@@ -40,3 +40,16 @@ class ProfileTests(APITestCase):
         body = {**SIGNUP, "linkedin_url": "not a url"}
         res = self.client.put("/api/profile/me/", body, format="json")
         self.assertEqual(res.status_code, 400)
+
+    def test_rank_is_optional_and_saves(self):
+        self.signup()
+        self.assertEqual(self.client.get("/api/profile/me/").data["rank"], "")
+        res = self.client.put("/api/profile/me/", {**SIGNUP, "rank": "Sergeant (E-5)"}, format="json")
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.data["rank"], "Sergeant (E-5)")
+
+    def test_website_title_saves(self):
+        self.signup()
+        body = {**SIGNUP, "website_url": "jane.dev", "website_title": "Portfolio"}
+        res = self.client.put("/api/profile/me/", body, format="json")
+        self.assertEqual(res.data["website_title"], "Portfolio")
