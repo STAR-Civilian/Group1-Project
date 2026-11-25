@@ -7,7 +7,7 @@
 .app-nav {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 8px 24px;
+  padding: 4px 24px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -22,8 +22,8 @@
 .app-nav__logo img {
   height: var(--logo-h);
   width: auto;
+  margin: -4px 0;
 }
-
 .app-nav__links {
   flex: 1 1 auto;
   display: flex;
@@ -39,7 +39,7 @@
   border-radius: 4px;
   color: #dfe4ee;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 17px;
 }
 .app-nav__link:hover {
   color: #fff;
@@ -58,7 +58,7 @@
   border-radius: 4px;
   background: none;
   color: #fff;
-  font: 15px Roboto, sans-serif;
+  font: 17px Roboto, sans-serif;
   cursor: pointer;
 }
 .app-nav__logout:hover {

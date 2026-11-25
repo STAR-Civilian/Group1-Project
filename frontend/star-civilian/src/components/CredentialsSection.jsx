@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../api";
+import Modal from "./Modal";
 
 // Same values as Credential.TYPE_CHOICES in history/models.py
 const TYPES = [
@@ -68,6 +69,7 @@ export default function CredentialsSection() {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false); // the add / edit pop-up
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -120,6 +122,16 @@ export default function CredentialsSection() {
     setError("");
   }
 
+  /* ---------- pop-up ---------- */
+  function openAdd() {
+    resetForm();
+    setModalOpen(true);
+  }
+  function closeModal() {
+    setModalOpen(false);
+    resetForm();
+  }
+
   function startEdit(c) {
     const parts = c.credential_type === "education" ? splitName(c.name) : { level: "", field: "" };
     setForm({
@@ -133,6 +145,7 @@ export default function CredentialsSection() {
     });
     setEditingId(c.id);
     setError("");
+    setModalOpen(true);
   }
 
   function pickSchool(s) {
@@ -154,6 +167,7 @@ export default function CredentialsSection() {
       e.preventDefault();
       pickSchool(schools[active]);
     } else if (e.key === "Escape") {
+      e.preventDefault(); // close just the list, not the pop-up
       setListOpen(false);
     }
   }
@@ -182,6 +196,7 @@ export default function CredentialsSection() {
         setItems([created, ...items]);
       }
       resetForm();
+      setModalOpen(false);
     } catch (err) {
       if (err.status === 401) navigate("/");
       else setError(err.message);
@@ -203,15 +218,85 @@ export default function CredentialsSection() {
 
   return (
     <section id="education" className="exp-section" aria-labelledby="edu-h">
-      <div className="exp-head">
-        <h2 id="edu-h">Education &amp; training</h2>
-        <p className="muted">Degrees, military courses, certifications and awards.</p>
+      <div className="exp-head exp-list__head">
+        <div>
+          <h2 id="edu-h">Education &amp; training</h2>
+          <p className="muted">Degrees, military courses, certifications and awards.</p>
+        </div>
+        <button id="add-edu-btn" type="button" className="btn btn-outline btn-sm" onClick={openAdd}>
+          + Add education or training
+        </button>
       </div>
 
-      <div className="exp-layout">
-        {/* ---------- add / edit form ---------- */}
-        <form className="exp-form" onSubmit={handleSave} aria-labelledby="edu-form-h">
-          <h2 id="edu-form-h">{editingId ? "Edit item" : "Add education or training"}</h2>
+      {error && !modalOpen && <p className="form-error" role="alert">{error}</p>}
+
+      {/* ---------- saved items ---------- */}
+      <div className="exp-list">
+        {loading ? (
+          <p className="muted">Loading…</p>
+        ) : items.length === 0 ? (
+          <div className="exp-empty">
+            <p>Nothing added yet.</p>
+            <button type="button" className="btn btn-primary" onClick={openAdd}>
+              Add education or training
+            </button>
+          </div>
+        ) : (
+          <ul>
+            {items.map((c) => (
+              <li key={c.id} className={`exp-card${editingId === c.id ? " is-editing" : ""}`}>
+                <div className="exp-card__top">
+                  <div>
+                    <span className={`tag tag--${c.credential_type}`}>
+                      {typeInfo(c.credential_type).label}
+                    </span>
+                    <h3>{c.name}</h3>
+                    {(c.issuer || c.date_earned) && (
+                      <p className="muted">
+                        {[c.issuer, formatDate(c.date_earned)].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
+                  </div>
+                  <div className="exp-card__actions">
+                    <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(c)}>
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-outline btn-sm"
+                      onClick={() => handleDelete(c)}
+                      aria-label={`Delete ${c.name}`}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                {c.description && <p className="exp-card__duties">{c.description}</p>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+    {/* ---------- add / edit pop-up ---------- */}
+      {modalOpen && (
+        <Modal
+          title={editingId ? "Edit item" : "Add education or training"}
+          titleId="edu-form-h"
+          onClose={closeModal}
+          onSubmit={handleSave}
+          busy={saving}
+          footer={
+            <>
+              <button className="btn btn-outline" type="button" onClick={closeModal} disabled={saving}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" type="submit" disabled={saving}>
+                {saving ? "Saving…" : editingId ? "Save changes" : "Save"}
+              </button>
+            </>
+          }
+        >
 
           <div className="field">
             <label htmlFor="credential_type">Type</label>
@@ -324,62 +409,8 @@ export default function CredentialsSection() {
           </div>
 
           {error && <p className="form-error" role="alert">{error}</p>}
-
-          <div className="exp-form__actions">
-            <button className="btn btn-primary" type="submit" disabled={saving}>
-              {saving ? "Saving…" : editingId ? "Save changes" : "Save"}
-            </button>
-            {editingId && (
-              <button className="btn btn-outline" type="button" onClick={resetForm}>
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* ---------- saved items ---------- */}
-        <div className="exp-list">
-          {loading ? (
-            <p className="muted">Loading…</p>
-          ) : items.length === 0 ? (
-            <div className="exp-empty">Nothing added yet. Use the form to add your first one.</div>
-          ) : (
-            <ul>
-              {items.map((c) => (
-                <li key={c.id} className={`exp-card${editingId === c.id ? " is-editing" : ""}`}>
-                  <div className="exp-card__top">
-                    <div>
-                      <span className={`tag tag--${c.credential_type}`}>
-                        {typeInfo(c.credential_type).label}
-                      </span>
-                      <h3>{c.name}</h3>
-                      {(c.issuer || c.date_earned) && (
-                        <p className="muted">
-                          {[c.issuer, formatDate(c.date_earned)].filter(Boolean).join(" · ")}
-                        </p>
-                      )}
-                    </div>
-                    <div className="exp-card__actions">
-                      <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(c)}>
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-sm"
-                        onClick={() => handleDelete(c)}
-                        aria-label={`Delete ${c.name}`}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  {c.description && <p className="exp-card__duties">{c.description}</p>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
+        </Modal>
+      )}
     </section>
   );
 }

@@ -8,9 +8,9 @@ import "../css-styling/AppHeader.css";
 const LINKS = [
   { to: "/dashboard", label: "Dashboard" },
   { to: "/experience", label: "Experience" },
-  { to: "/jobs", label: "Target jobs" },
+  { to: "/jobs", label: "Target Jobs" },
   { to: "/resume", label: "Resume" },
-  { to: "/star", label: "STAR answers" },
+  { to: "/star", label: "STAR Answers" },
 ];
 
 export default function AppHeader() {
