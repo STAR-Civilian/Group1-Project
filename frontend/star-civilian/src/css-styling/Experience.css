@@ -259,15 +259,10 @@
 }
 
 /* page title on the left, jump button on the right */
-.exp-head--split {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-}
-.exp-head--split > div {
-  flex: 1 1 320px;
+/* "Next: Education & training" under the positions list */
+.exp-list__next {
+  align-self: flex-end;
+  margin-top: 16px;
 }
 
 .exp-form__actions {
@@ -425,4 +420,21 @@ html {
 .sc-opt__place {
   font-size: 12px;
   color: #5a6070;
+}
+/* section title + "+ Add" button on one row */
+.exp-list__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.exp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.exp-empty p {
+  margin: 0;
 }
