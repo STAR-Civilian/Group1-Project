@@ -30,7 +30,7 @@
   background: var(--tl-line);
 }
 .timeline__step.is-done:not(:last-child)::after {
-  background: var(--tl-navy);
+  background: #2e7d32;
 }
 
 .timeline__link {
@@ -45,13 +45,8 @@
   text-decoration: none;
   font-size: 14px;
 }
-.timeline__link:hover .timeline__label {
-  text-decoration: underline;
-}
-.timeline__link:focus-visible {
-  outline: 2px solid var(--tl-navy);
-  outline-offset: 2px;
-}
+
+
 
 .timeline__dot {
   display: grid;
@@ -66,8 +61,8 @@
 }
 
 .is-done .timeline__dot {
-  background: var(--tl-navy);
-  border-color: var(--tl-navy);
+  background: #2e7d32;
+  border-color: #2e7d32;
   color: #fff;
 }
 .is-next .timeline__dot {
@@ -83,12 +78,18 @@
   font-weight: 500;
 }
 
-/* page you're on */
-.timeline__link.active .timeline__label {
+
+/* page you're on: solid dot with a double ring, bold label */
+.timeline__step.is-current .timeline__dot {
+  background: var(--tl-navy);
+  border-color: var(--tl-navy);
+  color: #fff;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 5px var(--tl-navy);
+}
+.timeline__step.is-current .timeline__label {
   color: var(--tl-navy);
   font-weight: 700;
 }
-
 @media (max-width: 600px) {
   .timeline__list {
     padding: 10px 8px;
