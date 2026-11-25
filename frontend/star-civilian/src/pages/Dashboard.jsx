@@ -7,9 +7,11 @@
 //   GET /api/resumes/
 //   GET /api/resumes/:id/star-answers/   (one call per resume, to count answers)
 //   GET /api/jobs/target-jobs/           (the jobs picked on the Target jobs page)
+//   GET /api/profile/me/                 (profile card; edited in ProfileCard.jsx)
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
+import ProfileCard from "../components/ProfileCard";
 import { apiFetch } from "../api";
 import "../css-styling/Experience.css"; // shared page styles (.exp ...)
 import "../css-styling/Dashboard.css";
@@ -18,8 +20,8 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const firstName = localStorage.getItem("first_name") || "there";
   const [data, setData] = useState(null); // { positions, credentials, resumes, targets, starCounts }
+  const [profile, setProfile] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -28,8 +30,10 @@ export default function Dashboard() {
       apiFetch("/api/history/credentials/"),
       apiFetch("/api/resumes/"),
       apiFetch("/api/jobs/target-jobs/"),
+      apiFetch("/api/profile/me/"),
     ])
-      .then(async ([positions, credentials, resumes, targets]) => {
+      .then(async ([positions, credentials, resumes, targets, me]) => {
+        setProfile(me);
         const lists = await Promise.all(
           resumes.map((r) => apiFetch(`/api/resumes/${r.id}/star-answers/`))
         );
@@ -49,6 +53,9 @@ export default function Dashboard() {
       </div>
     );
   }
+
+  const handleErr = (err) => (err.status === 401 ? navigate("/") : setError(err.message));
+  const firstName = profile?.first_name || localStorage.getItem("first_name") || "there";
 
   const totalStar = data ? Object.values(data.starCounts).reduce((a, b) => a + b, 0) : 0;
 
@@ -122,6 +129,15 @@ export default function Dashboard() {
               )}
             </section>
 
+            {/* ---------- profile ---------- */}
+            {profile && (
+              <section aria-labelledby="profile-h">
+                <div className="db-section-head">
+                  <h2 id="profile-h">Your profile</h2>
+                </div>
+                <ProfileCard profile={profile} onSaved={setProfile} onError={handleErr} />
+              </section>
+            )}
 
             {/* ---------- saved resumes ---------- */}
             <section aria-labelledby="res-h">

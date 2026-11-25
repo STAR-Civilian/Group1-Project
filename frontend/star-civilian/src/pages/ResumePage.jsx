@@ -3,7 +3,6 @@
 //
 // Backend used:
 //   GET    /api/profile/me/                 -> name + contact for the resume header
-//   PUT    /api/profile/me/                 -> edit contact info (ContactInfo.jsx)
 //   GET    /api/history/positions/          -> positions to include
 //   POST   /api/llm/generate-resume/        -> write a new resume (saved automatically)
 //   GET    /api/resumes/                    -> saved resumes (list)
@@ -16,7 +15,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
-import ContactInfo from "../components/ContactInfo";
 import { apiFetch } from "../api";
 import "../css-styling/Experience.css"; // shared page styles (.exp ...)
 import "../css-styling/ResumePage.css";
@@ -347,9 +345,10 @@ export default function ResumePage() {
         <div className="exp-layout">
           {/* ---------- left: generate + saved list ---------- */}
           <aside className="rs-side">
-            {profile && (
-              <ContactInfo profile={profile} onSaved={setProfile} onError={handleErr} />
-            )}
+            <p className="muted rs-hint">
+              Your name and contact info come from your profile.{" "}
+              <Link to="/dashboard">Edit it on the Dashboard</Link>.
+            </p>
 
             <form className="exp-form" onSubmit={handleGenerate} aria-labelledby="gen-h">
               <h2 id="gen-h">Generate a resume</h2>
