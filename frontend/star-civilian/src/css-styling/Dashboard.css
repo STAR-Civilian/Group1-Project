@@ -144,10 +144,17 @@
   margin: 12px 0 0;
   font-size: 14px;
 }
+.db-profile__foot {
+  margin-top: 24px;
+}
 .db-profile-form {
   flex: none;
 }
 .db-profile-form input[readonly] {
   background: #f4f5f9;
   color: var(--muted);
+}
+.req {
+  color: #b3261e;
+  font-weight: 700;
 }

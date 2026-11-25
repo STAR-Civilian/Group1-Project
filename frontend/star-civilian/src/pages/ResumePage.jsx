@@ -68,26 +68,41 @@ function fromDraft(d) {
 
 const EMPTY_JOB = { title: "", organization: "", dates: "", bullets: "" };
 
-// "https://www.linkedin.com/in/me/" -> "linkedin.com/in/me"
-const shortUrl = (url) => url.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, "");
-
-// Everything under the name: place, email, phone (optional), links (optional)
-function contactLine(p) {
-  if (!p) return "";
+// Links show as short titles instead of long URLs
+function profileLinks(p) {
   return [
-    [p.city, p.state].filter(Boolean).join(", "),
-    p.email,
-    p.phone,
-    ...[p.linkedin_url, p.github_url, p.website_url].filter(Boolean).map(shortUrl),
-  ]
-    .filter(Boolean)
-    .join(" · ");
+    { url: p.linkedin_url, title: "LinkedIn" },
+    { url: p.github_url, title: "GitHub" },
+    { url: p.website_url, title: p.website_title || "Website" },
+  ].filter((l) => l.url);
+}
+
+// Everything under the name: place, email, phone, then links
+function ContactLine({ profile, className }) {
+  if (!profile) return null;
+  const parts = [
+    [profile.city, profile.state].filter(Boolean).join(", "),
+    profile.email,
+    profile.phone,
+  ].filter(Boolean);
+  const links = profileLinks(profile);
+  if (!parts.length && !links.length) return null;
+  return (
+    <p className={className}>
+      {parts.join(" · ")}
+      {links.map((l) => (
+        <span key={l.url}>
+          {" · "}
+          <a href={l.url} target="_blank" rel="noreferrer">{l.title}</a>
+        </span>
+      ))}
+    </p>
+  );
 }
 
 /* ---------- printable version (only shows when printing) ---------- */
 function PrintableResume({ profile, content }) {
   const name = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
-  const contact = contactLine(profile);
   return (
     <div className="rs-print">
       {/* The empty header/footer rows repeat on every printed page: they are the top and bottom margins */}
@@ -102,7 +117,7 @@ function PrintableResume({ profile, content }) {
           <tr>
             <td className="rs-print__body">
             <h1>{name}</h1>
-            {contact && <p className="rs-print__contact">{contact}</p>}
+            <ContactLine profile={profile} className="rs-print__contact" />
             <h2>Summary</h2>
             <p>{content.summary}</p>
             {content.skills.length > 0 && (
@@ -326,7 +341,6 @@ export default function ResumePage() {
     setPosIds(posIds.includes(id) ? posIds.filter((x) => x !== id) : [...posIds, id]);
   const showing = draft && resume && String(resume.id) === openId;
   const fullName = [profile?.first_name, profile?.last_name].filter(Boolean).join(" ");
-  const contact = contactLine(profile);
 
   return (
     <div className="exp rs">
@@ -484,7 +498,7 @@ export default function ResumePage() {
                 <div className="rs-paper">
                   <div className="rs-paper__head">
                     <h2>{fullName || "Your name"}</h2>
-                    {contact && <p className="muted">{contact}</p>}
+                    <ContactLine profile={profile} className="muted rs-contact-line" />
                   </div>
 
                   <div className="field">

@@ -17,13 +17,11 @@ const BRANCHES = [
 const branchLabel = (v) => BRANCHES.find((b) => b.value === v)?.label || "";
 
 const FIELDS = [
-  "first_name", "last_name", "phone", "city", "state", "branch",
-  "job_code_or_title", "linkedin_url", "github_url", "website_url",
+  "first_name", "last_name", "phone", "city", "state", "branch", "rank",
+  "job_code_or_title", "linkedin_url", "github_url", "website_url", "website_title",
 ];
 const toForm = (p) => Object.fromEntries(FIELDS.map((f) => [f, p?.[f] || ""]));
 
-// "https://www.linkedin.com/in/me/" -> "linkedin.com/in/me"
-const shortUrl = (url) => url.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/$/, "");
 
 export default function ProfileCard({ profile, onSaved, onError }) {
   const [editing, setEditing] = useState(false);
@@ -52,9 +50,13 @@ export default function ProfileCard({ profile, onSaved, onError }) {
     }
   }
 
+  // Required fields get a * after the label
   const input = (name, label, props = {}) => (
     <div className="field">
-      <label htmlFor={`pf-${name}`}>{label}</label>
+      <label htmlFor={`pf-${name}`}>
+        {label}
+        {props.required && <span className="req" aria-hidden="true"> *</span>}
+      </label>
       <input id={`pf-${name}`} name={name} value={form[name]} onChange={onChange} {...props} />
     </div>
   );
@@ -63,8 +65,15 @@ export default function ProfileCard({ profile, onSaved, onError }) {
   if (!editing) {
     const name = [profile.first_name, profile.last_name].filter(Boolean).join(" ");
     const place = [profile.city, profile.state].filter(Boolean).join(", ");
-    const service = [branchLabel(profile.branch), profile.job_code_or_title].filter(Boolean).join(" · ");
-    const links = [profile.linkedin_url, profile.github_url, profile.website_url].filter(Boolean);
+    const service = [branchLabel(profile.branch), profile.rank, profile.job_code_or_title]
+      .filter(Boolean)
+      .join(" · ");
+    // Short titles instead of long URLs
+    const links = [
+      { url: profile.linkedin_url, title: "LinkedIn" },
+      { url: profile.github_url, title: "GitHub" },
+      { url: profile.website_url, title: profile.website_title || "Website" },
+    ].filter((l) => l.url);
 
     return (
       <div className="exp-card db-profile">
@@ -88,8 +97,8 @@ export default function ProfileCard({ profile, onSaved, onError }) {
             <dt>Links</dt>
             <dd>
               {links.length ? (
-                links.map((url) => (
-                  <a key={url} href={url} target="_blank" rel="noreferrer">{shortUrl(url)}</a>
+                links.map((l) => (
+                  <a key={l.url} href={l.url} target="_blank" rel="noreferrer">{l.title}</a>
                 ))
               ) : (
                 <span className="muted">Add LinkedIn, GitHub or a website</span>
@@ -97,14 +106,16 @@ export default function ProfileCard({ profile, onSaved, onError }) {
             </dd>
           </div>
         </dl>
-        <p className="muted db-profile__note">Your name, contact info and links go at the top of your resume.</p>
-      </div>
+<p className="muted db-profile__note db-profile__foot">Your name, contact info and links go at the top of your resume.</p>      </div>
     );
   }
 
   /* ---------- edit ---------- */
   return (
     <form className="exp-form db-profile-form" onSubmit={handleSave} aria-label="Edit profile">
+      <p className="muted db-profile__note">
+        <span className="req" aria-hidden="true">*</span> Required
+      </p>
       <div className="field-row">
         {input("first_name", "Legal first name", { required: true, autoComplete: "given-name" })}
         {input("last_name", "Legal last name", { required: true, autoComplete: "family-name" })}
@@ -114,14 +125,14 @@ export default function ProfileCard({ profile, onSaved, onError }) {
         <input id="pf-email" value={profile.email || ""} readOnly aria-describedby="pf-email-note" />
         <p id="pf-email-note" className="muted db-profile__note">This is your login email.</p>
       </div>
-      {input("phone", "Phone (optional)", { type: "tel", autoComplete: "tel" })}
+      {input("phone", "Phone", { type: "tel", autoComplete: "tel" })}
       <div className="field-row">
         {input("city", "City", { required: true, autoComplete: "address-level2" })}
         {input("state", "State", { required: true, maxLength: 2, placeholder: "CA" })}
       </div>
       <div className="field-row">
         <div className="field">
-          <label htmlFor="pf-branch">Branch (optional)</label>
+          <label htmlFor="pf-branch">Branch</label>
           <select id="pf-branch" name="branch" value={form.branch} onChange={onChange}>
             <option value="">None</option>
             {BRANCHES.map((b) => (
@@ -129,11 +140,15 @@ export default function ProfileCard({ profile, onSaved, onError }) {
             ))}
           </select>
         </div>
-        {input("job_code_or_title", "Military job (optional)", { placeholder: "e.g. 0411 or Maintenance Mgmt" })}
+        {input("rank", "Rank", { placeholder: "e.g. Sergeant (E-5)" })}
       </div>
-      {input("linkedin_url", "LinkedIn URL (optional)", { inputMode: "url", placeholder: "linkedin.com/in/yourname" })}
-      {input("github_url", "GitHub URL (optional)", { inputMode: "url", placeholder: "github.com/yourname" })}
-      {input("website_url", "Website (optional)", { inputMode: "url", placeholder: "yourname.com" })}
+      {input("job_code_or_title", "Military job", { placeholder: "e.g. 0411 or Maintenance Mgmt" })}
+      {input("linkedin_url", "LinkedIn URL", { inputMode: "url", placeholder: "linkedin.com/in/yourname" })}
+      {input("github_url", "GitHub URL", { inputMode: "url", placeholder: "github.com/yourname" })}
+      <div className="field-row">
+        {input("website_url", "Website", { inputMode: "url", placeholder: "yourname.com" })}
+        {input("website_title", "Website title", { maxLength: 60, placeholder: "e.g. Portfolio" })}
+      </div>
 
       <div className="exp-form__actions">
         <button className="btn btn-primary" type="submit" disabled={saving}>

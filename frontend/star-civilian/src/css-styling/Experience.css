@@ -102,9 +102,9 @@
   font-size: 18px;
   font-weight: 500;
 }
-.exp-card p {
-  margin: 2px 0 0;
-  font-size: 14px;
+.db-profile .db-profile__foot {
+  margin-top: 24px;
+  font-style: italic;
 }
 .exp-card__actions {
   display: flex;

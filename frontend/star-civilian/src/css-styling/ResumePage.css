@@ -267,3 +267,9 @@
     gap: 12px;
   }
 }
+
+/* links in the resume header */
+.rs-contact-line a,
+.rs-print__contact a {
+  color: inherit;
+}
