@@ -2,11 +2,11 @@ FROM node:22-slim AS build
 
 WORKDIR /app
 
-COPY frontend/vite-project/package*.json ./
+COPY frontend/star-civilian/package*.json ./
 
 RUN npm install
 
-COPY frontend/vite-project/ ./
+COPY frontend/star-civilian/ ./
 
 ARG VITE_API_URL=""
 ENV VITE_API_URL=$VITE_API_URL
