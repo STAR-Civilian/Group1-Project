@@ -281,7 +281,7 @@ export default function Experience() {
           {/* once they have a job saved, point them to the next section */}
           {!loading && positions.length > 0 && (
             <button type="button" className="btn btn-primary exp-list__next" onClick={goToEducation}>
-              Next: Education &amp; training ↓
+              Next: Education &amp; training
             </button>
           )}
         </section>
