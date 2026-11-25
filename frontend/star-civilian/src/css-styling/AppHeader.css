@@ -7,7 +7,7 @@
 .app-nav {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 8px 24px;
+  padding: 0 12px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -22,8 +22,8 @@
 .app-nav__logo img {
   height: var(--logo-h);
   width: auto;
+  margin: -10px 0;
 }
-
 .app-nav__links {
   flex: 1 1 auto;
   display: flex;
