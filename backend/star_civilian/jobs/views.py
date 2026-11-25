@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .onet import get_onet_data
+from .schools import search_schools
 from .models import Occupation, MilitaryJobKeyword, JobMatch, TargetJob
 from .details import load_details
 
@@ -381,3 +382,26 @@ def occupation_details(request):
         }
         for o in occupations
     })
+
+# 7. School search (for the Education form's suggestions)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def school_search(request):
+    """
+    Suggests U.S. schools while the veteran types a school name.
+    Returns an empty list for very short searches.
+    """
+
+    query = request.GET.get("q", "").strip()
+
+    if len(query) < 3:
+        return Response([])
+
+    try:
+        return Response(search_schools(query))
+    except Exception:
+        # The form still works if this fails: the veteran can just type the name.
+        return Response(
+            {"detail": "School search is not available right now."},
+            status=502,
+        )

@@ -14,8 +14,42 @@ const TYPES = [
 ];
 const typeInfo = (v) => TYPES.find((t) => t.value === v) || TYPES[0];
 
+// Degree levels for the Education type. "text" is the words that go on the resume.
+const LEVELS = [
+  { value: "hs", label: "High school diploma or GED", text: "High school diploma or GED", askField: false },
+  { value: "some", label: "Some college (no degree)", text: "Some college coursework", askField: true },
+  { value: "associate", label: "Associate degree", text: "Associate degree", askField: true },
+  { value: "bachelor", label: "Bachelor's degree", text: "Bachelor's degree", askField: true },
+  { value: "master", label: "Master's degree", text: "Master's degree", askField: true },
+  { value: "doctorate", label: "Doctorate or professional degree", text: "Doctorate or professional degree", askField: true },
+  { value: "certificate", label: "Certificate or diploma", text: "Certificate", askField: true },
+  { value: "other", label: "Other", text: "", askField: false },
+];
+const levelInfo = (v) => LEVELS.find((l) => l.value === v);
+
+// "Bachelor's degree" + "Public Health" -> "Bachelor's degree in Public Health"
+function composeName(level, field) {
+  const info = levelInfo(level);
+  const f = field.trim();
+  return info.askField && f ? `${info.text} in ${f}` : info.text;
+}
+
+// Turns a saved name back into a level and a field when someone edits it
+function splitName(name) {
+  for (const l of LEVELS) {
+    if (!l.text) continue;
+    if (name === l.text) return { level: l.value, field: "" };
+    if (name.startsWith(`${l.text} in `)) {
+      return { level: l.value, field: name.slice(l.text.length + 4) };
+    }
+  }
+  return { level: "other", field: "" };
+}
+
 const EMPTY_FORM = {
   credential_type: "education",
+  level: "",
+  field: "",
   name: "",
   issuer: "",
   date_earned: "",
@@ -37,8 +71,15 @@ export default function CredentialsSection() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [schools, setSchools] = useState([]); // school suggestions while typing
+  const [listOpen, setListOpen] = useState(false);
+  const [active, setActive] = useState(-1); // highlighted suggestion
 
   const info = typeInfo(form.credential_type);
+  // Suggestions only make sense for schools, not for certifications or awards
+  const wantsSchools = form.credential_type === "education" || form.credential_type === "training";
+  const isEdu = form.credential_type === "education";
+  const level = levelInfo(form.level);
 
   useEffect(() => {
     apiFetch("/api/history/credentials/")
@@ -46,6 +87,30 @@ export default function CredentialsSection() {
       .catch((err) => (err.status === 401 ? navigate("/") : setError(err.message)))
       .finally(() => setLoading(false));
   }, [navigate]);
+
+  // Look up school names a moment after the veteran stops typing.
+  // If anything goes wrong we simply show no suggestions; they can still type any name.
+  useEffect(() => {
+    const q = form.issuer.trim();
+    if (!wantsSchools || q.length < 3 || q.includes(",")) {
+      setSchools([]);
+      return undefined;
+    }
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      apiFetch(`/api/jobs/school-search/?q=${encodeURIComponent(q)}`)
+        .then((list) => {
+          if (!cancelled) setSchools(Array.isArray(list) ? list : []);
+        })
+        .catch(() => {
+          if (!cancelled) setSchools([]);
+        });
+    }, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [form.issuer, wantsSchools]);
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -56,22 +121,52 @@ export default function CredentialsSection() {
   }
 
   function startEdit(c) {
+    const parts = c.credential_type === "education" ? splitName(c.name) : { level: "", field: "" };
     setForm({
       credential_type: c.credential_type,
+      level: parts.level,
+      field: parts.field,
       name: c.name,
       issuer: c.issuer || "",
-      date_earned: c.date_earned || "",
+      date_earned: (c.date_earned || "").slice(0, 7), // "2021-06-15" -> "2021-06"
       description: c.description || "",
     });
     setEditingId(c.id);
     setError("");
   }
 
+  function pickSchool(s) {
+    setForm((f) => ({ ...f, issuer: s.label }));
+    setSchools([]);
+    setListOpen(false);
+    setActive(-1);
+  }
+
+  function onSchoolKey(e) {
+    if (!listOpen || schools.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActive((i) => (i + 1) % schools.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActive((i) => (i <= 0 ? schools.length - 1 : i - 1));
+    } else if (e.key === "Enter" && active >= 0) {
+      e.preventDefault();
+      pickSchool(schools[active]);
+    } else if (e.key === "Escape") {
+      setListOpen(false);
+    }
+  }
+
   async function handleSave(e) {
     e.preventDefault();
     setError("");
     setSaving(true);
-    const payload = { ...form, date_earned: form.date_earned || null };
+    // level and field only exist to build the name, so they are not sent to the server
+    const { level: lv, field, ...rest } = form;
+    const name = isEdu && lv && lv !== "other" ? composeName(lv, field) : form.name;
+    // The month picker gives "2021-06"; the server stores a full date, so use the 1st
+    const payload = { ...rest, name, date_earned: form.date_earned ? `${form.date_earned}-01` : null };
     try {
       if (editingId) {
         const updated = await apiFetch(`/api/history/credentials/${editingId}/`, {
@@ -127,19 +222,92 @@ export default function CredentialsSection() {
             </select>
           </div>
 
-          <div className="field">
-            <label htmlFor="cred-name">{info.name}</label>
-            <input id="cred-name" name="name" value={form.name} onChange={onChange} required />
-          </div>
+          {isEdu ? (
+            <>
+              <div className="field">
+                <label htmlFor="cred-level">{info.name}</label>
+                <select id="cred-level" name="level" value={form.level} onChange={onChange} required>
+                  <option value="">Select…</option>
+                  {LEVELS.map((l) => (
+                    <option key={l.value} value={l.value}>{l.label}</option>
+                  ))}
+                </select>
+              </div>
+              {level && level.askField && (
+                <div className="field">
+                  <label htmlFor="cred-field">Field of study</label>
+                  <input
+                    id="cred-field"
+                    name="field"
+                    placeholder="Example: Public Health"
+                    value={form.field}
+                    onChange={onChange}
+                  />
+                </div>
+              )}
+              {form.level === "other" && (
+                <div className="field">
+                  <label htmlFor="cred-name">Program name</label>
+                  <input id="cred-name" name="name" value={form.name} onChange={onChange} required />
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="field">
+              <label htmlFor="cred-name">{info.name}</label>
+              <input id="cred-name" name="name" value={form.name} onChange={onChange} required />
+            </div>
+          )}
 
           <div className="field-row">
             <div className="field">
               <label htmlFor="cred-issuer">{info.issuer}</label>
-              <input id="cred-issuer" name="issuer" value={form.issuer} onChange={onChange} />
+              <div className="sc-combo">
+                <input
+                  id="cred-issuer"
+                  name="issuer"
+                  value={form.issuer}
+                  onChange={(e) => {
+                    onChange(e);
+                    setListOpen(true);
+                    setActive(-1);
+                  }}
+                  onFocus={() => setListOpen(true)}
+                  onBlur={() => setListOpen(false)}
+                  onKeyDown={onSchoolKey}
+                  autoComplete="off"
+                  role={wantsSchools ? "combobox" : undefined}
+                  aria-expanded={wantsSchools ? listOpen && schools.length > 0 : undefined}
+                  aria-controls={wantsSchools ? "school-list" : undefined}
+                  aria-autocomplete={wantsSchools ? "list" : undefined}
+                />
+                {wantsSchools && listOpen && schools.length > 0 && (
+                  <ul id="school-list" className="sc-list" role="listbox">
+                    {schools.map((sc, i) => (
+                      <li
+                        key={sc.id}
+                        role="option"
+                        aria-selected={i === active}
+                        className={`sc-opt${i === active ? " is-active" : ""}`}
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // keep the field focused so the click registers
+                          pickSchool(sc);
+                        }}
+                        onMouseEnter={() => setActive(i)}
+                      >
+                        <span className="sc-opt__name">{sc.name}</span>
+                        <span className="sc-opt__place">
+                          {[sc.city, sc.state].filter(Boolean).join(", ")}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
             <div className="field">
               <label htmlFor="cred-date">Date earned</label>
-              <input id="cred-date" name="date_earned" type="date" value={form.date_earned} onChange={onChange} />
+              <input id="cred-date" name="date_earned" type="month" placeholder="YYYY-MM" value={form.date_earned} onChange={onChange} />
             </div>
           </div>
 
