@@ -20,7 +20,7 @@
   min-height: 44px;
 }
 .app-nav__logo img {
-  height: 100px;
+  height: var(--logo-h);
   width: auto;
 }
 

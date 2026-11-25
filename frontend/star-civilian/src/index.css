@@ -1,3 +1,6 @@
+:root {
+  --logo-h: 250px;   /* logo size on every page */
+}
 *,
 *::before,
 *::after {
