@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from resumes.models import JobFit, Resume, StarAnswer
 from resumes.serializers import JobFitSerializer
 
-from .client import LLMError, call_llm_json, resume_model
+from .client import LLMError, call_llm_json, resume_effort, resume_model
 from .prompts import (
     JOB_FIT_SYSTEM,
     RESUME_SYSTEM,
@@ -64,7 +64,7 @@ class GenerateResumeView(APIView):
         try:
             content = call_llm_json(
                 RESUME_SYSTEM, prompt, "resume.json", validate_resume,
-                max_tokens=8000, model=resume_model(),
+                                max_tokens=16000, model=resume_model(), effort=resume_effort(),
             )
         except LLMError:
             return Response(
