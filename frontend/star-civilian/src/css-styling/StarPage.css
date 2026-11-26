@@ -1,10 +1,36 @@
 /* src/css-styling/StarPage.css */
-/* Builds on Experience.css (.exp, .exp-layout, .exp-form, .exp-card ...) */
+/* Builds on Experience.css (.exp, .exp-list, .exp-card ...) and Modal.css */
 
-.star-side {
-  align-self: flex-start;
+/* title on the left, "+ New answers" on the right (like the Resume page) */
+.star-head-row {
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  margin-bottom: 16px;
+}
+.star-head-row > .exp-head {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.star-head-row > .btn {
+  flex: none;
+  margin-top: 8px;
+}
+@media (max-width: 600px) {
+  .star-head-row {
+    flex-wrap: wrap;
+  }
 }
 
+/* "Answers for" resume picker */
+.star-picker {
+  margin: 0 0 24px;
+  max-width: 520px;
+}
+.star-picker select {
+  width: 100%;
+}
+
+/* ---------- answer cards ---------- */
 .star-parts {
   margin: 16px 0 0;
   display: flex;
@@ -25,22 +51,54 @@
   white-space: pre-line;
 }
 
-.star-tip {
-  margin-top: 16px !important;
+.exp-card .star-tip {
+  margin-top: 16px;
   padding: 10px 12px;
   background: var(--tint);
   border-radius: 6px;
   line-height: 1.5;
 }
 
-.star-edit {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
+/* ---------- pop-ups ---------- */
 .star-note {
   margin: 0;
   font-size: 14px;
+}
+.star-question {
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* "Writing your answers" while the AI works */
+.star-working {
+  padding: 24px 0 8px;
+  text-align: center;
+}
+.star-working p {
+  margin: 0 0 6px;
+}
+.star-working__title {
+  font-size: 18px;
+  font-weight: 700;
+}
+.star-spinner {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 18px;
+  border: 4px solid var(--line);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: star-spin 0.9s linear infinite;
+}
+@keyframes star-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .star-spinner {
+    animation: none;
+    border-style: dotted;
+  }
 }

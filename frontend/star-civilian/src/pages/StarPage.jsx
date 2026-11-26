@@ -1,5 +1,6 @@
 // src/pages/StarPage.jsx
 // STAR interview answers for one saved resume: generate, edit, rewrite, delete.
+// Same layout as the Experience and Resume pages: full-width list, pop-up forms.
 //
 // Backend used:
 //   GET    /api/resumes/                          -> saved resumes (picker)
@@ -12,6 +13,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
+import Modal from "../components/Modal";
 import { apiFetch } from "../api";
 import "../css-styling/Experience.css"; // shared page styles (.exp ...)
 import "../css-styling/StarPage.css";
@@ -23,142 +25,53 @@ const PARTS = [
   { key: "result", label: "Result" },
 ];
 
+// "Logistics Manager · Nov 2026" (same as the Resume page)
+function resumeLabel(r) {
+  const date = r.created_at
+    ? new Date(r.created_at).toLocaleDateString(undefined, { month: "short", year: "numeric" })
+    : "";
+  return [r.target_job_title, date].filter(Boolean).join(" · ");
+}
+
 /* ---------- one answer card ---------- */
-function AnswerCard({ answer, onSaved, onDelete, onError }) {
-  const [mode, setMode] = useState("view"); // "view" | "edit" | "rewrite"
-  const [draft, setDraft] = useState(answer);
-  const [ownWords, setOwnWords] = useState("");
-  const [busy, setBusy] = useState(false);
-
-  function startEdit() {
-    setDraft(answer);
-    setMode("edit");
-  }
-
-  async function saveEdit(e) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const body = { question: draft.question };
-      PARTS.forEach(({ key }) => (body[key] = draft[key]));
-      const updated = await apiFetch(`/api/star-answers/${answer.id}/`, { method: "PATCH", body });
-      onSaved(updated);
-      setMode("view");
-    } catch (err) {
-      onError(err);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function rewrite(e) {
-    e.preventDefault();
-    setBusy(true);
-    try {
-      const updated = await apiFetch(`/api/llm/star-answers/${answer.id}/rewrite/`, {
-        method: "POST",
-        body: { answer_text: ownWords },
-      });
-      onSaved(updated);
-      setOwnWords("");
-      setMode("view");
-    } catch (err) {
-      onError(err);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  const set = (k) => (e) => setDraft({ ...draft, [k]: e.target.value });
-
+function AnswerCard({ answer, onEdit, onRewrite, onDelete }) {
   return (
-    <li className={`exp-card star-card${mode !== "view" ? " is-editing" : ""}`}>
+    <li className="exp-card">
       <div className="exp-card__top">
         <div>
           {answer.skill && <span className="tag tag--military">{answer.skill}</span>}
           <h3>{answer.question}</h3>
         </div>
-        {mode === "view" && (
-          <div className="exp-card__actions">
-            <button type="button" className="btn btn-outline btn-sm" onClick={startEdit}>
-              Edit
-            </button>
-            <button type="button" className="btn btn-outline btn-sm" onClick={() => setMode("rewrite")}>
-              Use my words
-            </button>
-            <button
-              type="button"
-              className="btn btn-outline btn-sm"
-              onClick={() => onDelete(answer)}
-              aria-label={`Delete answer to: ${answer.question}`}
-            >
-              Delete
-            </button>
-          </div>
-        )}
+        <div className="exp-card__actions">
+          <button type="button" className="btn btn-outline btn-sm" onClick={() => onEdit(answer)}>
+            Edit
+          </button>
+          <button type="button" className="btn btn-outline btn-sm" onClick={() => onRewrite(answer)}>
+            Use my words
+          </button>
+          <button
+            type="button"
+            className="btn btn-outline btn-sm"
+            onClick={() => onDelete(answer)}
+            aria-label={`Delete answer to: ${answer.question}`}
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
-      {mode === "view" && (
-        <>
-          <dl className="star-parts">
-            {PARTS.map(({ key, label }) => (
-              <div key={key} className="star-part">
-                <dt>{label}</dt>
-                <dd>{answer[key]}</dd>
-              </div>
-            ))}
-          </dl>
-          {answer.tip && <p className="star-tip"><strong>Tip:</strong> {answer.tip}</p>}
-        </>
-      )}
-
-      {mode === "edit" && (
-        <form className="star-edit" onSubmit={saveEdit}>
-          <div className="field">
-            <label htmlFor={`q-${answer.id}`}>Question</label>
-            <input id={`q-${answer.id}`} value={draft.question} onChange={set("question")} required />
+      <dl className="star-parts">
+        {PARTS.map(({ key, label }) => (
+          <div key={key} className="star-part">
+            <dt>{label}</dt>
+            <dd>{answer[key]}</dd>
           </div>
-          {PARTS.map(({ key, label }) => (
-            <div key={key} className="field">
-              <label htmlFor={`${key}-${answer.id}`}>{label}</label>
-              <textarea id={`${key}-${answer.id}`} rows={3} value={draft[key]} onChange={set(key)} />
-            </div>
-          ))}
-          <div className="exp-form__actions">
-            <button className="btn btn-primary" type="submit" disabled={busy}>
-              {busy ? "Saving…" : "Save changes"}
-            </button>
-            <button className="btn btn-outline" type="button" onClick={() => setMode("view")}>
-              Cancel
-            </button>
-          </div>
-        </form>
-      )}
-
-      {mode === "rewrite" && (
-        <form className="star-edit" onSubmit={rewrite}>
-          <div className="field">
-            <label htmlFor={`own-${answer.id}`}>Your answer, in your own words</label>
-            <textarea
-              id={`own-${answer.id}`}
-              rows={5}
-              maxLength={3000}
-              value={ownWords}
-              onChange={(e) => setOwnWords(e.target.value)}
-              placeholder="Tell the story however it comes out. We'll shape it into STAR."
-              required
-            />
-          </div>
-          <p className="muted star-note">This replaces the current Situation, Task, Action and Result.</p>
-          <div className="exp-form__actions">
-            <button className="btn btn-primary" type="submit" disabled={busy}>
-              {busy ? "Rewriting…" : "Rewrite in STAR"}
-            </button>
-            <button className="btn btn-outline" type="button" onClick={() => setMode("view")}>
-              Cancel
-            </button>
-          </div>
-        </form>
+        ))}
+      </dl>
+      {answer.tip && (
+        <p className="star-tip">
+          <strong>Tip:</strong> {answer.tip}
+        </p>
       )}
     </li>
   );
@@ -174,14 +87,25 @@ export default function StarPage() {
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [answersFor, setAnswersFor] = useState(null); // which resume the answers belong to
-  const [count, setCount] = useState(5);
-  const [jobNotes, setJobNotes] = useState("");
-  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
 
+  // Pop-ups: "generate" | "edit" | "rewrite" | null
+  const [modal, setModal] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [modalError, setModalError] = useState("");
+  // generate form
+  const [count, setCount] = useState(5);
+  const [jobNotes, setJobNotes] = useState("");
+  // edit / rewrite form
+  const [target, setTarget] = useState(null); // the answer being changed
+  const [draft, setDraft] = useState(null);
+  const [ownWords, setOwnWords] = useState("");
+
   const loadingAnswers = answersFor !== resumeId;
+  const currentResume = resumes.find((r) => String(r.id) === resumeId);
 
   const handleErr = (err) => (err.status === 401 ? navigate("/") : setError(err.message));
+  const handleModalErr = (err) => (err.status === 401 ? navigate("/") : setModalError(err.message));
 
   // Load saved resumes; open the newest one if none is in the URL
   useEffect(() => {
@@ -205,78 +129,198 @@ export default function StarPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeId]);
 
+  /* ---------- pop-ups ---------- */
+  function openModal(kind, answer = null) {
+    setModalError("");
+    setTarget(answer);
+    setDraft(answer ? { ...answer } : null);
+    setOwnWords("");
+    setModal(kind);
+  }
+  function closeModal() {
+    if (busy) return;
+    setModal(null);
+    setTarget(null);
+  }
+
+  const replaceAnswer = (updated) =>
+    setAnswers((list) => list.map((a) => (a.id === updated.id ? updated : a)));
+
   async function handleGenerate(e) {
     e.preventDefault();
-    setError("");
-    setGenerating(true);
+    setModalError("");
+    setBusy(true);
     try {
       const data = await apiFetch(`/api/llm/resumes/${resumeId}/generate-star/`, {
         method: "POST",
         body: { count: Number(count), job_notes: jobNotes },
       });
-      setAnswers([...data.answers, ...answers]);
+      setAnswers((list) => [...data.answers, ...list]);
+      setModal(null);
     } catch (err) {
-      handleErr(err);
+      handleModalErr(err);
     } finally {
-      setGenerating(false);
+      setBusy(false);
     }
   }
 
-  const replaceAnswer = (updated) =>
-    setAnswers(answers.map((a) => (a.id === updated.id ? updated : a)));
+  async function handleSaveEdit(e) {
+    e.preventDefault();
+    setModalError("");
+    setBusy(true);
+    try {
+      const body = { question: draft.question };
+      PARTS.forEach(({ key }) => (body[key] = draft[key]));
+      const updated = await apiFetch(`/api/star-answers/${target.id}/`, { method: "PATCH", body });
+      replaceAnswer(updated);
+      setModal(null);
+    } catch (err) {
+      handleModalErr(err);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleRewrite(e) {
+    e.preventDefault();
+    setModalError("");
+    setBusy(true);
+    try {
+      const updated = await apiFetch(`/api/llm/star-answers/${target.id}/rewrite/`, {
+        method: "POST",
+        body: { answer_text: ownWords },
+      });
+      replaceAnswer(updated);
+      setModal(null);
+    } catch (err) {
+      handleModalErr(err);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function handleDelete(a) {
     if (!window.confirm(`Delete the answer to "${a.question}"?`)) return;
     try {
       await apiFetch(`/api/star-answers/${a.id}/`, { method: "DELETE" });
-      setAnswers(answers.filter((x) => x.id !== a.id));
+      setAnswers((list) => list.filter((x) => x.id !== a.id));
     } catch (err) {
       handleErr(err);
     }
   }
+
+  const setPart = (k) => (e) => setDraft({ ...draft, [k]: e.target.value });
 
   return (
     <div className="exp">
       <AppHeader />
 
       <main className="exp-main">
-        <div className="exp-head">
-          <h1>STAR interview answers</h1>
-          <p className="muted">
-            Example answers to behavioral questions, built from your resume. Edit them until
-            they sound like you. They're examples to practice with, not scripts.
-          </p>
+        <div className="exp-list__head star-head-row">
+          <div className="exp-head">
+            <h1>STAR interview answers</h1>
+            <p className="muted">
+              Example answers to behavioral questions, built from your resume. Edit them until
+              they sound like you. They're examples to practice with, not scripts.
+            </p>
+          </div>
+          {resumes.length > 0 && (
+            <button type="button" className="btn btn-outline btn-sm" onClick={() => openModal("generate")}>
+              + New answers
+            </button>
+          )}
         </div>
 
-        {error && <p className="form-error" role="alert">{error}</p>}
+        {error && !modal && <p className="form-error" role="alert">{error}</p>}
 
         {loading ? (
           <p className="muted">Loading…</p>
         ) : resumes.length === 0 ? (
-          <div className="exp-empty">
-            You need a resume first. <Link to="/resume">Generate one</Link>, then come back here.
+          <div className="exp-empty exp-empty--action">
+            <p>STAR answers are built from a resume, so you need one first.</p>
+            <Link to="/resume" className="btn btn-primary">
+              Go to step three
+            </Link>
           </div>
         ) : (
-          <div className="exp-layout">
-            {/* ---------- left: pick resume + generate ---------- */}
-            <form className="exp-form star-side" onSubmit={handleGenerate} aria-labelledby="gen-h">
-              <h2 id="gen-h">Get example answers</h2>
+          <>
+            {/* ---------- pick which resume ---------- */}
+            <div className="field star-picker">
+              <label htmlFor="star-resume">Answers for</label>
+              <select id="star-resume" value={resumeId || ""} onChange={(e) => setParams({ resume: e.target.value })}>
+                {resumes.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {resumeLabel(r)}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-              <div className="field">
-                <label htmlFor="star-resume">Resume</label>
-                <select
-                  id="star-resume"
-                  value={resumeId || ""}
-                  onChange={(e) => setParams({ resume: e.target.value })}
-                >
-                  {resumes.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.target_job_title} ({new Date(r.created_at).toLocaleDateString()})
-                    </option>
+            {/* ---------- answers ---------- */}
+            <section className="exp-list" aria-labelledby="answers-h">
+              <h2 id="answers-h">
+                Your answers{!loadingAnswers && answers.length > 0 ? ` (${answers.length})` : ""}
+              </h2>
+              {loadingAnswers ? (
+                <p className="muted">Loading…</p>
+              ) : answers.length === 0 ? (
+                <div className="exp-empty exp-empty--action">
+                  <p>No answers yet for this resume.</p>
+                  <button type="button" className="btn btn-primary" onClick={() => openModal("generate")}>
+                    Get your first answers
+                  </button>
+                </div>
+              ) : (
+                <ul>
+                  {answers.map((a) => (
+                    <AnswerCard
+                      key={a.id}
+                      answer={a}
+                      onEdit={(ans) => openModal("edit", ans)}
+                      onRewrite={(ans) => openModal("rewrite", ans)}
+                      onDelete={handleDelete}
+                    />
                   ))}
-                </select>
-              </div>
+                </ul>
+              )}
+            </section>
+          </>
+        )}
+      </main>
 
+      {/* ---------- generate pop-up ---------- */}
+      {modal === "generate" && (
+        <Modal
+          title={busy ? "Writing your answers" : "New answers"}
+          titleId="gen-h"
+          onClose={closeModal}
+          onSubmit={handleGenerate}
+          busy={busy}
+          footer={
+            <>
+              <button className="btn btn-outline" type="button" onClick={closeModal} disabled={busy}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" type="submit" disabled={busy || !resumeId}>
+                {busy ? "Writing…" : "Generate answers"}
+              </button>
+            </>
+          }
+        >
+          {busy ? (
+            <div className="star-working" role="status" aria-live="polite">
+              <div className="star-spinner" aria-hidden="true" />
+              <p className="star-working__title">
+                We're writing answers{currentResume ? ` for ${currentResume.target_job_title}` : ""}.
+              </p>
+              <p className="muted">This can take up to a minute. Please keep this window open.</p>
+            </div>
+          ) : (
+            <>
+              {modalError && <p className="form-error" role="alert">{modalError}</p>}
+              <p className="muted star-note">
+                For: <strong>{currentResume ? resumeLabel(currentResume) : ""}</strong>
+              </p>
               <div className="field">
                 <label htmlFor="star-count">How many questions</label>
                 <input
@@ -288,50 +332,92 @@ export default function StarPage() {
                   onChange={(e) => setCount(e.target.value)}
                 />
               </div>
-
               <div className="field">
-                <label htmlFor="star-notes">Notes about the job (optional)</label>
+                <label htmlFor="star-notes">Notes about the job</label>
                 <textarea
                   id="star-notes"
-                  rows={3}
+                  rows={4}
                   value={jobNotes}
                   onChange={(e) => setJobNotes(e.target.value)}
-                  placeholder="Paste key lines from the job posting"
+                  placeholder="Optional: paste key lines from the job posting"
                 />
               </div>
+              <p className="muted star-note">New answers are added. The ones you already have are kept.</p>
+            </>
+          )}
+        </Modal>
+      )}
 
-              <div className="exp-form__actions">
-                <button className="btn btn-primary" type="submit" disabled={generating || !resumeId}>
-                  {generating ? "Writing answers…" : "Generate answers"}
-                </button>
-              </div>
-              <p className="muted star-note">New answers are added. Your edited ones are kept.</p>
-            </form>
-
-            {/* ---------- right: answers ---------- */}
-            <section className="exp-list" aria-labelledby="answers-h">
-              <h2 id="answers-h">Your answers</h2>
-              {loadingAnswers ? (
-                <p className="muted">Loading…</p>
-              ) : answers.length === 0 ? (
-                <div className="exp-empty">No answers yet. Generate some with the form.</div>
-              ) : (
-                <ul>
-                  {answers.map((a) => (
-                    <AnswerCard
-                      key={a.id}
-                      answer={a}
-                      onSaved={replaceAnswer}
-                      onDelete={handleDelete}
-                      onError={handleErr}
-                    />
-                  ))}
-                </ul>
-              )}
-            </section>
+      {/* ---------- edit pop-up ---------- */}
+      {modal === "edit" && draft && (
+        <Modal
+          title="Edit answer"
+          titleId="edit-h"
+          onClose={closeModal}
+          onSubmit={handleSaveEdit}
+          busy={busy}
+          footer={
+            <>
+              <button className="btn btn-outline" type="button" onClick={closeModal} disabled={busy}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" type="submit" disabled={busy}>
+                {busy ? "Saving…" : "Save changes"}
+              </button>
+            </>
+          }
+        >
+          {modalError && <p className="form-error" role="alert">{modalError}</p>}
+          <div className="field">
+            <label htmlFor="edit-q">Question</label>
+            <input id="edit-q" value={draft.question} onChange={setPart("question")} required />
           </div>
-        )}
-      </main>
+          {PARTS.map(({ key, label }) => (
+            <div key={key} className="field">
+              <label htmlFor={`edit-${key}`}>{label}</label>
+              <textarea id={`edit-${key}`} rows={3} value={draft[key]} onChange={setPart(key)} />
+            </div>
+          ))}
+        </Modal>
+      )}
+
+      {/* ---------- "use my words" pop-up ---------- */}
+      {modal === "rewrite" && target && (
+        <Modal
+          title={busy ? "Rewriting your answer" : "Use my words"}
+          titleId="rewrite-h"
+          onClose={closeModal}
+          onSubmit={handleRewrite}
+          busy={busy}
+          footer={
+            <>
+              <button className="btn btn-outline" type="button" onClick={closeModal} disabled={busy}>
+                Cancel
+              </button>
+              <button className="btn btn-primary" type="submit" disabled={busy}>
+                {busy ? "Rewriting…" : "Rewrite in STAR"}
+              </button>
+            </>
+          }
+        >
+          {modalError && <p className="form-error" role="alert">{modalError}</p>}
+          <p className="star-question">{target.question}</p>
+          <div className="field">
+            <label htmlFor="own-words">Your answer, in your own words</label>
+            <textarea
+              id="own-words"
+              rows={7}
+              maxLength={3000}
+              value={ownWords}
+              onChange={(e) => setOwnWords(e.target.value)}
+              placeholder="Tell the story however it comes out. We'll shape it into STAR."
+              required
+              disabled={busy}
+            />
+          </div>
+          <p className="muted star-note">This replaces the current Situation, Task, Action and Result.</p>
+        </Modal>
+      )}
     </div>
   );
 }
