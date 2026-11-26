@@ -22,7 +22,22 @@ def resume_model():
     return os.environ.get("LLM_RESUME_MODEL") or settings.LLM_MODEL
 
 
-def call_llm(system, user, mock_file, max_tokens=2000, model=None):
+def resume_effort():
+    """How hard the resume model thinks before it writes: low, medium, or high.
+
+    Sonnet 5.5 and Opus 5.5 think before they answer, and that thinking counts
+    toward max_tokens. A lower effort leaves room for the resume itself.
+    Set LLM_RESUME_EFFORT in the server's .env to change it.
+    """
+    return os.environ.get("LLM_RESUME_EFFORT") or "medium"
+
+
+def _supports_effort(model_name):
+    # Only send the effort setting to models we know accept it.
+    return "sonnet-5" in model_name or "opus-5" in model_name
+
+
+def call_llm(system, user, mock_file, max_tokens=2000, model=None, effort=None):
     """Send one request to Claude and return the reply text.
 
     With USE_MOCK_LLM on, return a saved sample from mocks/ instead,
@@ -34,11 +49,16 @@ def call_llm(system, user, mock_file, max_tokens=2000, model=None):
     import anthropic
 
     client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+    model_name = model or settings.LLM_MODEL
+    extra = {}
+    if effort and _supports_effort(model_name):
+        extra["extra_body"] = {"output_config": {"effort": effort}}
     response = client.messages.create(
-        model=model or settings.LLM_MODEL,
+        model=model_name,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": user}],
+        **extra,
     )
     if response.stop_reason == "max_tokens":
         # The reply was cut off, so any JSON in it will be incomplete.
@@ -58,7 +78,7 @@ def _parse_json(text):
     return json.loads(text)
 
 
-def call_llm_json(system, user, mock_file, validate, max_tokens=2000, model=None):
+def call_llm_json(system, user, mock_file, validate, max_tokens=2000, model=None, effort=None):
     """Like call_llm, but returns parsed JSON. Retries once if the reply is bad.
 
     `validate` is a function that raises ValueError if the data is wrong.
@@ -66,7 +86,7 @@ def call_llm_json(system, user, mock_file, validate, max_tokens=2000, model=None
     prompt = user
     for attempt in (1, 2):
         try:
-            text = call_llm(system, prompt, mock_file, max_tokens, model)
+            text = call_llm(system, prompt, mock_file, max_tokens, model, effort)
         except Exception:
             # API errors (bad key, timeout, rate limit, overloaded) land here.
             logger.exception("LLM API call failed for %s", mock_file)
