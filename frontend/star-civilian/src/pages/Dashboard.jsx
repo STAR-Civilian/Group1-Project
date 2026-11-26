@@ -147,9 +147,11 @@ export default function Dashboard() {
               {data.resumes.length === 0 ? (
                 <div className="exp-empty">
                   {data.positions.length === 0 ? (
-                    <>No resumes yet. <Link to="/experience">Add your experience first</Link>, then generate a resume.</>
+                    <>No resumes yet. <Link to="/experience">Begin step one.</Link></>
+                  ) : data.targets.length === 0 ? (
+                    <>No resumes yet. <Link to="/jobs">Continue to step two.</Link></>
                   ) : (
-                    <>No resumes yet. <Link to="/resume">Generate your first one</Link>.</>
+                    <>No resumes yet. <Link to="/resume">Continue to step three.</Link></>
                   )}
                 </div>
               ) : (
