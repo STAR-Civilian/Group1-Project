@@ -47,7 +47,7 @@ function AnswerCard({ answer, onEdit, onRewrite, onDelete }) {
             Edit
           </button>
           <button type="button" className="btn btn-outline btn-sm" onClick={() => onRewrite(answer)}>
-            Use my words
+            Use My Words
           </button>
           <button
             type="button"
@@ -218,7 +218,7 @@ export default function StarPage() {
       <main className="exp-main">
         <div className="exp-list__head star-head-row">
           <div className="exp-head">
-            <h1>STAR interview answers</h1>
+            <h1>STAR Interview Answers</h1>
             <p className="muted">
               Example answers to behavioral questions, built from your resume. Edit them until
               they sound like you. They're examples to practice with, not scripts.
@@ -226,7 +226,7 @@ export default function StarPage() {
           </div>
           {resumes.length > 0 && (
             <button type="button" className="btn btn-outline btn-sm" onClick={() => openModal("generate")}>
-              + New answers
+              + New Answers
             </button>
           )}
         </div>
@@ -259,7 +259,7 @@ export default function StarPage() {
             {/* ---------- answers ---------- */}
             <section className="exp-list" aria-labelledby="answers-h">
               <h2 id="answers-h">
-                Your answers{!loadingAnswers && answers.length > 0 ? ` (${answers.length})` : ""}
+              Your Answers{!loadingAnswers && answers.length > 0 ? ` (${answers.length})` : ""}
               </h2>
               {loadingAnswers ? (
                 <p className="muted">Loading…</p>
@@ -267,7 +267,7 @@ export default function StarPage() {
                 <div className="exp-empty exp-empty--action">
                   <p>No answers yet for this resume.</p>
                   <button type="button" className="btn btn-primary" onClick={() => openModal("generate")}>
-                    Get your first answers
+                    Get Your First Answers
                   </button>
                 </div>
               ) : (

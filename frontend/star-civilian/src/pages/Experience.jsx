@@ -2,7 +2,7 @@
 // Work experience: list of saved positions + a form with a Military / Civilian toggle.
 // Talks to /api/history/positions/ (history app, PositionViewSet).
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppHeader from "../components/AppHeader";
 import CredentialsSection from "../components/CredentialsSection";
 import MilitaryJobCodeField from "../components/MilitaryJobCodeField";
@@ -47,7 +47,10 @@ const branchLabel = (v) => BRANCHES.find((b) => b.value === v)?.label || v;
 function formatDate(d) {
   if (!d) return "Present";
   const [y, m] = d.split("-");
-  return new Date(y, m - 1).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  return new Date(y, m - 1).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
 }
 
 // Newest first, like the backend's ordering
@@ -76,7 +79,10 @@ function TextArea({ id, label, ...props }) {
 // A half-typed new position, saved as they type
 function loadDraft() {
   try {
-    return { ...EMPTY_FORM, ...JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}") };
+    return {
+      ...EMPTY_FORM,
+      ...JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"),
+    };
   } catch {
     return EMPTY_FORM;
   }
@@ -104,16 +110,20 @@ export default function Experience() {
   useEffect(() => {
     apiFetch("/api/history/positions/")
       .then(setPositions)
-      .catch((err) => (err.status === 401 ? navigate("/") : setError(err.message)))
+      .catch((err) =>
+        err.status === 401 ? navigate("/") : setError(err.message),
+      )
       .finally(() => setLoading(false));
   }, [navigate]);
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const setType = (type) => setForm({ ...form, experience_type: type });
 
-  // Scroll to Education & training and put focus on its "+ Add" button
+  // Scroll to Education & Training and put focus on its "+ Add" button
   function goToEducation() {
-    document.getElementById("education")?.scrollIntoView({ behavior: "smooth" });
+    document
+      .getElementById("education")
+      ?.scrollIntoView({ behavior: "smooth" });
     document.getElementById("add-edu-btn")?.focus({ preventScroll: true });
   }
 
@@ -165,7 +175,9 @@ export default function Experience() {
     // Send every field; blank out the ones that don't apply to this type
     const payload = { ...form };
     payload.end_date = current || !form.end_date ? null : form.end_date;
-    (isMilitary ? CIVILIAN_ONLY : MILITARY_ONLY).forEach((k) => (payload[k] = ""));
+    (isMilitary ? CIVILIAN_ONLY : MILITARY_ONLY).forEach(
+      (k) => (payload[k] = ""),
+    );
 
     try {
       if (editingId) {
@@ -173,7 +185,11 @@ export default function Experience() {
           method: "PUT",
           body: payload,
         });
-        setPositions(sortPositions(positions.map((p) => (p.id === editingId ? updated : p))));
+        setPositions(
+          sortPositions(
+            positions.map((p) => (p.id === editingId ? updated : p)),
+          ),
+        );
       } else {
         const created = await apiFetch("/api/history/positions/", {
           method: "POST",
@@ -216,21 +232,29 @@ export default function Experience() {
 
       <main className="exp-main">
         <div className="exp-head">
-          <h1>Work experience</h1>
+          <h1>Work Experience</h1>
           <p className="muted">
-            Add the jobs you've held, military or civilian. We use them to build your
-            resume and STAR interview answers.
+            Add the jobs you've held, military or civilian. We use them to build
+            your resume and STAR interview answers.
           </p>
         </div>
 
-        {error && !modalOpen && <p className="form-error" role="alert">{error}</p>}
+        {error && !modalOpen && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
 
         {/* ---------- saved positions ---------- */}
         <section className="exp-list" aria-labelledby="saved-h">
           <div className="exp-list__head">
-            <h2 id="saved-h">Your positions</h2>
-            <button type="button" className="btn btn-outline btn-sm" onClick={openAdd}>
-              + Add position
+            <h2 id="saved-h">Your Positions</h2>
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={openAdd}
+            >
+              + Add Position
             </button>
           </div>
 
@@ -239,18 +263,27 @@ export default function Experience() {
           ) : positions.length === 0 ? (
             <div className="exp-empty exp-empty--action">
               <p>No positions yet.</p>
-              <button type="button" className="btn btn-primary" onClick={openAdd}>
-                Add your first position
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={openAdd}
+              >
+                Add Your First Position
               </button>
             </div>
           ) : (
             <ul>
               {positions.map((p) => (
-                <li key={p.id} className={`exp-card${editingId === p.id ? " is-editing" : ""}`}>
+                <li
+                  key={p.id}
+                  className={`exp-card${editingId === p.id ? " is-editing" : ""}`}
+                >
                   <div className="exp-card__top">
                     <div>
                       <span className={`tag tag--${p.experience_type}`}>
-                        {p.experience_type === "military" ? "Military" : "Civilian"}
+                        {p.experience_type === "military"
+                          ? "Military"
+                          : "Civilian"}
                       </span>
                       <h3>{p.title}</h3>
                       {details(p) && <p className="muted">{details(p)}</p>}
@@ -259,7 +292,11 @@ export default function Experience() {
                       </p>
                     </div>
                     <div className="exp-card__actions">
-                      <button type="button" className="btn btn-outline btn-sm" onClick={() => startEdit(p)}>
+                      <button
+                        type="button"
+                        className="btn btn-outline btn-sm"
+                        onClick={() => startEdit(p)}
+                      >
                         Edit
                       </button>
                       <button
@@ -280,13 +317,26 @@ export default function Experience() {
 
           {/* once they have a job saved, point them to the next section */}
           {!loading && positions.length > 0 && (
-            <button type="button" className="btn btn-primary exp-list__next" onClick={goToEducation}>
-              Next: Education &amp; training
+            <button
+              type="button"
+              className="btn btn-primary exp-list__next"
+              onClick={goToEducation}
+            >
+              Next: Education &amp; Training
             </button>
           )}
         </section>
 
         <CredentialsSection />
+
+        {/* Next button Target Jobs */}
+        {positions.length > 0 && (
+          <div className="exp-next-step">
+            <Link to="/jobs" className="btn btn-primary">
+              Next: Target Jobs
+            </Link>
+          </div>
+        )}
       </main>
 
       {/* ---------- add / edit pop-up ---------- */}
@@ -299,16 +349,28 @@ export default function Experience() {
           busy={saving}
           footer={
             <>
-              <button className="btn btn-outline" type="button" onClick={closeModal} disabled={saving}>
+              <button
+                className="btn btn-outline"
+                type="button"
+                onClick={closeModal}
+                disabled={saving}
+              >
                 Cancel
               </button>
-              <button className="btn btn-primary" type="submit" disabled={saving}>
-                {saving ? "Saving…" : editingId ? "Save changes" : "Save position"}
+              <button
+                className="btn btn-primary"
+                type="submit"
+                disabled={saving}
+              >
+                {saving
+                  ? "Saving…"
+                  : editingId
+                    ? "Save Changes"
+                    : "Save Position"}
               </button>
             </>
           }
         >
-
           <div className="toggle" role="group" aria-label="Experience type">
             {["military", "civilian"].map((t) => (
               <button
@@ -336,10 +398,18 @@ export default function Experience() {
               <div className="field-row">
                 <div className="field">
                   <label htmlFor="branch">Branch</label>
-                  <select id="branch" name="branch" value={form.branch} onChange={onChange} required>
+                  <select
+                    id="branch"
+                    name="branch"
+                    value={form.branch}
+                    onChange={onChange}
+                    required
+                  >
                     <option value="">Select branch</option>
                     {BRANCHES.map((b) => (
-                      <option key={b.value} value={b.value}>{b.label}</option>
+                      <option key={b.value} value={b.value}>
+                        {b.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -360,11 +430,22 @@ export default function Experience() {
                 branch={form.branch}
               />
 
-              <Field id="unit" label="Unit" value={form.unit} onChange={onChange} />
+              <Field
+                id="unit"
+                label="Unit"
+                value={form.unit}
+                onChange={onChange}
+              />
             </>
           ) : (
             <div className="field-row">
-              <Field id="employer" label="Employer" value={form.employer} onChange={onChange} required />
+              <Field
+                id="employer"
+                label="Employer"
+                value={form.employer}
+                onChange={onChange}
+                required
+              />
               <Field
                 id="location"
                 label="Location"
@@ -395,8 +476,14 @@ export default function Experience() {
           </div>
 
           <label className="check">
-            <input type="checkbox" checked={current} onChange={(e) => setCurrent(e.target.checked)} />
-            {isMilitary ? "I currently serve in this role" : "I currently work here"}
+            <input
+              type="checkbox"
+              checked={current}
+              onChange={(e) => setCurrent(e.target.checked)}
+            />
+            {isMilitary
+              ? "I currently serve in this role"
+              : "I currently work here"}
           </label>
 
           <TextArea
@@ -416,7 +503,11 @@ export default function Experience() {
             onChange={onChange}
           />
 
-          {error && <p className="form-error" role="alert">{error}</p>}
+          {error && (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          )}
         </Modal>
       )}
     </div>

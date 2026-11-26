@@ -17,8 +17,8 @@ import { apiFetch } from "../api";
 import "../css-styling/Experience.css"; // shared page styles (.exp ...)
 import "../css-styling/TargetJobs.css";
 
-const COMPARE_LABEL = "Compare my experience";
-const COMPARED_LABEL = "View comparison";
+const COMPARE_LABEL = "Compare My Experience";
+const COMPARED_LABEL = "View Comparison";
 
 const STORAGE_KEY = "targetJobs";
 const MAX_MATCHES = 20;
@@ -362,7 +362,7 @@ export default function TargetJobs() {
 
       <main className="exp-main">
                          <div className="exp-head">
-          <h1>Target jobs</h1>
+          <h1>Target Jobs</h1>
           <p className="tj-lead">
             {!loadingMil && milJob && milJob.mos_code && (
               <>
@@ -395,9 +395,9 @@ export default function TargetJobs() {
         {/* ---------- picked target jobs ---------- */}
         <section className="tj-targets" aria-labelledby="targets-h">
           <div className="tj-targets-head">
-            <h2 id="targets-h">Your target jobs ({targets.length})</h2>
+            <h2 id="targets-h">Your Target Jobs ({targets.length})</h2>
             <button type="button" className="btn btn-outline btn-sm" onClick={openModal}>
-              + Add target jobs
+              + Add Target Jobs
             </button>
           </div>
           {loadingTargets ? (
@@ -437,7 +437,7 @@ export default function TargetJobs() {
                             onClick={() => toggleFit(t.code)}
                             aria-expanded={isOpen}
                           >
-                            {isOpen ? "Hide comparison" : COMPARED_LABEL}
+                            {isOpen ? "Hide Comparison" : COMPARED_LABEL}
                           </button>
                           <button
                             type="button"
@@ -446,7 +446,7 @@ export default function TargetJobs() {
                             disabled={isLoading}
                             title="Re-checks using your latest experience"
                           >
-                            Update comparison
+                            Update Comparison
                           </button>
                         </>
                       ) : (
@@ -489,7 +489,7 @@ export default function TargetJobs() {
         {targets.length > 0 && (
           <div className="tj-footer">
             <Link to="/resume" className="btn btn-primary tj-next">
-              Next: build my resume
+              Next: Build My Resume
             </Link>
           </div>
         )}
@@ -506,7 +506,7 @@ export default function TargetJobs() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="tj-modal__head">
-              <h2 id="tj-modal-h">Add target jobs</h2>
+              <h2 id="tj-modal-h">Add Target Jobs</h2>
               <button
                 type="button"
                 className="btn btn-outline btn-sm"

@@ -508,7 +508,7 @@ export default function ResumePage() {
       <main className="exp-main">
         <div className="rs-head-row">
           <div className="exp-head">
-            <h1>Your resume</h1>
+            <h1>Your Resume</h1>
             <p className="muted">
               One resume for each target job. Edit anything you want. Your name and contact info
               come from your <Link to="/dashboard">profile</Link>.
@@ -516,7 +516,7 @@ export default function ResumePage() {
           </div>
           {resumes.length > 0 && (
             <button type="button" className="btn btn-outline btn-sm" onClick={openModal}>
-              + New resume
+              + New Resume
             </button>
           )}
         </div>
@@ -541,7 +541,7 @@ export default function ResumePage() {
           <div className="exp-empty exp-empty--action">
             <p>You don't have a resume yet. Create one for a target job.</p>
             <button type="button" className="btn btn-primary" onClick={openModal}>
-              Generate your first resume
+              Generate Your First Resume
             </button>
           </div>
         )}
@@ -574,7 +574,7 @@ export default function ResumePage() {
 
                         <div className="rs-section-head">
                           <h3>Experience</h3>
-                          <button type="button" className="btn btn-outline btn-sm" onClick={addJob}>+ Add job</button>
+                          <button type="button" className="btn btn-outline btn-sm" onClick={addJob}>+ Add Job</button>
                         </div>
                         {draft.experience.map((j, i) => (
                           <div key={i} className="rs-job">
@@ -597,7 +597,7 @@ export default function ResumePage() {
                               <textarea id={`job-bullets-${i}`} rows={4} value={j.bullets} onChange={(e) => setJob(i, "bullets", e.target.value)} />
                             </div>
                             <button type="button" className="btn btn-outline btn-sm rs-remove" onClick={() => removeJob(i)}>
-                              Remove job
+                              Remove Job
                             </button>
                           </div>
                         ))}
@@ -678,18 +678,18 @@ export default function ResumePage() {
                           {msg ? `✓ ${msg}` : ""}
                         </span>
                         <button type="button" className="rs-delete" onClick={handleDelete}>
-                          Delete this resume
+                          Delete This Resume
                         </button>
                       </div>
                       <div className="rs-actions__right">
                         <button className="btn btn-outline btn-sm" type="button" onClick={startEditing}>
-                          Edit resume
+                          Edit Resume
                         </button>
                         <button className="btn btn-outline btn-sm" type="button" onClick={handlePrint}>
                           Print / PDF
                         </button>
                         <Link to={`/star?resume=${resume.id}`} className="btn btn-primary btn-sm">
-                          Next: STAR answers
+                          Next: STAR Answers
                         </Link>
                       </div>
                     </>
@@ -838,7 +838,7 @@ export default function ResumePage() {
                   Cancel
                 </button>
                 <button className="btn btn-primary" type="submit" disabled={positions.length === 0}>
-                  Generate resume
+                  Generate Resume
                 </button>
               </div>
             )}

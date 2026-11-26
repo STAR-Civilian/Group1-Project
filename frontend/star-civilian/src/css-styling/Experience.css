@@ -24,11 +24,17 @@
 .exp-main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 24px 64px;
+  padding: 10px 24px 32px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+
+.exp-main > .exp-list,
+.exp-section > .exp-list {
+  flex: none;
 }
 
 .exp-head h1 {
@@ -379,6 +385,12 @@
 }
 html {
   scroll-behavior: smooth;
+}
+
+/* Next Target Jobs button */
+.exp-next-step {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* ---------- school suggestions (Education form) ---------- */
