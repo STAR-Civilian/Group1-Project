@@ -194,47 +194,47 @@ function PrintableResume({ profile, content }) {
         <tbody>
           <tr>
             <td className="rs-print__body">
-            <h1>{name}</h1>
-            <ContactLine profile={profile} className="rs-print__contact" />
-            <h2>Summary</h2>
-            <p>{content.summary}</p>
-            {content.skills.length > 0 && (
-              <>
-                <h2>Skills</h2>
-                <p>{content.skills.join(" · ")}</p>
-              </>
-            )}
-            {content.experience.length > 0 && (
-              <>
-                <h2>Experience</h2>
-                {content.experience.map((j, i) => (
-                  <div key={i} className="rs-print__job">
-                    <div className="rs-print__job-head">
-                      <strong>{j.title}</strong>
-                      <span>{j.dates}</span>
+              <h1>{name}</h1>
+              <ContactLine profile={profile} className="rs-print__contact" />
+              <h2>Summary</h2>
+              <p>{content.summary}</p>
+              {content.skills.length > 0 && (
+                <>
+                  <h2>Skills</h2>
+                  <p>{content.skills.join(" · ")}</p>
+                </>
+              )}
+              {content.experience.length > 0 && (
+                <>
+                  <h2>Experience</h2>
+                  {content.experience.map((j, i) => (
+                    <div key={i} className="rs-print__job">
+                      <div className="rs-print__job-head">
+                        <strong>{j.title}</strong>
+                        <span>{j.dates}</span>
+                      </div>
+                      <div>{j.organization}</div>
+                      <ul>
+                        {j.bullets.map((b, k) => (
+                          <li key={k}>{b}</li>
+                        ))}
+                      </ul>
                     </div>
-                    <div>{j.organization}</div>
-                    <ul>
-                      {j.bullets.map((b, k) => (
-                        <li key={k}>{b}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </>
-            )}
-            {content.education.length > 0 && (
-              <>
-                <h2>Education</h2>
-                <ul>{content.education.map((e, i) => <li key={i}>{e}</li>)}</ul>
-              </>
-            )}
-            {content.certifications.length > 0 && (
-              <>
-                <h2>Certifications</h2>
-                <ul>{content.certifications.map((c, i) => <li key={i}>{c}</li>)}</ul>
-              </>
-            )}
+                  ))}
+                </>
+              )}
+              {content.education.length > 0 && (
+                <>
+                  <h2>Education</h2>
+                  <ul>{content.education.map((e, i) => <li key={i}>{e}</li>)}</ul>
+                </>
+              )}
+              {content.certifications.length > 0 && (
+                <>
+                  <h2>Certifications</h2>
+                  <ul>{content.certifications.map((c, i) => <li key={i}>{c}</li>)}</ul>
+                </>
+              )}
             </td>
           </tr>
         </tbody>
@@ -538,7 +538,7 @@ export default function ResumePage() {
         )}
 
         {!loading && resumes.length === 0 && (
-          <div className="exp-empty">
+          <div className="exp-empty exp-empty--action">
             <p>You don't have a resume yet. Create one for a target job.</p>
             <button type="button" className="btn btn-primary" onClick={openModal}>
               Generate your first resume
@@ -554,98 +554,98 @@ export default function ResumePage() {
             ) : (
               <>
                 <div className={`rs-grid${showTips ? " has-tips" : ""}`}>
-                <div className="rs-grid__main">
-                {editing ? (
-                  <div className="rs-paper">
-                    <div className="rs-paper__head">
-                      <h2>{fullName || "Your name"}</h2>
-                      <ContactLine profile={profile} className="muted rs-contact-line" />
-                    </div>
-
-                    <div className="field">
-                      <label htmlFor="ed-summary">Summary</label>
-                      <textarea id="ed-summary" rows={4} value={draft.summary} onChange={(e) => setField("summary", e.target.value)} />
-                    </div>
-
-                    <div className="field">
-                      <label htmlFor="ed-skills">Skills (one per line)</label>
-                      <textarea id="ed-skills" rows={5} value={draft.skills} onChange={(e) => setField("skills", e.target.value)} />
-                    </div>
-
-                    <div className="rs-section-head">
-                      <h3>Experience</h3>
-                      <button type="button" className="btn btn-outline btn-sm" onClick={addJob}>+ Add job</button>
-                    </div>
-                    {draft.experience.map((j, i) => (
-                      <div key={i} className="rs-job">
-                        <div className="field-row">
-                          <div className="field">
-                            <label htmlFor={`job-title-${i}`}>Title</label>
-                            <input id={`job-title-${i}`} value={j.title} onChange={(e) => setJob(i, "title", e.target.value)} />
-                          </div>
-                          <div className="field">
-                            <label htmlFor={`job-org-${i}`}>Organization</label>
-                            <input id={`job-org-${i}`} value={j.organization} onChange={(e) => setJob(i, "organization", e.target.value)} />
-                          </div>
-                          <div className="field rs-dates">
-                            <label htmlFor={`job-dates-${i}`}>Dates</label>
-                            <input id={`job-dates-${i}`} value={j.dates} onChange={(e) => setJob(i, "dates", e.target.value)} />
-                          </div>
+                  <div className="rs-grid__main">
+                    {editing ? (
+                      <div className="rs-paper">
+                        <div className="rs-paper__head">
+                          <h2>{fullName || "Your name"}</h2>
+                          <ContactLine profile={profile} className="muted rs-contact-line" />
                         </div>
+
                         <div className="field">
-                          <label htmlFor={`job-bullets-${i}`}>Bullets (one per line)</label>
-                          <textarea id={`job-bullets-${i}`} rows={4} value={j.bullets} onChange={(e) => setJob(i, "bullets", e.target.value)} />
+                          <label htmlFor="ed-summary">Summary</label>
+                          <textarea id="ed-summary" rows={4} value={draft.summary} onChange={(e) => setField("summary", e.target.value)} />
                         </div>
-                        <button type="button" className="btn btn-outline btn-sm rs-remove" onClick={() => removeJob(i)}>
-                          Remove job
-                        </button>
+
+                        <div className="field">
+                          <label htmlFor="ed-skills">Skills (one per line)</label>
+                          <textarea id="ed-skills" rows={5} value={draft.skills} onChange={(e) => setField("skills", e.target.value)} />
+                        </div>
+
+                        <div className="rs-section-head">
+                          <h3>Experience</h3>
+                          <button type="button" className="btn btn-outline btn-sm" onClick={addJob}>+ Add job</button>
+                        </div>
+                        {draft.experience.map((j, i) => (
+                          <div key={i} className="rs-job">
+                            <div className="field-row">
+                              <div className="field">
+                                <label htmlFor={`job-title-${i}`}>Title</label>
+                                <input id={`job-title-${i}`} value={j.title} onChange={(e) => setJob(i, "title", e.target.value)} />
+                              </div>
+                              <div className="field">
+                                <label htmlFor={`job-org-${i}`}>Organization</label>
+                                <input id={`job-org-${i}`} value={j.organization} onChange={(e) => setJob(i, "organization", e.target.value)} />
+                              </div>
+                              <div className="field rs-dates">
+                                <label htmlFor={`job-dates-${i}`}>Dates</label>
+                                <input id={`job-dates-${i}`} value={j.dates} onChange={(e) => setJob(i, "dates", e.target.value)} />
+                              </div>
+                            </div>
+                            <div className="field">
+                              <label htmlFor={`job-bullets-${i}`}>Bullets (one per line)</label>
+                              <textarea id={`job-bullets-${i}`} rows={4} value={j.bullets} onChange={(e) => setJob(i, "bullets", e.target.value)} />
+                            </div>
+                            <button type="button" className="btn btn-outline btn-sm rs-remove" onClick={() => removeJob(i)}>
+                              Remove job
+                            </button>
+                          </div>
+                        ))}
+
+                        <div className="field">
+                          <label htmlFor="ed-edu">Education (one per line)</label>
+                          <textarea id="ed-edu" rows={3} value={draft.education} onChange={(e) => setField("education", e.target.value)} />
+                        </div>
+
+                        <div className="field">
+                          <label htmlFor="ed-certs">Certifications (one per line)</label>
+                          <textarea id="ed-certs" rows={3} value={draft.certifications} onChange={(e) => setField("certifications", e.target.value)} />
+                        </div>
                       </div>
-                    ))}
-
-                    <div className="field">
-                      <label htmlFor="ed-edu">Education (one per line)</label>
-                      <textarea id="ed-edu" rows={3} value={draft.education} onChange={(e) => setField("education", e.target.value)} />
-                    </div>
-
-                    <div className="field">
-                      <label htmlFor="ed-certs">Certifications (one per line)</label>
-                      <textarea id="ed-certs" rows={3} value={draft.certifications} onChange={(e) => setField("certifications", e.target.value)} />
-                    </div>
+                    ) : (
+                      <>
+                        <ResumePreview profile={profile} content={currentContent} />
+                      </>
+                    )}
                   </div>
-                ) : (
-                  <>
-                    <ResumePreview profile={profile} content={currentContent} />
-                  </>
-                )}
-                </div>
 
-                {showTips && (
-                  <aside className="rs-tips" aria-label="Tips for this resume">
-                    {draft.questions.length > 0 && (
-                      <div className="rs-tips__block">
-                        <h2>Make it stronger</h2>
-                        <p>
-                          Answering these in <strong>Edit resume</strong> adds detail a hiring manager
-                          will look for.
-                        </p>
-                        <ul>
-                          {draft.questions.map((q, i) => <li key={i}>{q}</li>)}
-                        </ul>
-                      </div>
-                    )}
-                    {tipPlaceholders && (
-                      <div className="rs-tips__block">
-                        <h2>Fill in the gaps</h2>
-                        <p>
-                          Items in <mark className="rs-ph">[yellow brackets]</mark> need your input.
-                          {editing
-                            ? " Replace each one with your details."
-                            : " Choose Edit resume to fill them in."}
-                        </p>
-                      </div>
-                    )}
-                  </aside>
-                )}
+                  {showTips && (
+                    <aside className="rs-tips" aria-label="Tips for this resume">
+                      {draft.questions.length > 0 && (
+                        <div className="rs-tips__block">
+                          <h2>Make it stronger</h2>
+                          <p>
+                            Answering these in <strong>Edit resume</strong> adds detail a hiring manager
+                            will look for.
+                          </p>
+                          <ul>
+                            {draft.questions.map((q, i) => <li key={i}>{q}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                      {tipPlaceholders && (
+                        <div className="rs-tips__block">
+                          <h2>Fill in the gaps</h2>
+                          <p>
+                            Items in <mark className="rs-ph">[yellow brackets]</mark> need your input.
+                            {editing
+                              ? " Replace each one with your details."
+                              : " Choose Edit resume to fill them in."}
+                          </p>
+                        </div>
+                      )}
+                    </aside>
+                  )}
                 </div>
 
                 {/* ---------- actions: stay at the bottom of the screen while you scroll ---------- */}
@@ -739,97 +739,97 @@ export default function ResumePage() {
                 </p>
               </div>
             ) : (
-            <div className="rs-modal__body">
-              {error && <p className="form-error" role="alert">{error}</p>}
+              <div className="rs-modal__body">
+                {error && <p className="form-error" role="alert">{error}</p>}
 
-              <div className="field">
-                <label htmlFor="rs-job">Target job</label>
-                <select
-                  id="rs-job"
-                  autoFocus
-                  value={jobChoice}
-                  onChange={(e) => setJobChoice(e.target.value)}
-                  disabled={generating}
-                >
-                  {targets.map((t) => (
-                    <option key={t.code} value={t.code}>{t.title}</option>
-                  ))}
-                  <option value="other">Other (type a title)</option>
-                </select>
-              </div>
-              {jobChoice === "other" && (
                 <div className="field">
-                  <label htmlFor="rs-title">Job title</label>
-                  <input
-                    id="rs-title"
-                    value={customTitle}
-                    onChange={(e) => setCustomTitle(e.target.value)}
-                    placeholder="e.g. Project Manager"
+                  <label htmlFor="rs-job">Target job</label>
+                  <select
+                    id="rs-job"
+                    autoFocus
+                    value={jobChoice}
+                    onChange={(e) => setJobChoice(e.target.value)}
                     disabled={generating}
-                  />
+                  >
+                    {targets.map((t) => (
+                      <option key={t.code} value={t.code}>{t.title}</option>
+                    ))}
+                    <option value="other">Other (type a title)</option>
+                  </select>
                 </div>
-              )}
-              {targets.length === 0 && (
-                <p className="muted rs-hint">
-                  Tip: pick jobs on <Link to="/jobs">Target jobs</Link> to choose them here.
-                </p>
-              )}
+                {jobChoice === "other" && (
+                  <div className="field">
+                    <label htmlFor="rs-title">Job title</label>
+                    <input
+                      id="rs-title"
+                      value={customTitle}
+                      onChange={(e) => setCustomTitle(e.target.value)}
+                      placeholder="e.g. Project Manager"
+                      disabled={generating}
+                    />
+                  </div>
+                )}
+                {targets.length === 0 && (
+                  <p className="muted rs-hint">
+                    Tip: pick jobs on <Link to="/jobs">Target jobs</Link> to choose them here.
+                  </p>
+                )}
 
-              {positions.length > 0 ? (
-                <fieldset className="rs-positions">
-                  <legend>Include these positions</legend>
-                  {positions.map((p) => (
-                    <label key={p.id} className="check">
-                      <input
-                        type="checkbox"
-                        checked={posIds.includes(p.id)}
-                        onChange={() => togglePos(p.id)}
+                {positions.length > 0 ? (
+                  <fieldset className="rs-positions">
+                    <legend>Include these positions</legend>
+                    {positions.map((p) => (
+                      <label key={p.id} className="check">
+                        <input
+                          type="checkbox"
+                          checked={posIds.includes(p.id)}
+                          onChange={() => togglePos(p.id)}
+                          disabled={generating}
+                        />
+                        {p.title}
+                      </label>
+                    ))}
+                  </fieldset>
+                ) : (
+                  !loading && (
+                    <p className="muted rs-hint">
+                      Add at least one position on <Link to="/experience">Experience</Link> first.
+                    </p>
+                  )
+                )}
+
+                {showDetails ? (
+                  <>
+                    <div className="field">
+                      <label htmlFor="rs-notes">Notes about the job (optional)</label>
+                      <textarea
+                        id="rs-notes"
+                        rows={3}
+                        value={jobNotes}
+                        onChange={(e) => setJobNotes(e.target.value)}
+                        placeholder="Paste key lines from a job posting"
                         disabled={generating}
                       />
-                      {p.title}
-                    </label>
-                  ))}
-                </fieldset>
-              ) : (
-                !loading && (
-                  <p className="muted rs-hint">
-                    Add at least one position on <Link to="/experience">Experience</Link> first.
-                  </p>
-                )
-              )}
-
-              {showDetails ? (
-                <>
-                  <div className="field">
-                    <label htmlFor="rs-notes">Notes about the job (optional)</label>
-                    <textarea
-                      id="rs-notes"
-                      rows={3}
-                      value={jobNotes}
-                      onChange={(e) => setJobNotes(e.target.value)}
-                      placeholder="Paste key lines from a job posting"
-                      disabled={generating}
-                    />
-                  </div>
-                  <div className="field">
-                    <label htmlFor="rs-extra">Anything else to include (optional)</label>
-                    <textarea
-                      id="rs-extra"
-                      rows={3}
-                      maxLength={3000}
-                      value={extra}
-                      onChange={(e) => setExtra(e.target.value)}
-                      placeholder="Volunteer work, tools you know, clearance…"
-                      disabled={generating}
-                    />
-                  </div>
-                </>
-              ) : (
-                <button type="button" className="rs-more" onClick={() => setShowDetails(true)}>
-                  Add details about the job (optional)
-                </button>
-              )}
-            </div>
+                    </div>
+                    <div className="field">
+                      <label htmlFor="rs-extra">Anything else to include (optional)</label>
+                      <textarea
+                        id="rs-extra"
+                        rows={3}
+                        maxLength={3000}
+                        value={extra}
+                        onChange={(e) => setExtra(e.target.value)}
+                        placeholder="Volunteer work, tools you know, clearance…"
+                        disabled={generating}
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <button type="button" className="rs-more" onClick={() => setShowDetails(true)}>
+                    Add details about the job (optional)
+                  </button>
+                )}
+              </div>
             )}
 
             {!generating && (
