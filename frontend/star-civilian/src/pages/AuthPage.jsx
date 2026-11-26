@@ -1,6 +1,6 @@
 // src/pages/AuthPage.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import logo from "../assets/star-logo.svg";
 import "../css-styling/AuthPage.css";
 
@@ -182,7 +182,7 @@ export default function AuthPage({ initialMode = "login" }) {
                         <button className="auth-submit" type="submit">SIGN IN</button>
 
                         <div className="auth-links">
-                            <a href="/forgot-password">Forgot password?</a>
+                            <Link to="/forgot-password">Forgot password?</Link>
                             <span>
                                 New to STAR Civilian?{" "}
                                 <button type="button" className="link-btn" onClick={() => switchMode("signup")}>
