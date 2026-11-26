@@ -220,11 +220,11 @@ export default function CredentialsSection() {
     <section id="education" className="exp-section" aria-labelledby="edu-h">
       <div className="exp-head exp-list__head">
         <div>
-          <h2 id="edu-h">Education &amp; training</h2>
+          <h2 id="edu-h">Education &amp; Training</h2>
           <p className="muted">Degrees, military courses, certifications and awards.</p>
         </div>
         <button id="add-edu-btn" type="button" className="btn btn-outline btn-sm" onClick={openAdd}>
-          + Add education or training
+          + Add Education or Training
         </button>
       </div>
 
