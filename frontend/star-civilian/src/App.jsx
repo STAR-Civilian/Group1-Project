@@ -6,7 +6,8 @@ import ResumePage from './pages/ResumePage'
 import TargetJobs from './pages/TargetJobs'
 import StarPage from './pages/StarPage'
 import Dashboard from './pages/Dashboard'
-
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 
 // Logged in? Skip the login page and go straight to the dashboard.
 function Landing() {
@@ -19,6 +20,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/signup" element={<AuthPage initialMode="signup" />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:uid/:token" element={<ResetPassword />} />
         <Route path="/home" element={<Navigate to="/dashboard" replace />} />
         <Route path="/experience" element={<Experience />} />
         <Route path="/jobs" element={<TargetJobs />} />
