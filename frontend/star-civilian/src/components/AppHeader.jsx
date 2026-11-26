@@ -49,7 +49,7 @@ export default function AppHeader() {
             className="app-nav__logout"
             onClick={handleLogout}
           >
-            Log out
+            Log Out
           </button>
         </nav>
       </header>

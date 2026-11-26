@@ -133,7 +133,7 @@ export default function Dashboard() {
             {profile && (
               <section aria-labelledby="profile-h">
                 <div className="db-section-head">
-                  <h2 id="profile-h">Your profile</h2>
+                  <h2 id="profile-h">Your Profile</h2>
                 </div>
                 <ProfileCard profile={profile} onSaved={setProfile} onError={handleErr} />
               </section>
@@ -142,7 +142,7 @@ export default function Dashboard() {
             {/* ---------- saved resumes ---------- */}
             <section aria-labelledby="res-h">
               <div className="db-section-head">
-                <h2 id="res-h">Your resumes</h2>
+                <h2 id="res-h">Your Resumes</h2>
               </div>
               {data.resumes.length === 0 ? (
                 <div className="exp-empty">

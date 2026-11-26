@@ -169,3 +169,10 @@
 .exp .field select[aria-invalid="true"] {
   border-color: #b42318;
 }
+/* save profile  and cancel buttons */
+#location-right{
+ margin-left: auto;
+}
+#location-left{
+ margin-right: auto;
+}
