@@ -61,38 +61,38 @@ export default function Dashboard() {
 
   const steps = data
     ? [
-        {
-          title: "Experience",
-          done: data.positions.length > 0,
-          detail: `${plural(data.positions.length, "position")} · ${plural(
-            data.credentials.length,
-            "credential"
-          )}`,
-          to: "/experience",
-          cta: "Add experience",
-        },
-        {
-          title: "Target jobs",
-          done: data.targets.length > 0,
-          detail: plural(data.targets.length, "job") + " picked",
-          to: "/jobs",
-          cta: "Pick target jobs",
-        },
-        {
-          title: "Resume",
-          done: data.resumes.length > 0,
-          detail: plural(data.resumes.length, "resume") + " saved",
-          to: "/resume",
-          cta: "Generate a resume",
-        },
-        {
-          title: "STAR answers",
-          done: totalStar > 0,
-          detail: plural(totalStar, "answer") + " ready",
-          to: "/star",
-          cta: "Get STAR answers",
-        },
-      ]
+      {
+        title: "Experience",
+        done: data.positions.length > 0,
+        detail: `${plural(data.positions.length, "position")} · ${plural(
+          data.credentials.length,
+          "credential"
+        )}`,
+        to: "/experience",
+        cta: "Add experience",
+      },
+      {
+        title: "Target jobs",
+        done: data.targets.length > 0,
+        detail: plural(data.targets.length, "job") + " picked",
+        to: "/jobs",
+        cta: "Pick target jobs",
+      },
+      {
+        title: "Resume",
+        done: data.resumes.length > 0,
+        detail: plural(data.resumes.length, "resume") + " saved",
+        to: "/resume",
+        cta: "Generate a resume",
+      },
+      {
+        title: "STAR answers",
+        done: totalStar > 0,
+        detail: plural(totalStar, "answer") + " ready",
+        to: "/star",
+        cta: "Get STAR answers",
+      },
+    ]
     : [];
 
   const next = steps.find((s) => !s.done);
@@ -146,7 +146,11 @@ export default function Dashboard() {
               </div>
               {data.resumes.length === 0 ? (
                 <div className="exp-empty">
-                  No resumes yet. <Link to="/resume">Generate your first one</Link>.
+                  {data.positions.length === 0 ? (
+                    <>No resumes yet. <Link to="/experience">Add your experience first</Link>, then generate a resume.</>
+                  ) : (
+                    <>No resumes yet. <Link to="/resume">Generate your first one</Link>.</>
+                  )}
                 </div>
               ) : (
                 <ul className="db-resumes">
