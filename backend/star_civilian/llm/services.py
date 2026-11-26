@@ -46,6 +46,7 @@ def credential_to_dict(c):
         "name": c.name,
         "issuer": c.issuer,
         "year": str(c.date_earned.year) if c.date_earned else "",
+        "description": c.description,
     }
 
 
