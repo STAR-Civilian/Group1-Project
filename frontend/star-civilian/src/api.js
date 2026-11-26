@@ -36,6 +36,7 @@ export async function apiFetch(path, { method = "GET", body } = {}) {
   if (!res.ok) {
     const err = new Error(errorText(data));
     err.status = res.status;
+    err.data = data;                        // raw response, so forms can show messages per field
     throw err;
   }
   return data;

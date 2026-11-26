@@ -22,42 +22,90 @@ const FIELDS = [
 ];
 const toForm = (p) => Object.fromEntries(FIELDS.map((f) => [f, p?.[f] || ""]));
 
-
 export default function ProfileCard({ profile, onSaved, onError }) {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState(() => toForm(profile));
   const [saving, setSaving] = useState(false);
+  // Error text from the server: one message per field, plus one for the whole form
+  const [fieldErrors, setFieldErrors] = useState({}); // e.g. { first_name: "Names must start..." }
+  const [formError, setFormError] = useState("");     // e.g. "These fields are required: city"
 
-  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  // Typing in a box clears that box's error, so it does not linger after the fix
+  const onChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    setFieldErrors((prev) => ({ ...prev, [e.target.name]: "" }));
+  };
 
   function startEdit() {
     setForm(toForm(profile));
+    setFieldErrors({});
+    setFormError("");
     setEditing(true);
+  }
+
+  function cancelEdit() {
+    setFieldErrors({});
+    setFormError("");
+    setEditing(false);
   }
 
   async function handleSave(e) {
     e.preventDefault();
     setSaving(true);
+    setFieldErrors({});
+    setFormError("");
     try {
       const updated = await apiFetch("/api/profile/me/", { method: "PUT", body: form });
       localStorage.setItem("first_name", updated.first_name); // for "Hi, ___"
       onSaved(updated);
       setEditing(false);
     } catch (err) {
-      onError(err);
+      const detail = err.data?.detail;
+      if (err.status === 400 && detail) {
+        if (typeof detail === "string") {
+          // A single message for the whole form, e.g. "These fields are required: city"
+          setFormError(detail);
+        } else {
+          // An object of messages, one entry per bad field: stay on the form and
+          // show each message under its own box. Typed values stay as they are.
+          const perField = {};
+          const other = [];
+          for (const [field, msgs] of Object.entries(detail)) {
+            const text = [].concat(msgs).join(" ");
+            if (FIELDS.includes(field)) perField[field] = text;
+            else other.push(text); // not tied to a box, so show it with the form message
+          }
+          setFieldErrors(perField);
+          setFormError(other.join(" "));
+        }
+      } else {
+        // Anything else (expired login, server down): let the Dashboard handle it
+        onError(err);
+      }
     } finally {
       setSaving(false);
     }
   }
 
-  // Required fields get a * after the label
+  // Required fields get a * after the label; a server error shows under the box
   const input = (name, label, props = {}) => (
     <div className="field">
       <label htmlFor={`pf-${name}`}>
         {label}
         {props.required && <span className="req" aria-hidden="true"> *</span>}
       </label>
-      <input id={`pf-${name}`} name={name} value={form[name]} onChange={onChange} {...props} />
+      <input
+        id={`pf-${name}`}
+        name={name}
+        value={form[name]}
+        onChange={onChange}
+        aria-invalid={fieldErrors[name] ? "true" : "false"}
+        aria-describedby={fieldErrors[name] ? `pf-${name}-err` : undefined}
+        {...props}
+      />
+      {fieldErrors[name] && (
+        <p id={`pf-${name}-err`} className="field-error" role="alert">{fieldErrors[name]}</p>
+      )}
     </div>
   );
 
@@ -106,7 +154,8 @@ export default function ProfileCard({ profile, onSaved, onError }) {
             </dd>
           </div>
         </dl>
-<p className="muted db-profile__note db-profile__foot">Your name, contact info and links go at the top of your resume.</p>      </div>
+        <p className="muted db-profile__note db-profile__foot">Your name, contact info and links go at the top of your resume.</p>
+      </div>
     );
   }
 
@@ -133,12 +182,21 @@ export default function ProfileCard({ profile, onSaved, onError }) {
       <div className="field-row">
         <div className="field">
           <label htmlFor="pf-branch">Branch</label>
-          <select id="pf-branch" name="branch" value={form.branch} onChange={onChange}>
+          <select
+            id="pf-branch"
+            name="branch"
+            value={form.branch}
+            onChange={onChange}
+            aria-invalid={fieldErrors.branch ? "true" : "false"}
+          >
             <option value="">None</option>
             {BRANCHES.map((b) => (
               <option key={b.value} value={b.value}>{b.label}</option>
             ))}
           </select>
+          {fieldErrors.branch && (
+            <p className="field-error" role="alert">{fieldErrors.branch}</p>
+          )}
         </div>
         {input("rank", "Rank", { placeholder: "e.g. Sergeant (E-5)" })}
       </div>
@@ -150,11 +208,14 @@ export default function ProfileCard({ profile, onSaved, onError }) {
         {input("website_title", "Website title", { maxLength: 60, placeholder: "e.g. Portfolio" })}
       </div>
 
+      {/* A message that belongs to the whole form, not one box */}
+      {formError && <p className="form-error" role="alert">{formError}</p>}
+
       <div className="exp-form__actions">
         <button className="btn btn-primary" type="submit" disabled={saving}>
           {saving ? "Saving…" : "Save profile"}
         </button>
-        <button className="btn btn-outline" type="button" onClick={() => setEditing(false)}>
+        <button className="btn btn-outline" type="button" onClick={cancelEdit}>
           Cancel
         </button>
       </div>
