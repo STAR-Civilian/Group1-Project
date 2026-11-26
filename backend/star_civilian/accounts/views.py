@@ -27,6 +27,18 @@ REQUIRED_FIELDS = [
 URL_FIELDS = ["linkedin_url", "github_url", "website_url"]
 
 
+def format_phone(value):
+    """US numbers -> "(555) 123-4567". Anything else (e.g. international) is kept as typed."""
+    value = str(value or "").strip()
+    digits = "".join(ch for ch in value if ch.isdigit())
+    if len(digits) == 11 and digits.startswith("1"):
+        digits = digits[1:]     # drop the US country code
+    is_us = not value.startswith("+") or value.startswith("+1")
+    if is_us and len(digits) == 10:
+        return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+    return value
+
+
 def clean_url(value):
     """'linkedin.com/in/me' -> 'https://linkedin.com/in/me'. Blank stays blank."""
     value = str(value or "").strip()
@@ -61,7 +73,7 @@ class SignUp(APIView):
         profile = Profile(
             first_name=str(request.data["first_name"]).strip(),
             last_name=str(request.data["last_name"]).strip(),
-            phone=str(request.data.get("phone", "")).strip(),
+            phone=format_phone(request.data.get("phone", "")),
             city=str(request.data["city"]).strip(),
             state=str(request.data["state"]).strip().upper(),
             branch=str(request.data.get("branch", "")).strip(),
@@ -106,7 +118,7 @@ def profile_data(user):
         "email": user.email,
         "first_name": profile.first_name,
         "last_name": profile.last_name,
-        "phone": profile.phone,
+        "phone": format_phone(profile.phone),     # older numbers saved as digits show formatted too
         "city": profile.city,
         "state": profile.state,
         "branch": profile.branch,
@@ -138,7 +150,7 @@ class ProfileMe(APIView):
         
         profile.first_name = str(request.data["first_name"]).strip()
         profile.last_name = str(request.data["last_name"]).strip()
-        profile.phone = str(request.data.get("phone", "")).strip()
+        profile.phone = format_phone(request.data.get("phone", ""))
         profile.city = str(request.data["city"]).strip()
         profile.state = str(request.data["state"]).strip().upper()
         profile.branch = str(request.data.get("branch", "")).strip()

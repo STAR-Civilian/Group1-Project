@@ -53,3 +53,14 @@ class ProfileTests(APITestCase):
         body = {**SIGNUP, "website_url": "jane.dev", "website_title": "Portfolio"}
         res = self.client.put("/api/profile/me/", body, format="json")
         self.assertEqual(res.data["website_title"], "Portfolio")
+
+    def test_phone_is_formatted(self):
+        self.signup(phone="5551234567")
+        self.assertEqual(self.client.get("/api/profile/me/").data["phone"], "(555) 123-4567")
+        for typed in ["555-123-4567", "555.123.4567", "+1 555 123 4567", "15551234567"]:
+            res = self.client.put("/api/profile/me/", {**SIGNUP, "phone": typed}, format="json")
+            self.assertEqual(res.data["phone"], "(555) 123-4567", typed)
+
+    def test_international_phone_kept(self):
+        self.signup(phone="+44 20 7946 0958")
+        self.assertEqual(self.client.get("/api/profile/me/").data["phone"], "+44 20 7946 0958")
