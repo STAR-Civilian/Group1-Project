@@ -235,7 +235,7 @@ export default function CredentialsSection() {
         {loading ? (
           <p className="muted">Loading…</p>
         ) : items.length === 0 ? (
-          <div className="exp-empty">
+          <div className="exp-empty exp-empty--action">
             <p>Nothing added yet.</p>
             <button type="button" className="btn btn-primary" onClick={openAdd}>
               Add education or training
@@ -278,7 +278,7 @@ export default function CredentialsSection() {
         )}
       </div>
 
-    {/* ---------- add / edit pop-up ---------- */}
+      {/* ---------- add / edit pop-up ---------- */}
       {modalOpen && (
         <Modal
           title={editingId ? "Edit item" : "Add education or training"}

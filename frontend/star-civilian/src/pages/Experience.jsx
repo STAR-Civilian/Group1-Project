@@ -237,7 +237,7 @@ export default function Experience() {
           {loading ? (
             <p className="muted">Loading…</p>
           ) : positions.length === 0 ? (
-            <div className="exp-empty">
+            <div className="exp-empty exp-empty--action">
               <p>No positions yet.</p>
               <button type="button" className="btn btn-primary" onClick={openAdd}>
                 Add your first position
@@ -309,112 +309,112 @@ export default function Experience() {
           }
         >
 
-        <div className="toggle" role="group" aria-label="Experience type">
-          {["military", "civilian"].map((t) => (
-            <button
-              key={t}
-              type="button"
-              aria-pressed={form.experience_type === t}
-              className={`toggle__btn${form.experience_type === t ? " is-active" : ""}`}
-              onClick={() => setType(t)}
-            >
-              {t === "military" ? "Military" : "Civilian"}
-            </button>
-          ))}
-        </div>
-
-        <Field
-          id="title"
-          label={isMilitary ? "Billet / position" : "Job title"}
-          value={form.title}
-          onChange={onChange}
-          required
-        />
-
-        {isMilitary ? (
-          <>
-            <div className="field-row">
-              <div className="field">
-                <label htmlFor="branch">Branch</label>
-                <select id="branch" name="branch" value={form.branch} onChange={onChange} required>
-                  <option value="">Select branch</option>
-                  {BRANCHES.map((b) => (
-                    <option key={b.value} value={b.value}>{b.label}</option>
-                  ))}
-                </select>
-              </div>
-              <Field
-                id="rank"
-                label="Rank"
-                placeholder="e.g. Sergeant (E-5)"
-                value={form.rank}
-                onChange={onChange}
-              />
-            </div>
-
-            <MilitaryJobCodeField
-              id="mos_code"
-              name="mos_code"
-              value={form.mos_code}
-              onChange={onChange}
-              branch={form.branch}
-            />
-
-            <Field id="unit" label="Unit" value={form.unit} onChange={onChange} />
-          </>
-        ) : (
-          <div className="field-row">
-            <Field id="employer" label="Employer" value={form.employer} onChange={onChange} required />
-            <Field
-              id="location"
-              label="Location"
-              placeholder="City, ST"
-              value={form.location}
-              onChange={onChange}
-            />
+          <div className="toggle" role="group" aria-label="Experience type">
+            {["military", "civilian"].map((t) => (
+              <button
+                key={t}
+                type="button"
+                aria-pressed={form.experience_type === t}
+                className={`toggle__btn${form.experience_type === t ? " is-active" : ""}`}
+                onClick={() => setType(t)}
+              >
+                {t === "military" ? "Military" : "Civilian"}
+              </button>
+            ))}
           </div>
-        )}
 
-        <div className="field-row">
           <Field
-            id="start_date"
-            label="Start date"
-            type="date"
-            value={form.start_date}
+            id="title"
+            label={isMilitary ? "Billet / position" : "Job title"}
+            value={form.title}
             onChange={onChange}
             required
           />
-          <Field
-            id="end_date"
-            label="End date"
-            type="date"
-            value={current ? "" : form.end_date}
+
+          {isMilitary ? (
+            <>
+              <div className="field-row">
+                <div className="field">
+                  <label htmlFor="branch">Branch</label>
+                  <select id="branch" name="branch" value={form.branch} onChange={onChange} required>
+                    <option value="">Select branch</option>
+                    {BRANCHES.map((b) => (
+                      <option key={b.value} value={b.value}>{b.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <Field
+                  id="rank"
+                  label="Rank"
+                  placeholder="e.g. Sergeant (E-5)"
+                  value={form.rank}
+                  onChange={onChange}
+                />
+              </div>
+
+              <MilitaryJobCodeField
+                id="mos_code"
+                name="mos_code"
+                value={form.mos_code}
+                onChange={onChange}
+                branch={form.branch}
+              />
+
+              <Field id="unit" label="Unit" value={form.unit} onChange={onChange} />
+            </>
+          ) : (
+            <div className="field-row">
+              <Field id="employer" label="Employer" value={form.employer} onChange={onChange} required />
+              <Field
+                id="location"
+                label="Location"
+                placeholder="City, ST"
+                value={form.location}
+                onChange={onChange}
+              />
+            </div>
+          )}
+
+          <div className="field-row">
+            <Field
+              id="start_date"
+              label="Start date"
+              type="date"
+              value={form.start_date}
+              onChange={onChange}
+              required
+            />
+            <Field
+              id="end_date"
+              label="End date"
+              type="date"
+              value={current ? "" : form.end_date}
+              onChange={onChange}
+              disabled={current}
+            />
+          </div>
+
+          <label className="check">
+            <input type="checkbox" checked={current} onChange={(e) => setCurrent(e.target.checked)} />
+            {isMilitary ? "I currently serve in this role" : "I currently work here"}
+          </label>
+
+          <TextArea
+            id="duties"
+            label="Duties"
+            rows={4}
+            placeholder="What you were responsible for"
+            value={form.duties}
             onChange={onChange}
-            disabled={current}
           />
-        </div>
-
-        <label className="check">
-          <input type="checkbox" checked={current} onChange={(e) => setCurrent(e.target.checked)} />
-          {isMilitary ? "I currently serve in this role" : "I currently work here"}
-        </label>
-
-        <TextArea
-          id="duties"
-          label="Duties"
-          rows={4}
-          placeholder="What you were responsible for"
-          value={form.duties}
-          onChange={onChange}
-        />
-        <TextArea
-          id="achievements"
-          label="Achievements"
-          rows={3}
-          placeholder="Results, awards, etc. (numbers you can point to)"
-          value={form.achievements}
-          onChange={onChange}
-        />
+          <TextArea
+            id="achievements"
+            label="Achievements"
+            rows={3}
+            placeholder="Results, awards, etc. (numbers you can point to)"
+            value={form.achievements}
+            onChange={onChange}
+          />
 
           {error && <p className="form-error" role="alert">{error}</p>}
         </Modal>
