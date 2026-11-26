@@ -8,9 +8,9 @@ import "../css-styling/Timeline.css";
 
 const timelineSteps = [
   { key: "experience", label: "Experience", to: "/experience" },
-  { key: "jobs", label: "Target jobs", to: "/jobs" },
+  { key: "jobs", label: "Target Jobs", to: "/jobs" },
   { key: "resume", label: "Resume", to: "/resume" },
-  { key: "star", label: "STAR answers", to: "/star" },
+  { key: "star", label: "STAR Answers", to: "/star" },
 ];
 
 export default function Timeline() {
