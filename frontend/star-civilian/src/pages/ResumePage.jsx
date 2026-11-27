@@ -499,7 +499,7 @@ export default function ResumePage() {
   const genTitle = targets.find((t) => t.code === jobChoice)?.title || customTitle.trim();
   const currentContent = draft ? fromDraft(draft) : null;
   const tipPlaceholders = currentContent ? hasPlaceholders(currentContent) : false;
-  const showTips = !!draft && (draft.questions.length > 0 || tipPlaceholders);
+  const showTips = !!draft;
 
   return (
     <div className="exp rs">
@@ -644,6 +644,14 @@ export default function ResumePage() {
                           </p>
                         </div>
                       )}
+                      <div className="rs-tips__block">
+                      <h2>Check the details</h2>
+                      <p>
+                        This resume was written by AI, and AI can make mistakes. Read every line, and
+                        check each date, number, and job title against your own records before you
+                        use it.
+                      </p>
+                    </div>
                     </aside>
                   )}
                 </div>
