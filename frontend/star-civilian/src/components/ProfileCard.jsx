@@ -4,6 +4,7 @@
 // Saves with PUT /api/profile/me/.
 import { useState } from "react";
 import { apiFetch } from "../api";
+import MilitaryJobCodeField from "./MilitaryJobCodeField";
 
 // Same values as BRANCH_CHOICE in accounts/models.py
 const BRANCHES = [
@@ -274,9 +275,12 @@ export default function ProfileCard({ profile, onSaved, onError }) {
         </div>
         {input("rank", "Rank", { placeholder: "e.g. Sergeant (E-5)" })}
       </div>
-      {input("job_code_or_title", "Military job", {
-        placeholder: "e.g. 0411 or Maintenance Mgmt",
-      })}
+            <MilitaryJobCodeField
+        value={form.job_code_or_title}
+        onChange={onChange}
+        branch={form.branch}
+        id="pf-job_code_or_title"
+      />
       {input("linkedin_url", "LinkedIn URL", {
         inputMode: "url",
         placeholder: "linkedin.com/in/yourname",

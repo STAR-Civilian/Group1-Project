@@ -3,7 +3,7 @@
 // match it (O*NET), a keyword search, and the jobs they've picked as targets.
 //
 // Backend used:
-//   GET  /api/history/positions/            -> find the military job (mos_code, branch)
+//   GET  /api/profile/me/                   -> find the military job (mos_code, branch)
 //   GET  /api/jobs/military-search/         -> civilian matches for that code ("career" list)
 //   GET  /api/jobs/civilian-search/         -> keyword search ("occupation" list)
 //   POST /api/llm/job-fit/                  -> "How do I fit?" (summary, transfers, gaps). Uses AI, so it costs tokens.
@@ -151,7 +151,7 @@ function FitPanel({ fit }) {
 export default function TargetJobs() {
   const navigate = useNavigate();
 
-  const [milJob, setMilJob] = useState(null);       // a military Position from Experience
+  const [milJob, setMilJob] = useState(null);       // a military Position from branch Profile
   const [loadingMil, setLoadingMil] = useState(true);
   const [matches, setMatches] = useState([]);
   const [matchTitle, setMatchTitle] = useState("");
@@ -209,10 +209,16 @@ export default function TargetJobs() {
       .finally(() => setLoadingTargets(false));
   }, [navigate]);
 
-  // 1. Find the military job from Experience (most recent military position with a code)
+   // 1. Find the military job from the Profile (the code and branch the user saved there)
   useEffect(() => {
-    apiFetch("/api/history/positions/")
-      .then((list) => setMilJob(list.find((p) => p.experience_type === "military" && p.mos_code) || null))
+    apiFetch("/api/profile/me/")
+      .then((p) =>
+        setMilJob(
+          p.job_code_or_title
+            ? { mos_code: p.job_code_or_title, branch: p.branch }
+            : null
+        )
+      )
       .catch((err) => (err.status === 401 ? navigate("/") : setError(err.message)))
       .finally(() => setLoadingMil(false));
   }, [navigate]);
@@ -382,7 +388,7 @@ export default function TargetJobs() {
           <p className="muted tj-intro">
             We tailor your resume and interview answers to the ones you choose. Comparing is
             optional.{" "}
-            <Link to="/experience">
+                        <Link to="/dashboard">
               {!loadingMil && milJob ? "Update my military job" : "Add my military job"}
             </Link>
           </p>
