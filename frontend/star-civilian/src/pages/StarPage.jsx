@@ -414,6 +414,11 @@ export default function StarPage() {
               required
               disabled={busy}
             />
+                        <p className="muted">
+              Don't enter personal or confidential information, such as phone numbers, addresses,
+              ID numbers, or classified or controlled military information. What you type here is
+              sent to an AI service to help rewrite your answer.
+            </p>
           </div>
           <p className="muted star-note">This replaces the current Situation, Task, Action and Result.</p>
         </Modal>
