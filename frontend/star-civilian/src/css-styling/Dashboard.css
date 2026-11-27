@@ -176,3 +176,18 @@
 #location-left{
  margin-right: auto;
 }
+
+/* Dashboard: resumes grouped by target job */
+.db-resumes .rg-group { padding: 0; display: block; overflow: hidden; }
+.rg-top,
+.rg-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rg-top { padding: 16px 20px; }
+.rg-row { padding: 12px 20px 12px 36px; border-top: 1px solid #e5e7eb; background: #f9fafb; }
+.rg-name { font-weight: 500; }
+.rg-toggle {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 10px 20px; border: 0; border-top: 1px solid #e5e7eb;
+  background: #f9fafb; font: inherit; font-size: 0.85rem; color: #5b6472;
+  cursor: pointer; text-align: left;
+}
+.rg-toggle:hover { background: #f1f3f6; }

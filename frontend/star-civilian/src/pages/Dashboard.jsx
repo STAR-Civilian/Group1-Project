@@ -18,9 +18,28 @@ import "../css-styling/Dashboard.css";
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
+// Group resumes by target job (the O*NET code, or the title when there is no code).
+// Newest first inside each group, and groups with the newest resume come first.
+function groupResumes(resumes) {
+  const groups = new Map();
+  for (const r of resumes) {
+    const key = r.onet_code || r.target_job_title;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(r);
+  }
+  return [...groups.values()]
+    .map((list) =>
+      [...list].sort(
+        (a, b) => new Date(b.updated_at) - new Date(a.updated_at) || b.id - a.id
+      )
+    )
+    .sort((a, b) => new Date(b[0].updated_at) - new Date(a[0].updated_at));
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [data, setData] = useState(null); // { positions, credentials, resumes, targets, starCounts }
+  const [openGroups, setOpenGroups] = useState({}); // which target jobs show their earlier versions
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState("");
 
@@ -155,26 +174,69 @@ export default function Dashboard() {
                   )}
                 </div>
               ) : (
-                <ul className="db-resumes">
-                  {data.resumes.map((r) => (
-                    <li key={r.id} className="exp-card db-resume">
-                      <div>
-                        <h3>{r.target_job_title}</h3>
-                        <p className="muted">
-                          Updated {new Date(r.updated_at).toLocaleDateString()} ·{" "}
-                          {plural(data.starCounts[r.id] || 0, "STAR answer")}
-                        </p>
-                      </div>
-                      <div className="exp-card__actions">
-                        <Link to={`/resume?id=${r.id}`} className="btn btn-outline btn-sm">
-                          Resume
-                        </Link>
-                        <Link to={`/star?resume=${r.id}`} className="btn btn-outline btn-sm">
-                          STAR answers
-                        </Link>
-                      </div>
-                    </li>
-                  ))}
+                                               <ul className="db-resumes">
+                  {groupResumes(data.resumes).map((versions) => {
+                    const latest = versions[0];
+                    const older = versions.slice(1);
+                    const key = latest.onet_code || latest.target_job_title;
+                    const open = !!openGroups[key];
+                    return (
+                      <li key={key} className="exp-card rg-group">
+                        <div className="rg-top">
+                          <div>
+                            <h3>{latest.target_job_title}</h3>
+                            <p className="muted">
+                              Updated {new Date(latest.updated_at).toLocaleDateString()} ·{" "}
+                              {plural(data.starCounts[latest.id] || 0, "STAR answer")}
+                              {older.length > 0 && ` · ${plural(versions.length, "version")}`}
+                            </p>
+                          </div>
+                          <div className="exp-card__actions">
+                            <Link to={`/resume?id=${latest.id}`} className="btn btn-outline btn-sm">
+                              Resume
+                            </Link>
+                            <Link to={`/star?resume=${latest.id}`} className="btn btn-outline btn-sm">
+                              STAR answers
+                            </Link>
+                          </div>
+                        </div>
+                        {older.length > 0 && (
+                          <button
+                            type="button"
+                            className="rg-toggle"
+                            aria-expanded={open}
+                            onClick={() =>
+                              setOpenGroups((prev) => ({ ...prev, [key]: !prev[key] }))
+                            }
+                          >
+                            <span aria-hidden="true">{open ? "▴" : "▾"}</span>
+                            {open ? "Hide" : "Show"} {plural(older.length, "earlier version")}
+                          </button>
+                        )}
+                        {open &&
+                          older.map((r, i) => (
+                            <div key={r.id} className="rg-row">
+                              <div>
+                                <span className="rg-name">Version {versions.length - 1 - i}</span>
+                                <span className="muted">
+                                  {" "}
+                                  · {new Date(r.updated_at).toLocaleDateString()} ·{" "}
+                                  {plural(data.starCounts[r.id] || 0, "STAR answer")}
+                                </span>
+                              </div>
+                              <div className="exp-card__actions">
+                                <Link to={`/resume?id=${r.id}`} className="btn btn-outline btn-sm">
+                                  Resume
+                                </Link>
+                                <Link to={`/star?resume=${r.id}`} className="btn btn-outline btn-sm">
+                                  STAR answers
+                                </Link>
+                              </div>
+                            </div>
+                          ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </section>
