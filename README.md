@@ -62,9 +62,9 @@ Su Gardner     |   LLM app, resumes app, saved target jobs · AWS deployment    
 - **Alana Karp:** led the team and kept everyone on schedule. Built the `jobs` app: the O*NET client (`jobs/onet.py`), plus civilian search, military search, and skills-based job match endpoints. Tested the full app end to end.
 - **Liz Burk:** built the `accounts` app: sign-up and login with DRF token auth, the `Profile` model, `GET/PUT /api/profile/me/`, password rules, and name/city/phone validators. Set up Postgres and Django settings (required `SECRET_KEY`, `DEBUG` off by default). Tested the full app end to end.
 - **Steph Asauskas:** built the `history` app (`Position` and `Credential` models, serializers, CRUD endpoints, 16 tests). Built the frontend pages: login/sign up, Experience (work + education), Target jobs, Resume, STAR answers, and Dashboard. Built the progress timeline, the resume contact info section (optional phone, LinkedIn, GitHub, website), and the disclaimer footer. Wrote the README and WORKFLOW docs.
-- **Su Gardner:** built the `llm` app (Claude client with mock mode, prompts, and validators for resumes, STAR answers, rewrites, and job fit) and the `resumes` app (`Resume`, `StarAnswer`, `JobFit` CRUD). Added saved target jobs with descriptions and salary. Deployed the app to AWS EC2 with Docker, Nginx, and Caddy (automatic HTTPS).
+- **Su Gardner:** built the `llm` app (Claude client with mock mode, prompts, and validators for resumes, STAR answers, rewrites, and job fit) and the `resumes` app (`Resume`, `StarAnswer`, `JobFit` CRUD). Added saved target jobs with descriptions and salary. Redesigned the Target Jobs and Resume pages. Integration of Data.gov api for list of colleges in the experience app. Deployed the app to AWS EC2 with Docker, Nginx, and Caddy (automatic HTTPS).
 
-
+-**All team members contributed to edits and additions to the user's interface**
 
 ## Screenshots
 *(To-do: add images to `docs/`.)*
@@ -97,7 +97,8 @@ Deployment     |   AWS EC2, Caddy (HTTPS), Nginx
 
 ## Third-party APIs
 - **O*NET Web Services:** civilian occupation data, military-to-civilian job matching, job descriptions, and salary. Used in `jobs/onet.py`, `jobs/details.py`, and `jobs/views.py`.
-- **Anthropic Claude:** writes the resume, STAR answers, STAR rewrites, and job-fit notes. Used in `llm/client.py` and `llm/views.py`. Set `USE_MOCK_LLM=true` to use saved sample replies instead (no API key needed).
+- **Anthropic Claude:** writes the resume, STAR answers, STAR rewrites, and job-fit notes. Used in `llm/client.py` and `llm/views.py`. Set `USE_MOCK_LLM=true` to use saved sample replies instead (no API key needed). The live site is connected to paid API key using Claude Console. 
+- **College Scorecard (U.S. Department of Education, via api.data.gov):** school name suggestions for the Education section (U.S. schools only). Used in `jobs/schools.py` and `jobs/views.py` (`school_search`). Needs a free key from api.data.gov, set as `COLLEGE_SCORECARD_API_KEY` in `.env`.
 
 Includes information from O*NET Web Services. O*NET® is a trademark of USDOL/ETA.
 
