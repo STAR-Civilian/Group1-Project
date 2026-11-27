@@ -407,6 +407,12 @@ export default function CredentialsSection() {
               value={form.description}
               onChange={onChange}
             />
+            <p className="muted">
+              Don't enter personal or confidential information, such as phone numbers, addresses,
+              ID numbers, or classified or controlled military information. What you type here is
+              sent to an AI service to help write your resume.
+            </p>
+
           </div>
 
           {error && <p className="form-error" role="alert">{error}</p>}

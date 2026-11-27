@@ -830,6 +830,11 @@ export default function ResumePage() {
                         placeholder="Volunteer work, tools you know, clearance…"
                         disabled={generating}
                       />
+                                  <p className="muted">
+              Don't enter personal or confidential information, such as phone numbers, addresses,
+              ID numbers, or classified or controlled military information. What you type here is
+              sent to an AI service to help write your resume.
+            </p>
                     </div>
                   </>
                 ) : (
