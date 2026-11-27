@@ -22,6 +22,7 @@ const LEVELS = [
   { value: "associate", label: "Associate degree", text: "Associate degree", askField: true },
   { value: "bachelor", label: "Bachelor's degree", text: "Bachelor's degree", askField: true },
   { value: "master", label: "Master's degree", text: "Master's degree", askField: true },
+  { value: "master_cert", label: "Master's certificate", text: "Master's certificate", askField: true },
   { value: "doctorate", label: "Doctorate or professional degree", text: "Doctorate or professional degree", askField: true },
   { value: "certificate", label: "Certificate or diploma", text: "Certificate", askField: true },
   { value: "other", label: "Other", text: "", askField: false },
